@@ -1,0 +1,37 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/Front_end/css/sidebar.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>Quản lý kho</title>
+</head>
+<link rel="stylesheet" href="/Front_end/css/sidebar.css">
+<div class="sidebar">
+    <h2>Quản lý kho</h2>
+    <ul>
+        <li><a href="#" onclick="showSection('/Front_end/html/overview/overview')"><i class="fa-solid fa-house"></i> Tổng quan</a></li>
+        <li>
+            <a href="#" class="menu-toggle"><i class="fa-solid fa-file-invoice"></i> Đơn hàng</a>
+            <ul>
+                <li><a href="#" onclick="showSection('/Front_end/html/order/orderList')"> Danh sách đơn hàng</a></li>
+            </ul>
+        </li>
+        <li>
+            <a href="#" class="menu-toggle"><i class="fas fa-box"></i> Sản phẩm</a>
+            <ul>
+                <li><a href="#" onclick="showSection('/Front_end/html/product/productList')"> Danh sách sản phẩm</a></li>
+                <li><a href="#" onclick="showSection('/Front_end/html/product/categoryList')"> Danh mục sản phẩm</a></li>
+            </ul>
+        </li>
+        <li>
+            <a href="#" class="menu-toggle"><i class="fas fa-warehouse"></i> Quản lý kho</a>
+            <ul>
+                <li><a href="#" onclick="showSection('/Front_end/html/warehouse/inventory')"> Tồn kho</a></li>
+                <li><a href="#" onclick="showSection('/Front_end/html/product/productList')"> Đặt hàng nhập</a></li>
+                <li><a href="#" onclick="showSection('/Front_end/html/product/productList')"> Nhập hàng</a></li>
+                <li><a href="#" onclick="showSection('/Front_end/html/product/productList')"> Trả hàng nhập</a></li>
+                <li><a href="#" onclick="showSection('/Front_end/html/product/productList')"> Nhà cung cấp</a></li>
+            </ul>
+        </li>
+    </ul>
+</div>

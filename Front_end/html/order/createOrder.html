@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý kho - Tạo đơn nhập hàng</title>
+    <link rel="stylesheet" href="/Front_end/css/createOrder.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <div class="createOrder">
+    <div class="container">
+        <main class="content">
+            <div class="main-section">
+                <header>
+                    <h1>Tạo đơn nhập hàng</h1>
+                </header>
+                <section class="form-container">
+                    <div class="box">
+                        <h3>Sản phẩm</h3>
+                        <input type="text" id="searchProduct" placeholder="Tìm theo tên, mã SKU, quét mã Barcode..." onkeyup="filterProducts()">
+                        <table class="product-table" id="productTable">
+                            <thead>
+                                <tr>
+                                    <th>Chọn</th>
+                                    <th>Tên sản phẩm</th>
+                                    <th>Mã SKU</th>
+                                    <th>Giá</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productList">
+                                <tr onclick="selectProduct(this)">
+                                    <td><input type="checkbox"></td>
+                                    <td>Sản phẩm A</td>
+                                    <td>SKU123</td>
+                                    <td>100.000đ</td>
+                                </tr>
+                                <tr onclick="selectProduct(this)">
+                                    <td><input type="checkbox"></td>
+                                    <td>Sản phẩm B</td>
+                                    <td>SKU456</td>
+                                    <td>200.000đ</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="box">
+                        <h3>Thanh toán</h3>
+                        <p>Tổng tiền: 0đ</p>
+                        <p>Thêm giảm giá (F6)</p>
+                        <p>Chi phí nhập hàng (F7)</p>
+                        <p>Tiền cần trả NCC: 0đ</p>
+                    </div>
+                </section>
+            </div>
+            <aside class="side-panel">
+                <div class="box">
+                    <h3>Nhà cung cấp</h3>
+                    <input type="text" placeholder="Tìm theo tên, SDT, mã NCC...">
+                </div>
+                <div class="box">
+                    <h3>Thông tin bổ sung</h3>
+                    <p>Nhân viên phụ trách</p>
+                    <select><option>Admin PhucLeStore</option></select>
+                    <p>Ngày nhập dự kiến</p>
+                    <input type="date">
+                    <p>Mã đơn nhập</p>
+                    <input type="text" placeholder="Nhập mã đơn">
+                    <p>Tham chiếu</p>
+                    <input type="text" placeholder="Nhập mã tham chiếu">
+                </div>
+                <button>Tạo đơn nhập hàng</button>
+            </aside>
+        </main>
+    </div>
+</div>
+    <script>
+        function selectProduct(row) {
+            row.classList.toggle("selected");
+            let checkbox = row.querySelector("input[type='checkbox']");
+            checkbox.checked = !checkbox.checked;
+        }
+    </script>
+    
+</body>
+</html>

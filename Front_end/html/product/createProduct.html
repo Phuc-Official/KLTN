@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý kho - Thêm sản phẩm</title>
+    <link rel="stylesheet" href="/Front_end/css/createProduct.css">
+    <script src="script.js" defer></script>
+    
+</head>
+<body>
+    <div class="createProduct">
+    <div class="container">
+        <main class="content">
+            <div class="main-section">
+                <header>
+                    <h1>Thêm sản phẩm</h1>
+                    <button>Lưu</button>
+                </header>
+                <section class="form-container">
+                    <form>
+                        <label for="product-name">Tên sản phẩm</label>
+                        <input type="text" id="product-name" placeholder="Nhập tên sản phẩm">
+                        
+                        <label for="sku">Mã SKU</label>
+                        <input type="text" id="sku" placeholder="Nhập mã SKU">
+                        
+                        <label for="barcode">Mã vạch/Barcode</label>
+                        <input type="text" id="barcode" placeholder="Nhập mã vạch">
+                        
+                        <label for="unit">Đơn vị tính</label>
+                        <input type="text" id="unit" placeholder="Nhập đơn vị tính">
+                        
+                        <label for="description">Mô tả</label>
+                        <textarea id="description" placeholder="Nhập mô tả"></textarea>
+                        
+                        <label for="price">Giá bán</label>
+                        <input type="number" id="price" placeholder="Nhập giá bán">
+                        
+                        <button type="submit">Thêm sản phẩm</button>
+                    </form>
+                </section>
+            </div>
+            <aside class="side-panel">
+                <h3>Thông tin khác</h3>
+                <p>Ảnh sản phẩm</p>
+                <button>Thêm ảnh</button>
+                <p>Danh mục</p>
+                <select>
+                    <option>Chọn danh mục</option>
+                </select>
+                <p>Bảng giá</p>
+                <select>
+                    <option>Chọn bảng giá</option>
+                </select>
+            </aside>
+        </main>
+    </div>
+</div>
+</body>
+</html>

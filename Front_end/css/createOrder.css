@@ -1,0 +1,100 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+html, body {
+    height: 100%; /* Đảm bảo chiều cao của body và html chiếm toàn bộ */
+}
+
+.container {
+    display: flex;
+    height: 100vh; /* Chiều cao của container là 100% chiều cao màn hình */
+}
+
+.content {
+    flex-grow: 1; /* Chiếm toàn bộ không gian còn lại */
+    background: #F1F5F9;
+    padding: 20px;
+    display: flex;
+    gap: 20px;
+}
+
+.main-section {
+    flex: 2; /* Khu vực chính chiếm 2 phần */
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.side-panel {
+    flex: 1; /* Bảng điều khiển bên chiếm 1 phần */
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+header h1 {
+    font-size: 22px;
+}
+
+button {
+    background: #2563EB;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.box {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+input, textarea, select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #CBD5E1;
+    border-radius: 5px;
+    margin-top: 5px;
+}
+
+.product-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.product-table th, .product-table td {
+    border: 1px solid #CBD5E1;
+    padding: 10px;
+    text-align: left;
+}
+
+.product-table th {
+    background: #F3F4F6;
+}
+
+.selected {
+    background-color: #D1FAE5;
+}

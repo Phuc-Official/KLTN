@@ -1,0 +1,63 @@
+html, body {
+    height: 100%; /* Đảm bảo html và body chiếm toàn bộ chiều cao */
+    margin: 0;    /* Bỏ margin mặc định */
+}
+
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+}
+
+.container {
+    flex: 1; /* Chiếm toàn bộ không gian còn lại */
+    display: flex;
+}
+
+.content {
+    flex: 1;
+    padding: 20px;
+    background: #ecf0f1;
+    height: 100vh; /* Chiếm toàn bộ chiều cao của viewport */
+    box-sizing: border-box; /* Để padding không làm tăng kích thước */
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+input[type="text"] {
+    padding: 10px;
+    width: 300px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+th, td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background: #3498db;
+    color: white;
+}
+
+img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 5px;
+}

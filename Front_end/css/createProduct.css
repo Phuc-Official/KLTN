@@ -1,0 +1,78 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    display: flex;
+    height: 100vh; /* Chiếm toàn bộ chiều cao màn hình */
+}
+
+.content {
+    flex-grow: 1; /* Chiếm toàn bộ không gian còn lại */
+    background: #F1F5F9;
+    padding: 20px;
+    display: flex;
+    gap: 20px;
+}
+
+.main-section {
+    flex: 2; /* Khu vực chính chiếm 2 phần */
+    display: flex;
+    flex-direction: column; /* Sắp xếp theo cột */
+}
+
+.side-panel {
+    flex: 1; /* Bảng điều khiển bên chiếm 1 phần */
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    height: calc(100% - 40px); /* Chiều cao bằng chiều cao còn lại của content (padding) */
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+header h1 {
+    font-size: 22px;
+}
+
+button {
+    background: #2563EB;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.form-container {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+form {
+    display: grid;
+    gap: 15px;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #CBD5E1;
+    border-radius: 5px;
+}
+
+button[type="submit"] {
+    background: #10B981;
+}

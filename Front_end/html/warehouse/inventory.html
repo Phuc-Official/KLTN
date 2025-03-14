@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Kho</title>
+    <link rel="stylesheet" href="/Front_end/css/inventory.css"> 
+</head>
+<body>
+    <div class="container">
+        <main class="content">
+            <header>
+                <h1>Quản lý kho: Cửa hàng chính</h1>
+                <input type="text" placeholder="Tìm kiếm mã SKU, tên sản phẩm, barcode">
+            </header>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ảnh</th>
+                        <th>Sản phẩm</th>
+                        <th>SKU</th>
+                        <th>Tồn kho</th>
+                        <th>Có thể bán</th>
+                        <th>Giá bán</th>
+                    </tr>
+                </thead>
+                <tbody id="product-list">
+                    <tr>
+                        <td><img src="product.jpg" alt="Sản phẩm"></td>
+                        <td>Sữa tắm Dove</td>
+                        <td>SKU30</td>
+                        <td>100</td>
+                        <td>100</td>
+                        <td>150,000₫</td>
+                    </tr>
+                    <!-- Bạn có thể thêm các sản phẩm khác ở đây -->
+                </tbody>
+            </table>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

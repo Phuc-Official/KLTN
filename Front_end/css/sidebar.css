@@ -1,0 +1,84 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    display: flex;
+    height: 100vh;
+}
+
+.sidebar {
+    width: 260px;  /* Chiều rộng sidebar */
+    background: #1E293B;
+    color: white;
+    padding: 20px;
+    height: 100%;  /* Chiếm toàn bộ chiều cao */
+}
+
+.sidebar h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.sidebar ul {
+    list-style: none; /* Bỏ dấu đầu dòng */
+}
+
+.sidebar ul li {
+    padding: 10px;
+    cursor: pointer;
+}
+
+/* Bỏ gạch chân cho các liên kết */
+.sidebar ul li a {
+    color: white; /* Màu chữ */
+    text-decoration: none; /* Bỏ gạch chân */
+    display: flex; /* Hiển thị dưới dạng flex để căn chỉnh biểu tượng và văn bản */
+    align-items: center; /* Căn giữa theo chiều dọc */
+}
+
+/* Đặt kích thước cho biểu tượng */
+.sidebar ul li a i {
+    color: white; /* Màu chữ mặc định cho biểu tượng */
+    margin-right: 10px; /* Khoảng cách giữa biểu tượng và văn bản */
+    width: 24px; /* Chiều rộng của biểu tượng */
+    height: 24px; /* Chiều cao của biểu tượng */
+    display: inline-flex; /* Sử dụng inline-flex để căn chỉnh */
+    align-items: center; /* Căn giữa theo chiều dọc */
+    justify-content: center; /* Căn giữa theo chiều ngang */
+}
+
+/* Màu nền cho menu cha khi hover hoặc active */
+.sidebar ul li.active,
+.sidebar ul li:hover {
+    background: #334155;
+    border-radius: 5px;
+}
+
+/* Màu biểu tượng khi hover */
+.sidebar ul li:hover a i,
+.sidebar ul li.active a i {
+    color: #FFD700; /* Thay đổi màu khi hover hoặc active */
+}
+
+/* Khoảng cách cho menu con */
+.sidebar ul li ul {
+    margin-left: 24px; /* Khoảng cách từ bên trái cho menu con */
+    padding: 10px 0; /* Khoảng cách trên và dưới cho menu con */
+}
+
+.sidebar ul li ul li {
+    padding: 10px 10px; /* Padding cho các mục menu con */
+}
+
+.content {
+    flex-grow: 1;  /* Chiếm toàn bộ không gian còn lại */
+    background: #F1F5F9;
+    padding: 20px;
+}
+.sidebar ul li.active a {
+    color: #FFD700; /* Màu chữ cho mục đang chọn */
+}
