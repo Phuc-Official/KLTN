@@ -87,8 +87,8 @@ async function getProducts(endpoint, containerId) {
 
 // Gọi hàm khi trang được tải
 document.addEventListener("DOMContentLoaded", () => {
-  fetchData("donhang", "donhang-container");
-  fetchData("sanpham", "sanpham-container");
+  getProducts("donhang", "donhang-container");
+  getProducts("sanpham", "sanpham-container");
 });
 
 // Hàm thêm sản phẩm
