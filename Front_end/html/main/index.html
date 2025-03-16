@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Giao diện Sidebar</title>
-    <link rel="stylesheet" href="styles.css">
+    <!-- <link rel="stylesheet" href="styles.css"> -->
 </head>
 <body>
     <div class="container">
@@ -12,27 +12,32 @@
         <div class="content" id="content-container"></div>
     </div>
 
-    <script src="script.js"></script>
+    <!-- <script src="script.js"></script> -->
     <script>
         // Tải sidebar từ sidebar.html
         fetch('/Front_end/html/main/sidebar.html')
             .then(response => response.text())
             .then(data => {
                 document.getElementById('sidebar-container').innerHTML = data;
-                showSection('/Front_end/html/overview/overview'); // Hiển thị phần Tổng quan mặc định
+    
+                // Khôi phục phần nội dung đang hiển thị từ localStorage
+                const currentSection = localStorage.getItem('currentSection') || '/Front_end/html/overview/overview';
+                showSection(currentSection); // Hiển thị phần nội dung
             });
-
+    
         function showSection(section) {
             const contentContainer = document.getElementById('content-container');
             contentContainer.innerHTML = ''; // Xóa nội dung cũ
-
+    
             // Tải nội dung mới từ các tệp HTML
             fetch(section + '.html')
                 .then(response => response.text())
                 .then(data => {
                     contentContainer.innerHTML = data; // Chèn nội dung mới
+                    localStorage.setItem('currentSection', section); // Lưu trạng thái vào localStorage
                 });
         }
     </script>
+    <script src="/Front_end/database/app.js"></script>
 </body>
 </html>

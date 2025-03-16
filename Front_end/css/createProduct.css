@@ -5,15 +5,17 @@
     font-family: Arial, sans-serif;
 }
 
+
 .container {
     display: flex;
     height: 100vh; /* Chiếm toàn bộ chiều cao màn hình */
+    justify-content: center;
 }
 
 .content {
     flex-grow: 1; /* Chiếm toàn bộ không gian còn lại */
     background: #F1F5F9;
-    padding: 20px;
+    /* padding: 20px; */
     display: flex;
     gap: 20px;
 }
@@ -24,22 +26,19 @@
     flex-direction: column; /* Sắp xếp theo cột */
 }
 
-.side-panel {
-    flex: 1; /* Bảng điều khiển bên chiếm 1 phần */
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    height: calc(100% - 40px); /* Chiều cao bằng chiều cao còn lại của content (padding) */
-}
+
 
 header {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    justify-content: end; /* Căn phải nội dung */
+    align-items: center; /* Căn giữa theo chiều dọc */
     background: white;
     padding: 15px;
     border-radius: 8px;
     margin-bottom: 20px;
+    margin-left: 100px;
+    /* width: 100%; Chiếm toàn bộ chiều ngang */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Thêm bóng đổ nếu cần */
 }
 
 header h1 {
@@ -53,12 +52,15 @@ button {
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    margin-left: 10px;
 }
 
 .form-container {
     background: white;
     padding: 20px;
     border-radius: 8px;
+    margin-top: 20px;
+    margin-left: 100px;
 }
 
 form {
@@ -66,13 +68,93 @@ form {
     gap: 15px;
 }
 
-input, textarea {
+input {
     width: 100%;
     padding: 10px;
     border: 1px solid #CBD5E1;
     border-radius: 5px;
 }
+textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #CBD5E1;
+    border-radius: 5px;
+    height: 150px;
+}
+.input-small {
+    width: 49%; /* Chiều rộng nhỏ hơn */
+    padding: 10px; /* Padding nhỏ hơn */
+}
 
 button[type="submit"] {
     background: #10B981;
+}
+
+h1{
+    margin-left: 100px;
+}
+h3{
+    margin-bottom: 30px;
+    font-size: 20px;
+}
+.input-row {
+    display: flex; /* Sử dụng flexbox để căn chỉnh ngang */
+    gap: 15px; /* Khoảng cách giữa các ô nhập */
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column; /* Đặt nhãn và ô nhập theo cột */
+    flex: 1; /* Các ô nhập sẽ chiếm đều không gian */
+}
+.side-panel {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    height: auto; /* Chiều cao tự động */
+}
+.side-panel {
+    flex: 1; /* Bảng điều khiển bên chiếm 1 phần */
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    height: 77%;
+    overflow-y: auto; /* Thêm cuộn nếu nội dung quá dài */
+    margin-top: 142px;
+    margin-right: 100px;
+}
+
+.side-panel h3 {
+    margin-bottom: 15px; /* Khoảng cách dưới tiêu đề */
+    font-size: 24px; /* Kích thước tiêu đề */
+    color: #333; /* Màu chữ */
+}
+
+.info-item {
+    margin-bottom: 15px; /* Khoảng cách giữa các mục thông tin */
+}
+
+.info-item p {
+    margin-bottom: 5px; /* Khoảng cách giữa nhãn và phần tử */
+}
+
+button.upload-button {
+    background: #2563EB; /* Màu nền nút */
+    color: white; /* Màu chữ */
+    padding: 10px 15px; /* Padding cho nút */
+    border: none; /* Không có viền */
+    border-radius: 5px; /* Viền tròn */
+    cursor: pointer; /* Con trỏ chuột thay đổi khi hover */
+}
+
+button.upload-button:hover {
+    background: #1D4ED8; /* Màu khi hover */
+}
+
+select {
+    padding: 8px; /* Padding cho select */
+    border: 1px solid #CBD5E1; /* Viền cho select */
+    border-radius: 5px; /* Viền tròn */
+    width: 100%; /* Chiều rộng đầy đủ */
 }

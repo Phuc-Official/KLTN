@@ -1,0 +1,3 @@
+npm install mssql
+npm install express mssql cors
+chạy: node app.js

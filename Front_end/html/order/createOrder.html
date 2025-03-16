@@ -5,9 +5,64 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quản lý kho - Tạo đơn nhập hàng</title>
     <link rel="stylesheet" href="/Front_end/css/createOrder.css">
+    <link rel="stylesheet" href="/Front_end/css/sidebar.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="script.js" defer></script>
 </head>
 <body>
+    <div class="sidebar">
+        <h2>WHM</h2>
+        <ul>
+            <li>
+                <a href="#"><i class="fa-solid fa-house"></i>Tổng quan</a>
+            </li>
+            <li>
+                <a href="#"><i class="fa-solid fa-file-invoice"></i>Đơn hàng</a>
+                <ul class="submenu">
+                    <li><a href="#">Danh sách đơn hàng</a></li>
+                    <li><a href="#">Đơn hàng nháp</a></li>
+                    <li><a href="#">Trả hàng</a></li>
+                    <li><a href="#">Đơn chưa hoàn tất</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="#"><i class="fa-solid fa-truck-fast"></i>Vận chuyển</a>
+                <ul class="submenu">
+                    <li><a href="#">Tổng quan</a></li>
+                    <li><a href="#">Vận đơn</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="#"><i class="fas fa-box"></i>Sản phẩm</a>
+                <ul class="submenu">
+                    <li><a href="#">Danh sách sản phẩm</a></li>
+                    <li><a href="#">Danh mục sản phẩm</a></li>
+                    <li><a href="#">Bảng giá</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="#"><i class="fas fa-warehouse"></i>Quản lý kho</a>
+                <ul class="submenu">
+                    <li><a href="/Front_end/html/warehouse/inventory.html">Tồn kho</a></li>
+                    <li><a href="/Front_end/html/order/createOrder.html">Đặt hàng nhập</a></li>
+                    <li><a href="#">Nhập hàng</a></li>
+                    <li><a href="#">Trả hàng nhập</a></li>
+                    <li><a href="#">Nhà cung cấp</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="#"><i class="fa-solid fa-user"></i>Khách hàng</a>
+                <ul class="submenu">
+                    <li><a href="#">Khách hàng</a></li>
+                    <li><a href="#">Nhóm khách hàng</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="#"><i class="fa-solid fa-file-invoice-dollar"></i>Kiểm kê</a>
+            </li>
+        </ul>
+    </div>
+    <script src="/Front_end/javascript/sidebar.js"></script>
     <div class="createOrder">
     <div class="container">
         <main class="content">

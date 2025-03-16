@@ -74,11 +74,35 @@
     padding: 10px 10px; /* Padding cho các mục menu con */
 }
 
-.content {
-    flex-grow: 1;  /* Chiếm toàn bộ không gian còn lại */
-    background: #F1F5F9;
-    padding: 20px;
+/* Màu nền cho menu con khi hover */
+.sidebar ul li ul li:hover {
+    background: #2d3748; /* Màu nền khi hover */
+    border-radius: 5px; /* Bo tròn góc */
 }
-.sidebar ul li.active a {
-    color: #FFD700; /* Màu chữ cho mục đang chọn */
+
+/* Màu chữ cho submenu khi hover */
+.sidebar ul li ul li a {
+    color: white; /* Màu chữ cho các mục trong submenu */
+}
+
+/* Thay đổi màu chữ cho submenu khi hover */
+.sidebar ul li ul li:hover a {
+    color: #FFD700; /* Thay đổi màu chữ khi hover */
+}
+
+
+/* Màu nền cho submenu đang được chọn */
+.sidebar ul li ul li.active {
+    background: #FFD700; /* Màu nền cho submenu đang chọn */
+    color: #1E293B; /* Thay đổi màu chữ cho submenu đang chọn */
+}
+
+/* Màu chữ cho submenu đang chọn */
+.sidebar ul li ul li.active a {
+    color: #1E293B; /* Màu chữ cho submenu đang chọn */
+}
+/* Màu nền cho menu lớn đang được chọn */
+.sidebar ul li.active {
+    background: #1E293B; /* Màu nền cho menu lớn đang chọn */
+    color: #1E293B; /* Thay đổi màu chữ cho menu lớn đang chọn */
 }

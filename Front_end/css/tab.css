@@ -1,0 +1,37 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 00px;
+}
+.tab-container {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    overflow: hidden;
+}
+.tabs {
+    display: flex;
+    border-bottom: 1px solid #ddd;
+}
+.tab {
+    flex: 1;
+    padding: 10px;
+    background-color: #f0f0f0;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.3s;
+}
+.tab.active {
+    background-color: #fff;
+    border-top: 2px solid #0082bb;
+    font-weight: bold;
+}
+.tab-content {
+    padding: 20px;
+    border: 1px solid #ddd;
+}
+.tab-item {
+    display: none;
+}
+.tab-item.active {
+    display: block;
+}

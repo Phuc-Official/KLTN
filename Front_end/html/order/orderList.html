@@ -1,4 +1,38 @@
-<div id="orderList" class="section">
-    <h1>Quản lý đơn nhập hàng</h1>
-    <button onclick="showSection('/Front_end/html/order/createOrder')" class="create-order-btn">Tạo đơn nhập hàng</button>
-</div>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giao Diện với Tab</title>
+    <link rel="stylesheet" href="/Front_end/css/tab.css">
+</head>
+<body>
+    <div id="orderList" class="section">
+        <h2>Danh sách đơn hàng</h2>
+        <div id="tab-section"></div>
+    </div>
+    
+
+    <script>
+        // Tải template tab
+        fetch('/Front_end/html/template/tab.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('tab-section').innerHTML = data;
+
+                // Dữ liệu cho các tab
+                const tabsData = [
+                    { title: "Tất cả", content: "<p>Nội dung của Tab 1</p>" },
+                    { title: "Chưa xử lý giao hàng", content: "<p>Nội dung của Tab 2</p>" },
+                    { title: "Chờ lấy hàng", content: "<p>Nội dung của Tab 3</p>" },
+                    { title: "Đang lấy hàng", content: "<p>Nội dung của Tab 3</p>" },
+                    { title: "Chưa thanh toán", content: "<p>Nội dung của Tab 3</p>" }
+                    // Bạn có thể thêm nhiều tab khác
+                ];
+
+                initializeTabs(tabsData); // Khởi tạo tab với dữ liệu
+            }) .catch(error => console.error('Error loading tab template:', error));
+    </script>
+    <script src="/Front_end/javascript/tab.js"></script>
+</body>
+</html>
