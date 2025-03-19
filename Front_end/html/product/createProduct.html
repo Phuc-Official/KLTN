@@ -1,79 +1,112 @@
 <!DOCTYPE html>
 <html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Quản lý kho - Thêm sản phẩm</title>
-    <link rel="stylesheet" href="/Front_end/css/createProduct.css">
-    <link rel="stylesheet" href="/Front_end/css/sidebar.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script src="script.js" defer></script>
-</head>
-<body>
+    <link rel="stylesheet" href="/Front_end/css/createProduct.css" />
+    <link rel="stylesheet" href="/Front_end/css/sidebar.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+  </head>
+  <body>
     <div class="container">
-        <main class="content">
-            <div class="main-section">
-                <header>
-                    <button onclick="cancel()">Hủy</button>
-                    <button id="add-product-button" type="button">Thêm sản phẩm</button>
-                </header>
-                <h1>Thêm sản phẩm</h1>
-                <section class="form-container">
-                    <h3>Thông tin sản phẩm</h3>
-                    <form id="product-form">
-                        <label for="product-name">Tên sản phẩm</label>
-                        <input type="text" id="product-name" placeholder="Nhập tên sản phẩm" required>
-                        
-                        <label for="weight">Trọng lượng</label>
-                        <input type="text" id="weight" placeholder="Nhập trọng lượng" required>
+      <main class="content">
+        <div class="main-section">
+          <header>
+            <button onclick="cancel()">Hủy</button>
+            <button id="add-product-button" type="button">Thêm sản phẩm</button>
+          </header>
+          <div class="header-container">
+            <button id="back-button" onclick="cancel()">
+              <i class="fas fa-arrow-left"></i>
+            </button>
+            <h1 id="product-title">Thêm sản phẩm</h1>
+          </div>
+          <section class="form-container">
+            <h3>Thông tin sản phẩm</h3>
+            <form id="product-form">
+              <div class="input-row">
+                <div class="input-group">
+                  <label for="product-name">Mã sản phẩm</label>
+                  <input
+                    type="text"
+                    id="product-id"
+                    placeholder="Nhập mã sản phẩm"
+                    required
+                  />
+                </div>
+                <div class="input-group">
+                  <div class="info-item">
+                    <p>Loại sản phẩm</p>
+                    <select></select>
+                  </div>
+                </div>
+              </div>
 
-                        <label for="quantity">Số lượng tồn</label>
-                        <input type="number" id="quantity" placeholder="Nhập số lượng tồn" required>
+              <label for="product-name">Tên sản phẩm</label>
+              <input
+                type="text"
+                id="product-name"
+                placeholder="Nhập tên sản phẩm"
+                required
+              />
 
-                        <div class="input-row">
-                            <div class="input-group">
-                                <label for="sku">Mã SKU</label>
-                                <input type="text" id="sku" placeholder="Nhập mã SKU">
-                            </div>
-                            <div class="input-group">
-                                <label for="barcode">Mã vạch/Barcode</label>
-                                <input type="text" id="barcode" placeholder="Nhập mã vạch">
-                            </div>
-                        </div>
-                        <label for="unit">Đơn vị tính</label>
-                        <input type="text" id="unit" placeholder="Nhập đơn vị tính" class="input-small">
-                        <label for="description">Mô tả</label>
-                        <textarea id="description" placeholder="Nhập mô tả"></textarea>
-                    </form>
-                </section>
-            </div>
-            <aside class="side-panel">
-                <h3>Thông tin khác</h3>
-                <div class="info-item">
-                    <p>Ảnh sản phẩm</p>
-                    <button class="upload-button">Thêm ảnh</button>
+              <div class="input-row">
+                <div class="input-group">
+                  <label for="unit">Đơn vị tính</label>
+                  <select id="unit" required>
+                    <!-- Các đơn vị tính sẽ được thêm vào đây -->
+                  </select>
                 </div>
-                <div class="info-item">
-                    <p>Danh mục</p>
-                    <select>
-                        <option>Chọn danh mục</option>
-                        <option>Danh mục 1</option>
-                        <option>Danh mục 2</option>
-                    </select>
+                <div class="input-group">
+                  <label for="converted-stock-quantity"
+                    >Số lượng tồn quy đổi</label
+                  >
+                  <input
+                    type="number"
+                    id="converted-stock-quantity"
+                    placeholder="Nhập số lượng tồn quy đổi"
+                    oninput="updateQuantity()"
+                  />
                 </div>
-                <div class="info-item">
-                    <p>Bảng giá</p>
-                    <select>
-                        <option>Chọn bảng giá</option>
-                        <option>Bảng giá 1</option>
-                        <option>Bảng giá 2</option>
-                    </select>
+              </div>
+
+              <div class="input-row">
+                <div class="input-group">
+                  <label for="conversion-rate">Tỷ lệ quy đổi</label>
+                  <input type="text" id="conversion-rate" disabled />
                 </div>
-            </aside>
-        </main>
+                <div class="input-group">
+                  <label for="quantity">Số lượng tồn</label>
+                  <input type="number" id="quantity" disabled />
+                </div>
+              </div>
+
+              <label for="weight">Trọng lượng</label>
+              <input
+                type="text"
+                id="weight"
+                placeholder="Nhập trọng lượng"
+                required
+              />
+              <label for="description">Mô tả</label>
+              <textarea id="description" placeholder="Nhập mô tả"></textarea>
+            </form>
+          </section>
+        </div>
+        <aside class="side-panel">
+          <h3>Thông tin khác</h3>
+          <div class="info-item">
+            <p>Ảnh sản phẩm</p>
+            <button class="upload-button">Thêm ảnh</button>
+          </div>
+        </aside>
+      </main>
     </div>
-    <script src="../../javascript/products.js">
-    
-    </script>
-</body>
+    <script src="../../javascript/products.js"></script>
+    <script src="../../javascript/unit.js"></script>
+  </body>
 </html>

@@ -1,24 +1,28 @@
-const headerSanPham = [
-  "Tên sản phẩm",
-  "Trọng lượng",
-  "Đơn vị tính",
-  "Số lượng tồn",
-];
+// const headerSanPham = [
+//   "Tên sản phẩm",
+//   "Trọng lượng",
+//   "Đơn vị tính",
+//   "Số lượng tồn",
+// ];
 
 function cancel() {
   // Quay về trang trước
   window.history.back();
 }
+function viewProductDetails(productId) {
+  window.location.href = `../product/productDetails.html?id=${productId}`; // Chuyển hướng đến trang chi tiết
+}
 
 async function addProduct() {
   const product = {
+    MaSanPham: document.getElementById("product-id").value,
     TenSanPham: document.getElementById("product-name").value,
     TrongLuong: document.getElementById("weight").value,
     DonViTinh: document.getElementById("unit").value,
+    SoLuongTonQuyDoi: document.getElementById("converted-stock-quantity").value,
     SoLuongTon: document.getElementById("quantity").value,
-    SKU: document.getElementById("sku").value,
-    Barcode: document.getElementById("barcode").value,
-    Description: document.getElementById("description").value,
+    MoTaSanPham: document.getElementById("description").value,
+    MaDonVi: document.getElementById("unit").value,
   };
 
   try {
@@ -45,50 +49,80 @@ async function addProduct() {
   }
 }
 
-async function getProducts(endpoint, containerId) {
+// async function getProducts(endpoint, containerId) {
+//   try {
+//     const response = await fetch(`http://localhost:3000/api/${endpoint}`);
+//     if (!response.ok) {
+//       throw new Error("Mạng lỗi, không thể lấy dữ liệu");
+//     }
+//     const data = await response.json();
+//     const container = document.getElementById(containerId);
+
+//     // Tạo tiêu đề cho bảng
+//     const headerRow = document.createElement("tr");
+//     headerSanPham.forEach((key) => {
+//       const th = document.createElement("th");
+//       th.textContent = key;
+//       headerRow.appendChild(th);
+//     });
+//     container.appendChild(headerRow);
+
+//     // Hiển thị dữ liệu
+//     const formatted = data.map((item) => ({
+//       tenSP: item.TenSanPham,
+//       trongLuong: item.TrongLuong,
+//       dvTinh: item.DonViTinh,
+//       soLuongTon: item.SoLuongTon,
+//     }));
+
+//     formatted.forEach((item) => {
+//       const row = document.createElement("tr");
+//       Object.values(item).forEach((value) => {
+//         const td = document.createElement("td");
+//         td.textContent = value; // Hiển thị giá trị
+//         row.appendChild(td);
+//       });
+//       container.appendChild(row);
+//     });
+//   } catch (error) {
+//     console.error("Lỗi khi lấy dữ liệu:", error);
+//   }
+// }
+
+async function fetchProducts() {
   try {
-    const response = await fetch(`http://localhost:3000/api/${endpoint}`);
-    if (!response.ok) {
-      throw new Error("Mạng lỗi, không thể lấy dữ liệu");
-    }
-    const data = await response.json();
-    const container = document.getElementById(containerId);
+    const response = await fetch("http://localhost:3000/api/sanpham");
+    const products = await response.json();
 
-    // Tạo tiêu đề cho bảng
-    const headerRow = document.createElement("tr");
-    headerSanPham.forEach((key) => {
-      const th = document.createElement("th");
-      th.textContent = key;
-      headerRow.appendChild(th);
-    });
-    container.appendChild(headerRow);
+    const container = document.querySelector("#sanpham-container tbody");
+    container.innerHTML = ""; // Xóa nội dung cũ
 
-    // Hiển thị dữ liệu
-    const formatted = data.map((item) => ({
-      tenSP: item.TenSanPham,
-      trongLuong: item.TrongLuong,
-      dvTinh: item.DonViTinh,
-      soLuongTon: item.SoLuongTon,
-    }));
-
-    formatted.forEach((item) => {
+    products.forEach((product) => {
       const row = document.createElement("tr");
-      Object.values(item).forEach((value) => {
-        const td = document.createElement("td");
-        td.textContent = value; // Hiển thị giá trị
-        row.appendChild(td);
+      row.innerHTML = `
+          <td>${product.MaSanPham}</td>
+          <td>${product.TenSanPham}</td>
+          <td>${
+            product.TenNhom || "Không xác định"
+          }</td> <!-- Hiển thị TenNhom -->
+          <td>${product.SoLuongTon}</td>
+      `;
+      row.addEventListener("click", () => {
+        viewProductDetails(product.MaSanPham);
       });
       container.appendChild(row);
     });
   } catch (error) {
-    console.error("Lỗi khi lấy dữ liệu:", error);
+    console.error("Lỗi khi tải sản phẩm:", error);
   }
 }
 
+fetchProducts(); // Gọi hàm khi trang được tải
+
 // Gọi hàm khi trang được tải
 document.addEventListener("DOMContentLoaded", () => {
-  getProducts("donhang", "donhang-container");
-  getProducts("sanpham", "sanpham-container");
+  // getProducts("donhang", "donhang-container");
+  // getProducts("sanpham", "sanpham-container");
 });
 
 // Hàm thêm sản phẩm

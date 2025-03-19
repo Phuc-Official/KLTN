@@ -4,9 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Quản lý Kho</title>
-    <link rel="stylesheet" href="/Front_end/css/tab.css" />
-    <link rel="stylesheet" href="/Front_end/css/inventory.css" />
-    <link rel="stylesheet" href="/Front_end/css/sidebar.css" />
+    <link rel="stylesheet" href="../../css/tab.css" />
+    <link rel="stylesheet" href="../../css/inventory.css" />
+    <link rel="stylesheet" href="../../css/sidebar.css" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
@@ -19,19 +19,17 @@
         <li>
           <a href=""><i class="fa-solid fa-house"></i>Tổng quan</a>
         </li>
-        <li>
+        <!-- <li>
           <a href="#"><i class="fa-solid fa-file-invoice"></i>Đơn hàng</a>
           <ul class="submenu">
             <li>
-              <a href="/Front_end/html/overview/overview.html"
-                >Danh sách đơn hàng</a
-              >
+              <a href="../overview/overview.html">Danh sách đơn hàng</a>
             </li>
             <li><a href="#">Đơn hàng nháp</a></li>
             <li><a href="#">Trả hàng</a></li>
             <li><a href="#">Đơn chưa hoàn tất</a></li>
           </ul>
-        </li>
+        </li> -->
         <li>
           <a href="#"><i class="fa-solid fa-truck-fast"></i>Vận chuyển</a>
           <ul class="submenu">
@@ -43,26 +41,23 @@
           <a href="#"><i class="fas fa-box"></i>Sản phẩm</a>
           <ul class="submenu">
             <li>
-              <a href="/Front_end/html/product/productList.html"
-                >Danh sách sản phẩm</a
-              >
+              <a href="../product/productList.html">Danh sách sản phẩm</a>
             </li>
             <li><a href="#">Danh mục sản phẩm</a></li>
-            <li><a href="#">Bảng giá</a></li>
           </ul>
         </li>
         <li>
           <a href="#"><i class="fas fa-warehouse"></i>Quản lý kho</a>
           <ul class="submenu">
             <li>
-              <a href="/Front_end/html/warehouse/inventory.html">Tồn kho</a>
+              <a href="../warehouse/inventory.html">Tồn kho</a>
             </li>
             <li>
-              <a href="/Front_end/html/order/createOrder.html">Đặt hàng nhập</a>
+              <a href="../order/createOrder.html">Đặt hàng nhập</a>
             </li>
             <li><a href="#">Nhập hàng</a></li>
             <li><a href="#">Trả hàng nhập</a></li>
-            <li><a href="#">Nhà cung cấp</a></li>
+            <li><a href="../supplier/supplierList.html">Nhà cung cấp</a></li>
           </ul>
         </li>
         <li>
@@ -77,13 +72,19 @@
         </li>
       </ul>
     </div>
-    <script src="/Front_end/javascript/sidebar.js"></script>
+    <script src="../../javascript/sidebar.js"></script>
+
+    <!-- ///////////////////////////////////////////////////////// -->
 
     <div class="container">
       <main class="content">
         <header>
           <h1>Danh sách sản phẩm</h1>
-          <button class="create-button" onclick="createProduct()">
+          <button
+            id="add-product-button"
+            class="create-button"
+            onclick="createProduct()"
+          >
             <span class="icon">➕</span> Tạo Sản Phẩm
           </button>
           <input
@@ -92,13 +93,25 @@
           />
         </header>
         <body>
-          <table id="sanpham-container"></table>
+          <table id="sanpham-container">
+            <thead>
+              <tr>
+                <th>Mã sản phẩm</th>
+                <th>Tên sản phẩm</th>
+                <th>Loại</th>
+                <th>Số lượng tồn</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Dữ liệu sản phẩm sẽ được chèn ở đây thông qua JavaScript -->
+            </tbody>
+          </table>
         </body>
       </main>
     </div>
-    <script>
+    <!-- <script>
       // Tải template tab
-      fetch("/Front_end/html/template/tab.html")
+      fetch("../../html/template/tab.html")
         .then((response) => response.text())
         .then((data) => {
           document.getElementById("tab-section").innerHTML = data;
@@ -122,15 +135,15 @@
           initializeTabs(tabsData); // Khởi tạo tab với dữ liệu
         })
         .catch((error) => console.error("Error loading tab template:", error));
-    </script>
+    </script> -->
     <script>
       function createProduct() {
         // Chuyển hướng đến trang tạo sản phẩm
-        window.location.href = "/Front_end/html/product/createProduct.html"; // Thay đổi thành URL của trang bạn muốn chuyển đến
+        window.location.href = "../product/createProduct.html"; // Thay đổi thành URL của trang bạn muốn chuyển đến
       }
     </script>
 
-    <script src="/Front_end/javascript/tab.js"></script>
+    <script src="../../javascript/tab.js"></script>
     <script src="../../javascript/products.js"></script>
   </body>
 </html>
