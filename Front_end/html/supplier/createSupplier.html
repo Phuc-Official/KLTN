@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quản lý kho - Thêm sản phẩm</title>
+    <link rel="stylesheet" href="/Front_end/css/createProduct.css" />
+    <link rel="stylesheet" href="/Front_end/css/sidebar.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <main class="content">
+        <div class="main-section">
+          <header>
+            <button onclick="cancel()">Hủy</button>
+            <button id="add-supplier-button" type="button">Thêm mới</button>
+          </header>
+          <div class="header-container">
+            <button id="back-button" onclick="cancel()">
+              <i class="fas fa-arrow-left"></i>
+            </button>
+            <h1 id="supplier-title">Thêm mới nhà cung cấp</h1>
+          </div>
+          <section class="form-container">
+            <h3>Thông tin chung</h3>
+            <form id="supplier-form">
+              <label for="supplier-name">Tên nhà cung cấp</label>
+              <input
+                type="text"
+                id="supplier-name"
+                placeholder="Nhập tên nhà cung cấp"
+                required
+              />
+
+              <div class="input-row">
+                <div class="input-group">
+                  <div class="input-group">
+                    <label for="supplier-name">Mã nhà cung cấp</label>
+                    <input
+                      type="text"
+                      id="supplier-id"
+                      placeholder="Nhập mã nhà cung cấp"
+                      required
+                    />
+                  </div>
+                </div>
+                <div class="input-group">
+                  <label for="phone">Số điện thoại</label>
+                  <input
+                    type="number"
+                    id="phone"
+                    placeholder="Nhập số điện thoại"
+                  />
+                </div>
+              </div>
+
+              <div class="input-row">
+                <div class="input-group">
+                  <label for="email">Email</label>
+                  <input type="text" id="email" placeholder="Nhập Email" />
+                </div>
+                <div class="input-group">
+                  <label for="tax-id">Mã số thuế</label>
+                  <input
+                    type="number"
+                    id="tax-id"
+                    placeholder="Nhập mã số thuế"
+                  />
+                </div>
+              </div>
+            </form>
+          </section>
+          <section class="form-container">
+            <h3>Địa chỉ</h3>
+            <form id="address-form">
+              <div class="input-row">
+                <div class="input-group">
+                  <label for="city">Tỉnh/Thành Phố:</label>
+                  <select id="city" required>
+                    <option value="">Chọn tỉnh/thành phố</option>
+                    <!-- Các tùy chọn tỉnh/thành phố sẽ được thêm vào đây -->
+                  </select>
+                </div>
+                <div class="input-group">
+                  <label for="district">Quận/Huyện:</label>
+                  <select id="district" required>
+                    <option value="">Chọn quận/huyện</option>
+                    <!-- Các tùy chọn quận/huyện sẽ được thêm vào đây -->
+                  </select>
+                </div>
+              </div>
+
+              <label for="ward">Phường/Xã:</label>
+              <select id="ward" required class="input-small">
+                <option value="">Chọn phường/xã</option>
+                <!-- Các tùy chọn phường/xã sẽ được thêm vào đây -->
+              </select>
+
+              <label for="specific-address">Địa Chỉ Cụ Thể:</label>
+              <input
+                type="text"
+                id="specific-address"
+                placeholder="Nhập địa chỉ cụ thể"
+                required
+              />
+            </form>
+          </section>
+        </div>
+      </main>
+    </div>
+    <script src="../../javascript/suppliers.js"></script>
+  </body>
+</html>

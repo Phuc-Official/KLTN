@@ -2,7 +2,9 @@ require("dotenv/config");
 const express = require("express");
 const cors = require("cors");
 const sql = require("mssql"); // Import thư viện mssql
+
 const productRouter = require("./routes/product.route");
+const supplierRouter = require("./routes/supplier.route");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -38,6 +40,7 @@ connectToDatabase();
 
 // Endpoint cho bảng đơn hàng
 app.use(productRouter);
+app.use(supplierRouter);
 
 // Khởi động server
 app.listen(PORT, () => {

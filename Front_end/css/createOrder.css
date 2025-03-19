@@ -1,100 +1,137 @@
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
 }
 
-html, body {
-    height: 100%; /* Đảm bảo chiều cao của body và html chiếm toàn bộ */
+html,
+body {
+  height: 100%; /* Đảm bảo chiều cao của body và html chiếm toàn bộ */
 }
 
 .container {
-    display: flex;
-    height: 100vh; /* Chiều cao của container là 100% chiều cao màn hình */
+  display: flex;
+  height: 100vh; /* Chiều cao của container là 100% chiều cao màn hình */
 }
 
 .content {
-    flex-grow: 1; /* Chiếm toàn bộ không gian còn lại */
-    background: #F1F5F9;
-    padding: 20px;
-    display: flex;
-    gap: 20px;
+  flex-grow: 1; /* Chiếm toàn bộ không gian còn lại */
+  background: #f1f5f9;
+  padding: 20px;
+  display: flex;
+  gap: 20px;
 }
 
 .main-section {
-    flex: 2; /* Khu vực chính chiếm 2 phần */
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
+  flex: 2; /* Khu vực chính chiếm 2 phần */
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
 }
 
 .side-panel {
-    flex: 1; /* Bảng điều khiển bên chiếm 1 phần */
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
+  flex: 1; /* Bảng điều khiển bên chiếm 1 phần */
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
 }
 
 header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: white;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
 }
 
 header h1 {
-    font-size: 22px;
+  font-size: 22px;
 }
 
 button {
-    background: #2563EB;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+  background: #2563eb;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
 .form-container {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .box {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
 }
 
-input, textarea, select {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #CBD5E1;
-    border-radius: 5px;
-    margin-top: 5px;
+input,
+textarea,
+select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 5px;
+  margin-top: 5px;
 }
 
 .product-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
 }
 
-.product-table th, .product-table td {
-    border: 1px solid #CBD5E1;
-    padding: 10px;
-    text-align: left;
+.product-table th,
+.product-table td {
+  border: 1px solid #cbd5e1;
+  padding: 10px;
+  text-align: left;
 }
 
 .product-table th {
-    background: #F3F4F6;
+  background: #f3f4f6;
 }
 
 .selected {
-    background-color: #D1FAE5;
+  background-color: #d1fae5;
+}
+
+.form-container {
+  margin-top: 20px; /* Khoảng cách phía trên */
+}
+
+.form-container label {
+  display: block; /* Hiển thị nhãn trên một dòng riêng */
+  margin-bottom: 5px; /* Khoảng cách dưới mỗi nhãn */
+  font-weight: bold; /* Đậm chữ */
+}
+
+.form-container input {
+  width: 100%; /* Chiều rộng 100% */
+  padding: 10px; /* Khoảng cách bên trong */
+  margin-bottom: 15px; /* Khoảng cách giữa các ô nhập */
+  border: 1px solid #ccc; /* Viền xung quanh */
+  border-radius: 4px; /* Bo góc */
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
+}
+
+#save-button {
+  background-color: #4caf50; /* Màu nền của nút lưu */
+  color: white; /* Màu chữ */
+  border: none; /* Không viền */
+  padding: 10px 15px; /* Khoảng cách bên trong */
+  cursor: pointer; /* Con trỏ chuột khi di chuột qua */
+  border-radius: 4px; /* Bo góc */
+  font-size: 16px; /* Kích thước chữ */
+}
+
+#save-button:hover {
+  background-color: #45a049; /* Màu nền khi di chuột qua */
 }

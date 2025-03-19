@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quản lý kho - Chi tiết sản phẩm</title>
+    <link rel="stylesheet" href="../../css/createProduct.css" />
+    <link rel="stylesheet" href="../../css/sidebar.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <main class="content">
+        <div class="main-section">
+          <header></header>
+          <div class="header-container">
+            <button id="back-button" onclick="cancel()">
+              <i class="fas fa-arrow-left"></i>
+            </button>
+            <h1 id="product-title">Chi tiết sản phẩm</h1>
+          </div>
+          <section class="form-container" id="product-details">
+            <!-- Chi tiết sản phẩm sẽ được hiển thị ở đây -->
+          </section>
+        </div>
+        <aside class="side-panel">
+          <h3>Thông tin khác</h3>
+          <div class="info-item">
+            <p>Ảnh sản phẩm</p>
+            <button class="upload-button">Thêm ảnh</button>
+          </div>
+        </aside>
+      </main>
+    </div>
+    <script>
+      async function fetchProductDetails() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const maSanPham = urlParams.get("id");
+
+        try {
+          const response = await fetch(
+            `http://localhost:3000/api/sanpham/${maSanPham}`
+          );
+
+          // Kiểm tra nếu phản hồi không thành công
+          if (!response.ok) {
+            const errorText = await response.text();
+            console.error("Lỗi từ server:", errorText);
+            throw new Error("Không thể tải chi tiết sản phẩm.");
+          }
+
+          const product = await response.json(); // Phân tích cú pháp JSON
+          const detailsContainer = document.getElementById("product-details");
+          detailsContainer.innerHTML = `
+            <div class="details-container">
+                <h3>${product.TenSanPham}</h3>
+                <label for="sku">Mã sản phẩm:</label>
+                <input type="text" id="product-id" value="${product.MaSanPham}" />
+
+                <div class="input-row">
+                    <div class="input-group">
+                        <label for="unit">Đơn vị tính:</label>
+                        <input type="text" id="unit" value="${product.TenDonVi}" />
+                    </div>
+                    <div class="input-group">
+                        <label for="converted-stock-quantity">Số lượng tồn quy đổi:</label>
+                        <input type="text" id="converted-stock-quantity" value="${product.SoLuongTonQuyDoi}" />
+                    </div>
+                </div>
+                
+                <div class="input-row">
+                    <div class="input-group">
+                        <label for="conversion-rate">Tỷ lệ quy đổi:</label>
+                        <input type="text" id="conversion-rate" value="${product.TyleQuyDoi}" disabled/>
+                    </div>
+                    <div class="input-group">
+                        <label for="quantity">Số lượng tồn:</label>
+                        <input type="number" id="quantity" value="${product.SoLuongTon}"disabled/>
+                    </div>
+                </div>
+
+                <label for="weight">Trọng lượng:</label>
+                <input type="text" id="weight" value="${product.TrongLuong}" />
+
+                <label for="description">Mô tả sản phẩm:</label>
+                <input type="text" id="description" value="${product.MoTaSanPham}" />
+            </div>
+        `;
+        } catch (error) {
+          console.error("Lỗi khi tải chi tiết sản phẩm:", error);
+          document.getElementById("product-details").innerHTML =
+            "<p>Không thể tải chi tiết sản phẩm.</p>";
+        }
+      }
+
+      fetchProductDetails(); // Gọi hàm khi trang được tải
+
+      function cancel() {
+        // Quay về trang trước
+        window.history.back();
+      }
+    </script>
+  </body>
+</html>
