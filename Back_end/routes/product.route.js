@@ -26,6 +26,29 @@ productRouter.get("/api/nhomsanpham", async (req, res) => {
   }
 });
 
+// Endpoint để lấy mã sản phẩm lớn nhất
+productRouter.get("/api/sanpham/max-masanpham", async (req, res) => {
+  try {
+    const sqlQuery = `
+      SELECT TOP 1 MaSanPham
+      FROM SanPham
+      ORDER BY MaSanPham DESC
+    `;
+
+    const result = await sql.query(sqlQuery);
+
+    if (result.recordset.length > 0) {
+      const maxMaSanPham = result.recordset[0].MaSanPham;
+      return res.json({ maxMaSanPham });
+    } else {
+      return res.json({ maxMaSanPham: null });
+    }
+  } catch (err) {
+    console.error("Lỗi khi lấy mã sản phẩm lớn nhất:", err);
+    res.status(500).send("Lỗi truy vấn cơ sở dữ liệu");
+  }
+});
+
 // Endpoint cho bảng sản phẩm
 productRouter.get("/api/sanpham", async (req, res) => {
   try {
@@ -49,7 +72,7 @@ productRouter.get("/api/sanpham/:maSanPham", async (req, res) => {
 
   try {
     const sqlQuery = `
-          SELECT sp.*, nh.TenNhom, dv.TyleQuyDoi
+          SELECT sp.*, nh.TenNhom, dv.TyleQuyDoi, dv.TenDonVi
           FROM SanPham sp
           LEFT JOIN NhomSanPham nh ON sp.MaNhom = nh.MaNhom
           LEFT JOIN DonViTinh dv ON sp.MaDonVi = dv.MaDonVi
@@ -82,25 +105,14 @@ productRouter.post("/api/sanpham", async (req, res) => {
       MoTaSanPham,
       TrongLuong,
       DonViTinh,
-      SoLuongTon,
-      SoLuongTonQuyDoi,
       MaDonVi,
       MaNhom,
+      GiaSanPham,
     } = req.body;
 
-    // Lấy MaNhom dựa trên TenNhom
-    // const sqlQueryNhom = `SELECT MaNhom FROM NhomSanPham WHERE TenNhom = @TenNhom`;
-    // const requestNhom = new sql.Request();
-    // requestNhom.input("TenNhom", sql.NVarChar, TenNhom);
-    // const resultNhom = await requestNhom.query(sqlQueryNhom);
-
-    // if (resultNhom.recordset.length === 0) {
-    //   return res.status(400).json({ message: "Nhóm sản phẩm không tồn tại." });
-    // }
-
     const sqlQuery = `
-      INSERT INTO SanPham (MaSanPham, TenSanPham, MoTaSanPham, TrongLuong, DonViTinh, SoLuongTon, SoLuongTonQuyDoi, MaDonVi, MaNhom)
-      VALUES (@MaSanPham, @TenSanPham, @MoTaSanPham, @TrongLuong, @DonViTinh, @SoLuongTon, @SoLuongTonQuyDoi, @MaDonVi, @MaNhom)
+      INSERT INTO SanPham (MaSanPham, TenSanPham, MoTaSanPham, TrongLuong, DonViTinh, MaDonVi, MaNhom, GiaSanPham)
+      VALUES (@MaSanPham, @TenSanPham, @MoTaSanPham, @TrongLuong, @DonViTinh, @MaDonVi, @MaNhom, @GiaSanPham)
     `;
 
     const request = new sql.Request();
@@ -109,10 +121,9 @@ productRouter.post("/api/sanpham", async (req, res) => {
     request.input("MoTaSanPham", sql.NVarChar, MoTaSanPham);
     request.input("TrongLuong", sql.Decimal, TrongLuong);
     request.input("DonViTinh", sql.NVarChar, DonViTinh);
-    request.input("SoLuongTon", sql.Int, SoLuongTon);
-    request.input("SoLuongTonQuyDoi", sql.NVarChar, SoLuongTonQuyDoi);
     request.input("MaDonVi", sql.NVarChar, MaDonVi);
     request.input("MaNhom", sql.Int, MaNhom);
+    request.input("GiaSanPham", sql.Decimal, GiaSanPham);
 
     await request.query(sqlQuery);
 

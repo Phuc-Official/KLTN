@@ -58,40 +58,73 @@
           const product = await response.json(); // Phân tích cú pháp JSON
           const detailsContainer = document.getElementById("product-details");
           detailsContainer.innerHTML = `
-            <div class="details-container">
-                <h3>${product.TenSanPham}</h3>
-                <label for="sku">Mã sản phẩm:</label>
-                <input type="text" id="product-id" value="${product.MaSanPham}" />
+                  <div class="details-container">
+                      <h3>${product.TenSanPham}</h3>
+                      <div class="input-row">
+                          <div class="input-group">
+                              <label for="sku">Mã sản phẩm:</label>
+                      <input type="text" id="product-id" value="${
+                        product.MaSanPham
+                      }" />
+                          </div>
+                          <div class="input-group">
+                              <label for="converted-stock-quantity">Loại sản phẩm:</label>
+                              <input type="text" id="converted-stock-quantity" value="${
+                                product.TenNhom
+                              }" />
+                          </div>
+                      </div>
 
-                <div class="input-row">
-                    <div class="input-group">
-                        <label for="unit">Đơn vị tính:</label>
-                        <input type="text" id="unit" value="${product.TenDonVi}" />
-                    </div>
-                    <div class="input-group">
-                        <label for="converted-stock-quantity">Số lượng tồn quy đổi:</label>
-                        <input type="text" id="converted-stock-quantity" value="${product.SoLuongTonQuyDoi}" />
-                    </div>
-                </div>
-                
-                <div class="input-row">
-                    <div class="input-group">
-                        <label for="conversion-rate">Tỷ lệ quy đổi:</label>
-                        <input type="text" id="conversion-rate" value="${product.TyleQuyDoi}" disabled/>
-                    </div>
-                    <div class="input-group">
-                        <label for="quantity">Số lượng tồn:</label>
-                        <input type="number" id="quantity" value="${product.SoLuongTon}"disabled/>
-                    </div>
-                </div>
 
-                <label for="weight">Trọng lượng:</label>
-                <input type="text" id="weight" value="${product.TrongLuong}" />
+                      <div class="input-row">
+                          <div class="input-group">
+                              <label for="unit">Đơn vị tính:</label>
+                              <input type="text" id="unit" value="${
+                                product.TenDonVi
+                              }" />
+                          </div>
+                          <div class="input-group">
+                              <label for="converted-stock-quantity">Số lượng tồn quy đổi:</label>
+                              <input type="text" id="converted-stock-quantity" value="${
+                                product.SoLuongTonQuyDoi
+                              }" />
+                          </div>
+                      </div>
 
-                <label for="description">Mô tả sản phẩm:</label>
-<textarea id="description" rows="4" placeholder="Nhập mô tả sản phẩm...">${product.MoTaSanPham}</textarea>
-            </div>
-        `;
+                      <div class="input-row">
+                          <div class="input-group">
+                              <label for="conversion-rate">Tỷ lệ quy đổi:</label>
+                              <input type="text" id="conversion-rate" value="${
+                                product.TyleQuyDoi
+                              }" disabled/>
+                          </div>
+                          <div class="input-group">
+                              <label for="quantity">Số lượng tồn:</label>
+                              <input type="number" id="quantity" value="${
+                                product.SoLuongTon
+                              }"disabled/>
+                          </div>
+                      </div>
+
+                      <div class="input-row">
+                          <div class="input-group">
+                              <label for="weight">Trọng lượng:</label>
+                      <input type="text" id="weight" value="${
+                        product.TrongLuong
+                      }" />
+                          </div>
+                          <div class="input-group">
+                              <label for="price">Giá sản phẩm:</label>
+                              <input type="number" id="price" value="${formatCurrency(
+                                product.GiaSanPham
+                              )}"/>
+                          </div>
+                      </div>
+
+                      <label for="description">Mô tả sản phẩm:</label>
+      <textarea id="description" rows="3" >${product.MoTaSanPham}</textarea>
+                  </div>
+              `;
         } catch (error) {
           console.error("Lỗi khi tải chi tiết sản phẩm:", error);
           document.getElementById("product-details").innerHTML =
@@ -104,6 +137,10 @@
       function cancel() {
         // Quay về trang trước
         window.history.back();
+      }
+      function formatCurrency(value) {
+        // Chuyển đổi giá thành chuỗi, loại bỏ các ký tự không phải số, sau đó định dạng
+        return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."); // Thêm dấu chấm
       }
     </script>
   </body>

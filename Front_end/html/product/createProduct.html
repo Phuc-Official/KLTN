@@ -38,13 +38,12 @@
                       type="text"
                       id="product-id"
                       placeholder="Nhập mã sản phẩm"
-                      value="SP"
                       required
                     />
                   </div>
                   <div class="input-group">
                     <label for="product-group">Loại sản phẩm</label>
-                    <select id="product-group" required>
+                    <select id="product-group">
                       <option value="" disabled selected>
                         Chọn loại sản phẩm
                       </option>
@@ -63,7 +62,7 @@
                 <div class="input-row">
                   <div class="input-group">
                     <label for="unit">Đơn vị tính</label>
-                    <select id="unit" required>
+                    <select id="unit">
                       <option value="" disabled selected>
                         Chọn đơn vị tính
                       </option>
@@ -71,7 +70,11 @@
                     </select>
                   </div>
                   <div class="input-group">
-                    <label for="converted-stock-quantity"
+                    <div class="input-group">
+                      <label for="conversion-rate">Tỷ lệ quy đổi</label>
+                      <input type="text" id="conversion-rate" disabled />
+                    </div>
+                    <!-- <label for="converted-stock-quantity"
                       >Số lượng tồn quy đổi</label
                     >
                     <input
@@ -79,29 +82,36 @@
                       id="converted-stock-quantity"
                       placeholder="Nhập số lượng tồn quy đổi"
                       oninput="updateQuantity()"
-                    />
+                    /> -->
                   </div>
                 </div>
 
                 <div class="input-row">
-                  <div class="input-group">
-                    <label for="conversion-rate">Tỷ lệ quy đổi</label>
-                    <input type="text" id="conversion-rate" disabled />
-                  </div>
-                  <div class="input-group">
+                  <!-- <div class="input-group">
                     <label for="quantity">Số lượng tồn</label>
                     <input type="number" id="quantity" disabled />
-                  </div>
+                  </div> -->
                 </div>
 
-                <label for="weight">Trọng lượng</label>
-                <input
-                  class="input-small"
-                  type="text"
-                  id="weight"
-                  placeholder="Nhập trọng lượng (gram/ml)"
-                  required
-                />
+                <div class="input-row">
+                  <div class="input-group">
+                    <label for="weight">Trọng lượng</label>
+                    <input
+                      type="number"
+                      id="weight"
+                      placeholder="Nhập trọng lượng (gram/ml)"
+                    />
+                  </div>
+                  <div class="input-group">
+                    <label for="price">Giá sản phẩm</label>
+                    <input
+                      type="number"
+                      id="price"
+                      placeholder="Nhập giá (VND)"
+                      oninput="formatPriceInput()"
+                    />
+                  </div>
+                </div>
 
                 <label for="description">Mô tả</label>
                 <textarea id="description" placeholder="Nhập mô tả"></textarea>

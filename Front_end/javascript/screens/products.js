@@ -6,17 +6,42 @@ function viewProductDetails(productId) {
   window.location.href = `../product/productDetail.html?id=${productId}`; // Chuyển hướng đến trang chi tiết
 }
 
+async function suggestNextProductId() {
+  try {
+    const response = await fetch(
+      "http://localhost:3000/api/sanpham/max-masanpham"
+    );
+    const data = await response.json();
+
+    if (data.maxMaSanPham) {
+      const prefix = data.maxMaSanPham.slice(0, 2); // Lấy tiền tố (ví dụ: "SP")
+      const currentNumber = parseInt(data.maxMaSanPham.slice(2), 10); // Lấy số hiện tại (ví dụ: "0001")
+
+      const nextNumber = (currentNumber + 1).toString().padStart(4, "0"); // Tăng số lên và thêm số 0 phía trước
+      const nextProductId = prefix + nextNumber; // Gợi ý mã sản phẩm tiếp theo
+
+      document.getElementById("product-id").value = nextProductId; // Hiển thị mã sản phẩm gợi ý
+    } else {
+      document.getElementById("product-id").value = "SP0001"; // Giá trị mặc định nếu chưa có sản phẩm nào
+    }
+  } catch (error) {
+    console.error("Lỗi khi gợi ý mã sản phẩm:", error);
+  }
+}
+
 async function addProduct() {
+  const priceInput = document.getElementById("price").value;
+  const rawPrice = priceInput.replace(/\./g, ""); // Loại bỏ dấu chấm
+  const formattedPrice = parseFloat(rawPrice); // Chuyển đổi thành số
+
   const product = {
     MaSanPham: document.getElementById("product-id").value,
     TenSanPham: document.getElementById("product-name").value,
     TrongLuong: document.getElementById("weight").value,
-    DonViTinh: document.getElementById("unit").value,
-    SoLuongTonQuyDoi: document.getElementById("converted-stock-quantity").value,
-    SoLuongTon: document.getElementById("quantity").value,
     MoTaSanPham: document.getElementById("description").value,
     MaDonVi: document.getElementById("unit").value,
     MaNhom: document.getElementById("product-group").value,
+    GiaSanPham: formattedPrice,
   };
 
   try {
@@ -96,8 +121,8 @@ async function fetchProducts() {
       row.innerHTML = `
           <td>${product.MaSanPham}</td>
           <td>${product.TenSanPham}</td>
-          <td>${product.TenNhom || "Không xác định"}</td> 
-          <td>${product.SoLuongTon}</td>
+          <td>${product.TenNhom || " "}</td> 
+          <td>${product.SoLuongTon || " "}</td>
       `;
       row.addEventListener("click", () => {
         viewProductDetails(product.MaSanPham);
@@ -125,13 +150,29 @@ async function loadGroups() {
     console.error("Lỗi khi tải đơn vị tính:", error);
   }
 }
+function formatCurrency(value) {
+  // Chuyển đổi giá thành chuỗi, loại bỏ các ký tự không phải số, sau đó định dạng
+  return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."); // Thêm dấu chấm
+}
+function formatPriceInput() {
+  const priceInput = document.getElementById("price");
+  let value = priceInput.value.replace(/\./g, ""); // Xóa dấu chấm để xử lý
+  if (!isNaN(value) && value !== "") {
+    priceInput.value = formatCurrency(value); // Định dạng lại giá
+  } else {
+    priceInput.value = ""; // Nếu không phải số, xóa ô
+  }
+}
 
 fetchProducts();
+loadGroups();
 // Gọi hàm khi trang được tải
 document.addEventListener("DOMContentLoaded", () => {
   // getProducts("donhang", "donhang-container");
   // getProducts("sanpham", "sanpham-container");
 });
+// Gọi hàm khi trang được tải
+window.onload = suggestNextProductId;
 
 // Hàm thêm sản phẩm
 document.getElementById("add-button").addEventListener("click", addProduct);
