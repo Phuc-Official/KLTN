@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="../../css/inventory.css" />
+    <link rel="stylesheet" href="../../css/sidebar.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../../css/cus/customer.css" />
+  </head>
+
+  <body>
+    <div class="sidebar">
+      <h2>WHM</h2>
+      <ul>
+        <li>
+          <a href=""><i class="fa-solid fa-house"></i>Tổng quan</a>
+        </li>
+        <!-- <li>
+        <a href="#"><i class="fa-solid fa-file-invoice"></i>Đơn hàng</a>
+        <ul class="submenu">
+          <li>
+            <a href="../overview/overview.html">Danh sách đơn hàng</a>
+          </li>
+          <li><a href="#">Đơn hàng nháp</a></li>
+          <li><a href="#">Trả hàng</a></li>
+          <li><a href="#">Đơn chưa hoàn tất</a></li>
+        </ul>
+      </li> -->
+        <li>
+          <a href="#"><i class="fa-solid fa-truck-fast"></i>Vận chuyển</a>
+          <ul class="submenu">
+            <li><a href="#">Tổng quan</a></li>
+            <li><a href="#">Vận đơn</a></li>
+          </ul>
+        </li>
+        <li>
+          <a href="#"><i class="fas fa-box"></i>Sản phẩm</a>
+          <ul class="submenu">
+            <li>
+              <a href="../product/productList.html">Danh sách sản phẩm</a>
+            </li>
+            <li><a href="#">Danh mục sản phẩm</a></li>
+          </ul>
+        </li>
+        <li>
+          <a href="#"><i class="fas fa-warehouse"></i>Quản lý kho</a>
+          <ul class="submenu">
+            <li>
+              <a href="../warehouse/inventory.html">Tồn kho</a>
+            </li>
+            <li>
+              <a href="../order/createOrder.html">Đặt hàng nhập</a>
+            </li>
+            <li><a href="#">Nhập hàng</a></li>
+            <li><a href="#">Trả hàng nhập</a></li>
+            <li><a href="../supplier/supplierList.html">Nhà cung cấp</a></li>
+          </ul>
+        </li>
+        <li>
+          <a href="#"><i class="fa-solid fa-user"></i>Khách hàng</a>
+          <ul class="submenu">
+            <li><a href="../customer/index.html">Khách hàng</a></li>
+            <li><a href="#">Nhóm khách hàng</a></li>
+          </ul>
+        </li>
+        <li>
+          <a href="#"><i class="fa-solid fa-file-invoice-dollar"></i>Kiểm kê</a>
+        </li>
+      </ul>
+    </div>
+    <script src="/Front_end/javascript/sidebar.js"></script>
+
+    <div class="body_cus">
+      <header>
+        <h1>Khách hàng</h1>
+      </header>
+      <div class="container_cus">
+        <div class="button_group_cus">
+          <div class="search">
+            <input type="text" placeholder="Tìm kiếm" />
+            <button>Tìm kiếm</button>
+          </div>
+          <div class="add_cus">
+            <button
+              onclick="window.location.href='/Front_end/html/customer/addCustomer.html'"
+            >
+              Thêm khách hàng
+            </button>
+          </div>
+        </div>
+        <div class="table_container">
+          <table>
+            <thead>
+              <tr>
+                <th>STT</th>
+                <th>Tên khách hàng</th>
+                <th>Địa chỉ</th>
+                <th>Số điện thoại</th>
+                <th>Đơn hàng</th>
+                <th>Đơn gần nhất</th>
+                <th>Thao tác</th>
+              </tr>
+            </thead>
+            <tbody id="customerTableBody">
+              <!-- Dữ liệu khách hàng sẽ được chèn vào đây bằng JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <script>
+      const customers = [
+        {
+          id: 1,
+          name: "Nguyễn Văn A",
+          address: "123 Đường ABC",
+          phone: "0123456789",
+          orders: 2,
+          lastOrder: "2024-03-18",
+        },
+        {
+          id: 2,
+          name: "Trần Thị B",
+          address: "456 Đường XYZ",
+          phone: "0987654321",
+          orders: 5,
+          lastOrder: "2024-03-10",
+        },
+        {
+          id: 3,
+          name: "Lê Văn C",
+          address: "789 Đường LMN",
+          phone: "0345678901",
+          orders: 1,
+          lastOrder: "2024-03-05",
+        },
+      ];
+
+      function loadCustomers() {
+        let tableBody = document.getElementById("customerTableBody");
+        tableBody.innerHTML = "";
+
+        customers.forEach((customer, index) => {
+          let customerData = encodeURIComponent(JSON.stringify(customer)); // Chuyển object thành string
+          let row = `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${customer.name}</td>
+                        <td>${customer.address}</td>
+                        <td>${customer.phone}</td>
+                        <td>${customer.orders}</td>
+                        <td>${customer.lastOrder}</td>
+                        <td>
+                            <button onclick="updateCustomer('${customerData}')">Sửa</button>
+                            <button onclick="deleteCustomer(${
+                              customer.id
+                            })">Xóa</button>
+                        </td>
+                    </tr>
+                `;
+          tableBody.innerHTML += row;
+        });
+      }
+
+      function updateCustomer(customerData) {
+        window.location.href = `/Front_end/html/customer/updateCustomer.html?data=${customerData}`;
+      }
+
+      function deleteCustomer(customerId) {
+        if (confirm("Bạn có chắc chắn muốn xóa khách hàng này không?")) {
+          alert("Xóa thành công (Giả lập, cần kết nối DB để thực hiện)");
+        }
+      }
+
+      loadCustomers();
+    </script>
+  </body>
+</html>

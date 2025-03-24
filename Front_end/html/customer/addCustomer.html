@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="../../css/inventory.css" />
+    <link rel="stylesheet" href="../../css/sidebar.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../../css/cus/addCustomer.css" />
+  </head>
+
+  <body>
+    <div class="sidebar">
+      <h2>WHM</h2>
+      <ul>
+        <li>
+          <a href=""><i class="fa-solid fa-house"></i>Tổng quan</a>
+        </li>
+        <!-- <li>
+        <a href="#"><i class="fa-solid fa-file-invoice"></i>Đơn hàng</a>
+        <ul class="submenu">
+          <li>
+            <a href="../overview/overview.html">Danh sách đơn hàng</a>
+          </li>
+          <li><a href="#">Đơn hàng nháp</a></li>
+          <li><a href="#">Trả hàng</a></li>
+          <li><a href="#">Đơn chưa hoàn tất</a></li>
+        </ul>
+      </li> -->
+        <li>
+          <a href="#"><i class="fa-solid fa-truck-fast"></i>Vận chuyển</a>
+          <ul class="submenu">
+            <li><a href="#">Tổng quan</a></li>
+            <li><a href="#">Vận đơn</a></li>
+          </ul>
+        </li>
+        <li>
+          <a href="#"><i class="fas fa-box"></i>Sản phẩm</a>
+          <ul class="submenu">
+            <li>
+              <a href="../product/productList.html">Danh sách sản phẩm</a>
+            </li>
+            <li><a href="#">Danh mục sản phẩm</a></li>
+          </ul>
+        </li>
+        <li>
+          <a href="#"><i class="fas fa-warehouse"></i>Quản lý kho</a>
+          <ul class="submenu">
+            <li>
+              <a href="../warehouse/inventory.html">Tồn kho</a>
+            </li>
+            <li>
+              <a href="../order/createOrder.html">Đặt hàng nhập</a>
+            </li>
+            <li><a href="#">Nhập hàng</a></li>
+            <li><a href="#">Trả hàng nhập</a></li>
+            <li><a href="../supplier/supplierList.html">Nhà cung cấp</a></li>
+          </ul>
+        </li>
+        <li>
+          <a href="#"><i class="fa-solid fa-user"></i>Khách hàng</a>
+          <ul class="submenu">
+            <li><a href="../customer/index.html">Khách hàng</a></li>
+            <li><a href="#">Nhóm khách hàng</a></li>
+          </ul>
+        </li>
+        <li>
+          <a href="#"><i class="fa-solid fa-file-invoice-dollar"></i>Kiểm kê</a>
+        </li>
+      </ul>
+    </div>
+    <script src="../../javascript/sidebar.js"></script>
+
+    <div class="body_cus">
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          margin: 0 100px 0 0;
+        "
+      >
+        <header>
+          <h1>Thêm mới khách hàng</h1>
+        </header>
+        <div class="add_cus">
+          <button
+            onclick="window.location.href='/Front_end/html/customer/index.html'"
+          >
+            Trở về
+          </button>
+        </div>
+      </div>
+      <div class="container_add_cus">
+        <!-- thông tin cơ bản gồm họ, tên, sdt, email, ngày sinh, giới tính-->
+        <div class="basic_info">
+          <h2>Thông tin cơ bản</h2>
+          <div class="input_group">
+            <label for="name">Họ và tên</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              placeholder="Nhập họ và tên"
+            />
+          </div>
+          <div class="input_group">
+            <label for="phone">Số điện thoại</label>
+            <input
+              type="text"
+              id="phone"
+              name="phone"
+              placeholder="Nhập số điện thoại"
+            />
+          </div>
+          <div class="input_group">
+            <label for="email">Email</label>
+            <input
+              type="text"
+              id="email"
+              name="email"
+              placeholder="Nhập email"
+            />
+          </div>
+          <div class="input_group">
+            <label for="dob">Ngày sinh</label>
+            <input type="date" id="dob" name="dob" />
+          </div>
+          <!-- giới tính -->
+          <div
+            class="input_group"
+            style="display: flex; justify-content: space-between"
+          >
+            <label>Giới tính:</label>
+            <input type="radio" id="male" name="gender" value="male" />
+            <label for="male">Nam</label>
+
+            <input type="radio" id="female" name="gender" value="female" />
+            <label for="female">Nữ</label>
+
+            <input type="radio" id="other" name="gender" value="other" />
+            <label for="other">Khác</label>
+          </div>
+          <!-- địa chỉ nhận hàng -->
+          <div class="input_group">
+            <h2>Địa chỉ nhận hàng</h2>
+            <label for="receiver_name">Họ và tên</label>
+            <input
+              type="text"
+              id="receiver_name"
+              name="receiver_name"
+              placeholder="Nhập họ và tên người nhận"
+            />
+
+            <label for="receiver_phone">Số điện thoại</label>
+            <input
+              type="text"
+              id="receiver_phone"
+              name="receiver_phone"
+              placeholder="Nhập số điện thoại người nhận"
+            />
+
+            <label for="receiver_address">Địa chỉ</label>
+            <input
+              type="text"
+              id="receiver_address"
+              name="receiver_address"
+              placeholder="Nhập địa chỉ cụ thể"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

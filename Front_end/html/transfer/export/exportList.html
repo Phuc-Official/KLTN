@@ -55,12 +55,11 @@
           >
           <ul class="submenu">
             <li>
-              <a href="../transfer/entry/entryList.html">Phiếu nhập</a>
+              <a href="..//.html">Phiếu nhập</a>
             </li>
-            <li><a href="../transfer/export/exportList.html">Phiếu xuất</a></li>
+            <li><a href="..///.html">Phiếu xuất</a></li>
           </ul>
         </li>
-
         <li>
           <a href="#"><i class="fas fa-warehouse"></i>Quản lý kho</a>
           <ul class="submenu">
@@ -87,7 +86,7 @@
         </li>
       </ul>
     </div>
-    <script src="../../javascript/elements/sidebar.js"></script>
+    <script src="../../javascript/sidebar.js"></script>
 
     <!-- ///////////////////////////////////////////////////////// -->
 
@@ -95,7 +94,11 @@
       <main class="content">
         <div class="header-container">
           <h1>Danh sách sản phẩm</h1>
-          <button id="add-button" class="create-button" onclick="create()">
+          <button
+            id="add-product-button"
+            class="create-button"
+            onclick="createProduct()"
+          >
             <i class="fa-solid fa-circle-plus"></i>
             Thêm sản phẩm
           </button>
@@ -166,14 +169,15 @@
         .catch((error) => console.error("Error loading tab template:", error));
     </script> -->
     <script>
-      function create() {
+      fetchProducts();
+      function createProduct() {
         // Chuyển hướng đến trang tạo sản phẩm
         window.location.href = "../product/createProduct.html"; // Thay đổi thành URL của trang bạn muốn chuyển đến
       }
     </script>
 
-    <script src="../../javascript/screens/products.js"></script>
-    <script src="../../javascript/elements/tab.js"></script>
-    <script src="../../javascript/elements/page.js"></script>
+    <script src="../../javascript/tab.js"></script>
+    <script src="../../javascript/products.js"></script>
+    <script src="../../javascript/page.js"></script>
   </body>
 </html>

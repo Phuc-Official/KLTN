@@ -12,29 +12,32 @@
     />
   </head>
   <body>
+    <header></header>
     <div class="container">
       <main class="content">
         <div class="main-section">
-          <header></header>
           <div class="header-container">
-            <button id="back-button" onclick="cancel()">
+            <button id="back-button" onclick="cancel()" class="button-back">
               <i class="fas fa-arrow-left"></i>
             </button>
-            <h1 id="product-title">Chi tiết sản phẩm</h1>
+            <h1 id="back-title">Chi tiết sản phẩm</h1>
           </div>
-          <section class="form-container" id="product-details">
-            <!-- Chi tiết sản phẩm sẽ được hiển thị ở đây -->
-          </section>
+          <div class="main-content">
+            <section class="form-container" id="product-details">
+              <!-- Chi tiết sản phẩm sẽ được hiển thị ở đây -->
+            </section>
+            <aside class="side-panel">
+              <h3>Thông tin khác</h3>
+              <div class="info-item">
+                <p>Ảnh sản phẩm</p>
+                <button class="upload-button">Thêm ảnh</button>
+              </div>
+            </aside>
+          </div>
         </div>
-        <aside class="side-panel">
-          <h3>Thông tin khác</h3>
-          <div class="info-item">
-            <p>Ảnh sản phẩm</p>
-            <button class="upload-button">Thêm ảnh</button>
-          </div>
-        </aside>
       </main>
     </div>
+
     <script>
       async function fetchProductDetails() {
         const urlParams = new URLSearchParams(window.location.search);
@@ -86,7 +89,7 @@
                 <input type="text" id="weight" value="${product.TrongLuong}" />
 
                 <label for="description">Mô tả sản phẩm:</label>
-                <input type="text" id="description" value="${product.MoTaSanPham}" />
+<textarea id="description" rows="4" placeholder="Nhập mô tả sản phẩm...">${product.MoTaSanPham}</textarea>
             </div>
         `;
         } catch (error) {

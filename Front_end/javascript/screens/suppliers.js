@@ -3,7 +3,7 @@ function cancel() {
   window.history.back();
 }
 function viewSupplierDetails(supplierId) {
-  window.location.href = `../supplier/supplierDetails.html?id=${supplierId}`;
+  window.location.href = `../supplier/supplierDetail.html?id=${supplierId}`;
 }
 
 async function addSupplier() {

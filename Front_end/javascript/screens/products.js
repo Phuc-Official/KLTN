@@ -1,16 +1,9 @@
-// const headerSanPham = [
-//   "Tên sản phẩm",
-//   "Trọng lượng",
-//   "Đơn vị tính",
-//   "Số lượng tồn",
-// ];
-
 function cancel() {
   // Quay về trang trước
   window.history.back();
 }
 function viewProductDetails(productId) {
-  window.location.href = `../product/productDetails.html?id=${productId}`; // Chuyển hướng đến trang chi tiết
+  window.location.href = `../product/productDetail.html?id=${productId}`; // Chuyển hướng đến trang chi tiết
 }
 
 async function addProduct() {
@@ -23,6 +16,7 @@ async function addProduct() {
     SoLuongTon: document.getElementById("quantity").value,
     MoTaSanPham: document.getElementById("description").value,
     MaDonVi: document.getElementById("unit").value,
+    MaNhom: document.getElementById("product-group").value,
   };
 
   try {
@@ -102,9 +96,7 @@ async function fetchProducts() {
       row.innerHTML = `
           <td>${product.MaSanPham}</td>
           <td>${product.TenSanPham}</td>
-          <td>${
-            product.TenNhom || "Không xác định"
-          }</td> <!-- Hiển thị TenNhom -->
+          <td>${product.TenNhom || "Không xác định"}</td> 
           <td>${product.SoLuongTon}</td>
       `;
       row.addEventListener("click", () => {
@@ -117,8 +109,24 @@ async function fetchProducts() {
   }
 }
 
-fetchProducts(); // Gọi hàm khi trang được tải
+async function loadGroups() {
+  try {
+    const response = await fetch("http://localhost:3000/api/nhomsanpham");
+    const groups = await response.json();
+    const groupSelect = document.getElementById("product-group");
 
+    groups.forEach((group) => {
+      const option = document.createElement("option");
+      option.value = group.MaNhom;
+      option.textContent = group.TenNhom;
+      groupSelect.appendChild(option);
+    });
+  } catch (error) {
+    console.error("Lỗi khi tải đơn vị tính:", error);
+  }
+}
+
+fetchProducts();
 // Gọi hàm khi trang được tải
 document.addEventListener("DOMContentLoaded", () => {
   // getProducts("donhang", "donhang-container");
@@ -126,6 +134,4 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // Hàm thêm sản phẩm
-document
-  .getElementById("add-product-button")
-  .addEventListener("click", addProduct);
+document.getElementById("add-button").addEventListener("click", addProduct);

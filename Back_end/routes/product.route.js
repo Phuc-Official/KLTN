@@ -15,13 +15,41 @@ productRouter.get("/api/donvitinh", async (req, res) => {
   }
 });
 
+productRouter.get("/api/nhomsanpham", async (req, res) => {
+  try {
+    const sqlQuery = `SELECT * FROM NhomSanPham`;
+    const result = await sql.query(sqlQuery);
+    res.json(result.recordset);
+  } catch (err) {
+    console.error("Lỗi khi lấy danh sách nhóm:", err);
+    res.status(500).send("Lỗi khi truy vấn cơ sở dữ liệu");
+  }
+});
+
+// Endpoint cho bảng sản phẩm
+productRouter.get("/api/sanpham", async (req, res) => {
+  try {
+    const sqlQuery = `
+      SELECT sp.*, nh.TenNhom
+      FROM SanPham sp
+      LEFT JOIN NhomSanPham nh ON sp.MaNhom = nh.MaNhom;
+    `;
+
+    const result = await sql.query(sqlQuery);
+    res.json(result.recordset);
+  } catch (err) {
+    console.error("Lỗi truy vấn: ", err);
+    res.status(500).send("Lỗi truy vấn cơ sở dữ liệu");
+  }
+});
+
 // Endpoint cho bảng sản phẩm
 productRouter.get("/api/sanpham/:maSanPham", async (req, res) => {
   const maSanPham = req.params.maSanPham;
 
   try {
     const sqlQuery = `
-          SELECT sp.*, nh.TenNhom, dv.TenDonVi, dv.TyleQuyDoi
+          SELECT sp.*, nh.TenNhom, dv.TyleQuyDoi
           FROM SanPham sp
           LEFT JOIN NhomSanPham nh ON sp.MaNhom = nh.MaNhom
           LEFT JOIN DonViTinh dv ON sp.MaDonVi = dv.MaDonVi
@@ -44,23 +72,6 @@ productRouter.get("/api/sanpham/:maSanPham", async (req, res) => {
   }
 });
 
-// Endpoint cho bảng sản phẩm
-productRouter.get("/api/sanpham", async (req, res) => {
-  try {
-    const sqlQuery = `
-      SELECT sp.*, nh.TenNhom
-      FROM SanPham sp
-      LEFT JOIN NhomSanPham nh ON sp.MaNhom = nh.MaNhom
-    `;
-
-    const result = await sql.query(sqlQuery);
-    res.json(result.recordset);
-  } catch (err) {
-    console.error("Lỗi truy vấn: ", err);
-    res.status(500).send("Lỗi truy vấn cơ sở dữ liệu");
-  }
-});
-
 // Endpoint cho thêm sản phẩm
 productRouter.post("/api/sanpham", async (req, res) => {
   try {
@@ -74,16 +85,26 @@ productRouter.post("/api/sanpham", async (req, res) => {
       SoLuongTon,
       SoLuongTonQuyDoi,
       MaDonVi,
+      MaNhom,
     } = req.body;
 
+    // Lấy MaNhom dựa trên TenNhom
+    // const sqlQueryNhom = `SELECT MaNhom FROM NhomSanPham WHERE TenNhom = @TenNhom`;
+    // const requestNhom = new sql.Request();
+    // requestNhom.input("TenNhom", sql.NVarChar, TenNhom);
+    // const resultNhom = await requestNhom.query(sqlQueryNhom);
+
+    // if (resultNhom.recordset.length === 0) {
+    //   return res.status(400).json({ message: "Nhóm sản phẩm không tồn tại." });
+    // }
+
     const sqlQuery = `
-              INSERT INTO SanPham (MaSanPham, TenSanPham, MoTaSanPham, TrongLuong, DonViTinh, SoLuongTon, SoLuongTonQuyDoi, MaDonVi)
-              VALUES (@MaSanPham, @TenSanPham, @MoTaSanPham, @TrongLuong, @DonViTinh, @SoLuongTon, @SoLuongTonQuyDoi, @MaDonVi)
-          `;
+      INSERT INTO SanPham (MaSanPham, TenSanPham, MoTaSanPham, TrongLuong, DonViTinh, SoLuongTon, SoLuongTonQuyDoi, MaDonVi, MaNhom)
+      VALUES (@MaSanPham, @TenSanPham, @MoTaSanPham, @TrongLuong, @DonViTinh, @SoLuongTon, @SoLuongTonQuyDoi, @MaDonVi, @MaNhom)
+    `;
 
     const request = new sql.Request();
     request.input("MaSanPham", sql.NVarChar, MaSanPham);
-
     request.input("TenSanPham", sql.NVarChar, TenSanPham);
     request.input("MoTaSanPham", sql.NVarChar, MoTaSanPham);
     request.input("TrongLuong", sql.Decimal, TrongLuong);
@@ -91,6 +112,8 @@ productRouter.post("/api/sanpham", async (req, res) => {
     request.input("SoLuongTon", sql.Int, SoLuongTon);
     request.input("SoLuongTonQuyDoi", sql.NVarChar, SoLuongTonQuyDoi);
     request.input("MaDonVi", sql.NVarChar, MaDonVi);
+    request.input("MaNhom", sql.Int, MaNhom);
+
     await request.query(sqlQuery);
 
     res.status(201).json({ message: "Sản phẩm đã được thêm thành công!" });

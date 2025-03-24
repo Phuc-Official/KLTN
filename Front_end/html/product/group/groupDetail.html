@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quản lý kho - Chi tiết nhóm sản phẩm</title>
+    <link rel="stylesheet" href="../../../css/createProduct.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+  </head>
+  <body>
+    <header></header>
+    <div class="container">
+      <main class="content">
+        <div class="main-section">
+          <div class="header-container">
+            <button id="back-button" onclick="cancel()" class="button-back">
+              <i class="fas fa-arrow-left"></i>
+            </button>
+            <h1 id="back-title">Chi tiết nhóm sản phẩm</h1>
+          </div>
+          <div class="main-content">
+            <section class="form-container" id="group-details">
+              <!-- Chi tiết nhóm sản phẩm sẽ được hiển thị ở đây -->
+            </section>
+            <aside class="side-panel">
+              <h3>Thông tin khác</h3>
+              <div class="info-item">
+                <p>Ảnh sản phẩm</p>
+                <button class="upload-button">Thêm ảnh</button>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </main>
+    </div>
+    <script>
+      async function fetchGroupDetails() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const maNhom = urlParams.get("id");
+
+        try {
+          const response = await fetch(
+            `http://localhost:3000/api/nhomsanpham/${maNhom}`
+          );
+
+          // Kiểm tra nếu phản hồi không thành công
+          if (!response.ok) {
+            const errorText = await response.text();
+            console.error("Lỗi từ server:", errorText);
+            throw new Error("Không thể tải chi tiết nhóm sản phẩm.");
+          }
+
+          const group = await response.json(); // Phân tích cú pháp JSON
+          const detailsContainer = document.getElementById("group-details");
+          detailsContainer.innerHTML = `
+            <div class="details-container">
+                <h3>${group.TenNhom}</h3>
+                <div class="input-row">
+                    <div class="input-group">
+                        <label for="group-id">Mã nhóm:</label>
+                        <input type="text" id="group-id" value="${group.MaNhom}" />
+                    </div>
+                    <div class="input-group">
+                        <label for="group-name">Tên nhóm:</label>
+                        <input type="text" id="group-name" value="${group.TenNhom}" />
+                    </div>
+                </div>
+                <label for="group-description">Mô tả:</label>
+                <textarea id="group-description">${group.MoTa}</textarea>
+            </div>
+        `;
+        } catch (error) {
+          console.error("Lỗi khi tải chi tiết nhóm sản phẩm:", error);
+          document.getElementById("group-details").innerHTML =
+            "<p>Không thể tải chi tiết nhóm sản phẩm.</p>";
+        }
+      }
+
+      fetchGroupDetails(); // Gọi hàm khi trang được tải
+
+      function cancel() {
+        // Quay về trang trước
+        window.history.back();
+      }
+    </script>
+  </body>
+</html>

@@ -1,90 +1,78 @@
-html, body {
-    height: 100%; /* Đảm bảo html và body chiếm toàn bộ chiều cao */
-    margin: 0;    /* Bỏ margin mặc định */
+html,
+body {
+  height: 100%; /* Đảm bảo html và body chiếm toàn bộ chiều cao */
+  margin: 0; /* Bỏ margin mặc định */
 }
 
 body {
-    font-family: Arial, sans-serif;
-    display: flex;
+  height: 100%; /* Đảm bảo html và body chiếm toàn bộ chiều cao */
+  display: flex;
 }
 
 .container {
-    flex: 1; /* Chiếm toàn bộ không gian còn lại */
-    display: flex;
+  flex: 1; /* Chiếm toàn bộ không gian còn lại */
+  display: flex;
 }
-
+.container_a {
+  /* background-color: ghostwhite; */
+  padding: 20px;
+  border: 1px solid #e0e0e0;
+  margin: auto;
+  height: auto;
+  border-radius: 10px;
+  width: 100%;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
 .content {
-    flex: 1;
-    padding: 20px;
-    background: #ecf0f1;
-    height: 100vh; /* Chiếm toàn bộ chiều cao của viewport */
-    box-sizing: border-box; /* Để padding không làm tăng kích thước */
+  flex: 1;
+  padding: 20px;
+  background: #ecf0f1;
+  height: 100vh; /* Chiếm toàn bộ chiều cao của viewport */
+  box-sizing: border-box; /* Để padding không làm tăng kích thước */
 }
 
-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
+.table {
+  margin-top: 20px;
+}
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
 input[type="text"] {
-    padding: 10px;
-    width: 300px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+  padding: 10px;
+  width: 300px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
 }
 
 table {
-    width: 100%;
-    border-collapse: collapse;
-    background: white;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-th, td {
-    padding: 15px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
+th,
+td {
+  padding: 15px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
 }
 
 th {
-    background: #3498db;
-    color: white;
+  background: skyblue;
+  color: white;
 }
 
 img {
-    width: 50px;
-    height: 50px;
-    object-fit: cover;
-    border-radius: 5px;
-}
-.popup {
-    display: none; /* Ẩn popup theo mặc định */
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* Nền mờ */
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-.popup-content {
-    background-color: white;
-    padding: 20px;
-    border-radius: 5px;
-    width: 400px;
-}
-.close-btn {
-    background-color: #dc3545; /* Màu đỏ */
-    color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 5px 10px;
-    cursor: pointer;
-    float: right;
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 5px;
 }

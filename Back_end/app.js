@@ -5,6 +5,7 @@ const sql = require("mssql"); // Import thư viện mssql
 
 const productRouter = require("./routes/product.route");
 const supplierRouter = require("./routes/supplier.route");
+const groupRouter = require("./routes/group.route");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -41,6 +42,7 @@ connectToDatabase();
 // Endpoint cho bảng đơn hàng
 app.use(productRouter);
 app.use(supplierRouter);
+app.use(groupRouter);
 
 // Khởi động server
 app.listen(PORT, () => {

@@ -17,3 +17,30 @@
 #back-button i {
   font-size: 20px; /* Kích thước biểu tượng */
 }
+
+.create-button {
+  background-color: #0066ff; /* Màu nền xanh */
+  color: white; /* Màu chữ trắng */
+  border: none; /* Không có viền */
+  border-radius: 10px; /* Bo tròn góc */
+  padding: 10px 20px; /* Đệm cho nút */
+  font-size: 16px; /* Kích thước chữ */
+  cursor: pointer; /* Đổi con trỏ khi hover */
+  transition: background-color 0.3s ease; /* Hiệu ứng chuyển màu */
+  font-weight: 500;
+}
+.create-button:hover {
+  background-color: #45a049; /* Màu nền khi hover */
+}
+i {
+  margin-right: 10px; /* Khoảng cách giữa biểu tượng và chữ */
+}
+
+/* /////////////////// */
+.search {
+  font-size: 16px;
+}
+.search::placeholder {
+  color: darkgrey; /* Màu sắc của placeholder */
+  opacity: 1; /* Đảm bảo độ mờ */
+}

@@ -1,108 +1,107 @@
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
 }
 
 .container {
-    display: flex;
-    height: 100vh;
+  display: flex;
 }
 
 .sidebar {
-    width: 260px;  /* Chiều rộng sidebar */
-    background: #1E293B;
-    color: white;
-    padding: 20px;
-    height: 100%;  /* Chiếm toàn bộ chiều cao */
+  width: 260px; /* Chiều rộng sidebar */
+  background: #1e293b;
+  color: white;
+  padding: 20px;
 }
 
 .sidebar h2 {
-    font-size: 24px;
-    margin-bottom: 20px;
+  font-size: 24px;
+  margin-bottom: 20px;
 }
 
 .sidebar ul {
-    list-style: none; /* Bỏ dấu đầu dòng */
+  list-style: none; /* Bỏ dấu đầu dòng */
 }
 
 .sidebar ul li {
-    padding: 10px;
-    cursor: pointer;
+  margin-bottom: 10px;
+  padding: 10px;
+  cursor: pointer;
 }
 
 /* Bỏ gạch chân cho các liên kết */
 .sidebar ul li a {
-    color: white; /* Màu chữ */
-    text-decoration: none; /* Bỏ gạch chân */
-    display: flex; /* Hiển thị dưới dạng flex để căn chỉnh biểu tượng và văn bản */
-    align-items: center; /* Căn giữa theo chiều dọc */
+  color: white; /* Màu chữ */
+  text-decoration: none; /* Bỏ gạch chân */
+  display: flex; /* Hiển thị dưới dạng flex để căn chỉnh biểu tượng và văn bản */
+  align-items: center; /* Căn giữa theo chiều dọc */
 }
 
 /* Đặt kích thước cho biểu tượng */
 .sidebar ul li a i {
-    color: white; /* Màu chữ mặc định cho biểu tượng */
-    margin-right: 10px; /* Khoảng cách giữa biểu tượng và văn bản */
-    width: 24px; /* Chiều rộng của biểu tượng */
-    height: 24px; /* Chiều cao của biểu tượng */
-    display: inline-flex; /* Sử dụng inline-flex để căn chỉnh */
-    align-items: center; /* Căn giữa theo chiều dọc */
-    justify-content: center; /* Căn giữa theo chiều ngang */
+  color: white; /* Màu chữ mặc định cho biểu tượng */
+  margin-right: 10px; /* Khoảng cách giữa biểu tượng và văn bản */
+  width: 24px; /* Chiều rộng của biểu tượng */
+  height: 24px; /* Chiều cao của biểu tượng */
+  display: inline-flex; /* Sử dụng inline-flex để căn chỉnh */
+  align-items: center; /* Căn giữa theo chiều dọc */
+  justify-content: center; /* Căn giữa theo chiều ngang */
 }
 
 /* Màu nền cho menu cha khi hover hoặc active */
 .sidebar ul li.active,
 .sidebar ul li:hover {
-    background: #334155;
-    border-radius: 5px;
+  background: #334155;
+  border-radius: 5px;
 }
 
 /* Màu biểu tượng khi hover */
 .sidebar ul li:hover a i,
 .sidebar ul li.active a i {
-    color: #FFD700; /* Thay đổi màu khi hover hoặc active */
+  color: #ffd700; /* Thay đổi màu khi hover hoặc active */
 }
 
 /* Khoảng cách cho menu con */
 .sidebar ul li ul {
-    margin-left: 24px; /* Khoảng cách từ bên trái cho menu con */
-    padding: 10px 0; /* Khoảng cách trên và dưới cho menu con */
+  margin-left: 24px; /* Khoảng cách từ bên trái cho menu con */
+  padding: 10px 0;
 }
 
 .sidebar ul li ul li {
-    padding: 10px 10px; /* Padding cho các mục menu con */
+  /* padding: 10px 10px; */
+  /* Padding cho các mục menu con */
 }
 
 /* Màu nền cho menu con khi hover */
 .sidebar ul li ul li:hover {
-    background: #2d3748; /* Màu nền khi hover */
-    border-radius: 5px; /* Bo tròn góc */
+  background: #2d3748; /* Màu nền khi hover */
+  border-radius: 5px; /* Bo tròn góc */
 }
 
 /* Màu chữ cho submenu khi hover */
 .sidebar ul li ul li a {
-    color: white; /* Màu chữ cho các mục trong submenu */
+  color: white; /* Màu chữ cho các mục trong submenu */
 }
 
 /* Thay đổi màu chữ cho submenu khi hover */
 .sidebar ul li ul li:hover a {
-    color: #FFD700; /* Thay đổi màu chữ khi hover */
+  color: #ffd700; /* Thay đổi màu chữ khi hover */
 }
-
 
 /* Màu nền cho submenu đang được chọn */
 .sidebar ul li ul li.active {
-    background: #FFD700; /* Màu nền cho submenu đang chọn */
-    color: #1E293B; /* Thay đổi màu chữ cho submenu đang chọn */
+  background: #ffd700; /* Màu nền cho submenu đang chọn */
+  color: #1e293b; /* Thay đổi màu chữ cho submenu đang chọn */
 }
 
 /* Màu chữ cho submenu đang chọn */
 .sidebar ul li ul li.active a {
-    color: #1E293B; /* Màu chữ cho submenu đang chọn */
+  color: #1e293b; /* Màu chữ cho submenu đang chọn */
 }
 /* Màu nền cho menu lớn đang được chọn */
 .sidebar ul li.active {
-    background: #1E293B; /* Màu nền cho menu lớn đang chọn */
-    color: #1E293B; /* Thay đổi màu chữ cho menu lớn đang chọn */
+  background: #1e293b; /* Màu nền cho menu lớn đang chọn */
+  color: #1e293b; /* Thay đổi màu chữ cho menu lớn đang chọn */
 }

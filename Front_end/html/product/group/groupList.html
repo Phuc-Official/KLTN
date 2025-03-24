@@ -4,8 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Quản lý Kho</title>
-    <link rel="stylesheet" href="../../css/inventory.css" />
-    <link rel="stylesheet" href="../../css/sidebar.css" />
+    <link rel="stylesheet" href="../../../css/sidebar.css" />
+    <link rel="stylesheet" href="../../../css/inventory.css" />
+    <link rel="stylesheet" href="../../../css/button.css" />
+    <link rel="stylesheet" href="../../css/page.css" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
@@ -29,9 +31,9 @@
           <a href="#"><i class="fas fa-box"></i>Sản phẩm</a>
           <ul class="submenu">
             <li>
-              <a href="../product/productList.html">Danh sách sản phẩm</a>
+              <a href="../../product/productList.html">Danh sách sản phẩm</a>
             </li>
-            <li><a href="../product/group/groupList.html">Nhóm sản phẩm</a></li>
+            <li><a href="#">Nhóm sản phẩm</a></li>
           </ul>
         </li>
         <li>
@@ -45,7 +47,9 @@
             </li>
             <li><a href="#">Nhập hàng</a></li>
             <li><a href="#">Trả hàng nhập</a></li>
-            <li><a href="../supplier/supplierList.html">Nhà cung cấp</a></li>
+            <li>
+              <a href="../../supplier/supplierList.html">Nhà cung cấp</a>
+            </li>
           </ul>
         </li>
         <li>
@@ -60,50 +64,52 @@
         </li>
       </ul>
     </div>
-    <script src="../../javascript/sidebar.js"></script>
+    <script src="../../../javascript/elements/sidebar.js"></script>
 
     <!-- ///////////////////////////////////////////////////////// -->
 
     <div class="container">
       <main class="content">
-        <header>
-          <h1>Danh sách nhà cung cấp</h1>
+        <div class="header-container">
+          <h1>Loại sản phẩm</h1>
           <button
-            id="add-supplier-button"
+            id="add-group-button"
             class="create-button"
-            onclick="createSupplier()"
+            onclick="createGroup()"
           >
-            <span class="icon">➕</span> Thêm nhà cung cấp
+            <i class="fa-solid fa-circle-plus"></i>
+            Tạo nhóm sản phẩm
           </button>
+        </div>
+        <div class="container_a">
           <input
+            class="search"
             type="text"
-            placeholder="Tìm kiếm mã SKU, tên sản phẩm, barcode"
+            placeholder=" 🔍︎  Tìm kiếm theo Tên nhóm"
           />
-        </header>
-        <body>
-          <table id="supplier-container">
-            <thead>
-              <tr>
-                <th>Mã NCC</th>
-                <th>Tên NCC</th>
-                <th>Số điện thoại</th>
-                <th>Email</th>
-              </tr>
-            </thead>
-            <tbody>
-              <!-- Dữ liệu sản phẩm sẽ được chèn ở đây thông qua JavaScript -->
-            </tbody>
-          </table>
-        </body>
+
+          <div class="table">
+            <table id="group-container">
+              <thead>
+                <tr>
+                  <th>Tên nhóm</th>
+                  <th>Mô tả</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Dữ liệu sản phẩm sẽ được chèn ở đây thông qua JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
       </main>
     </div>
-
     <script>
-      function createSupplier() {
+      function createGroup() {
         // Chuyển hướng đến trang tạo sản phẩm
-        window.location.href = "../supplier/createSupplier.html"; // Thay đổi thành URL của trang bạn muốn chuyển đến
+        window.location.href = "../group/createGroup.html"; // Thay đổi thành URL của trang bạn muốn chuyển đến
       }
     </script>
-    <script src="../../javascript/suppliers.js"></script>
+    <script src="../../../javascript/screens/groups.js"></script>
   </body>
 </html>
