@@ -1,0 +1,32 @@
+.product-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  border: 1px solid #ccc;
+  max-height: 200px;
+  overflow-y: auto;
+  display: none; /* Ẩn danh sách khi không có sản phẩm */
+}
+
+.product-list li {
+  padding: 8px;
+  cursor: pointer;
+}
+
+.product-list li:hover {
+  background-color: #f0f0f0; /* Hiệu ứng hover */
+}
+.selected-products {
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-top: 10px;
+}
+
+.selected-product-item {
+  padding: 5px;
+  border-bottom: 1px solid #ddd;
+}
+
+.selected-product-item:last-child {
+  border-bottom: none; /* Bỏ viền cho phần tử cuối cùng */
+}

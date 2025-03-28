@@ -78,8 +78,12 @@ header h1 {
   padding: 25px;
   border-radius: 8px;
   width: 60%;
-  margin-right: 20px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-container.full-width {
+  width: 100%; /* Đảm bảo chiều rộng 100% cho trang phiếu nhập */
+  flex: 1; /* Chiếm toàn bộ không gian còn lại */
 }
 
 form {
@@ -122,6 +126,7 @@ textarea {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   height: auto; /* Chiều cao tự động */
   overflow-y: auto;
+  margin-left: 20px;
 }
 
 .side-panel h3 {
@@ -230,4 +235,79 @@ select {
   border: 1px solid #cbd5e1; /* Viền cho select */
   border-radius: 8px; /* Viền tròn */
   width: 100%; /* Chiều rộng đầy đủ */
+}
+
+#selected-products table {
+  width: 100%; /* Chiều rộng bảng */
+  border-collapse: collapse; /* Bỏ khoảng cách giữa các ô */
+  margin-top: 20px; /* Khoảng cách trên bảng */
+}
+
+#selected-products th,
+#selected-products td {
+  border: 1px solid #ddd; /* Đường viền cho các ô */
+  padding: 8px; /* Khoảng cách bên trong ô */
+  text-align: left; /* Căn trái nội dung */
+}
+
+#selected-products th {
+  background-color: #f2f2f2; /* Màu nền cho tiêu đề */
+}
+
+#selected-products tr:nth-child(even) {
+  background-color: #f9f9f9; /* Màu nền cho các hàng chẵn */
+}
+
+#selected-products tr:hover {
+  background-color: #eaeaea; /* Màu nền khi hover hàng */
+}
+
+#product-table {
+  width: 100%; /* Đặt chiều rộng bảng là 100% */
+  border-collapse: collapse; /* Bỏ khoảng cách giữa các ô */
+  margin-top: 20px; /* Khoảng cách trên bảng */
+}
+
+#product-table thead {
+  background-color: #f2f2f2; /* Màu nền cho tiêu đề */
+}
+
+#product-table th,
+#product-table td {
+  border: 1px solid #ddd; /* Đường viền cho các ô */
+  padding: 8px; /* Khoảng cách bên trong ô */
+  text-align: left; /* Căn trái nội dung */
+}
+
+#product-table th {
+  font-weight: bold; /* Làm đậm tiêu đề */
+}
+
+#product-table tr:nth-child(even) {
+  background-color: #f9f9f9; /* Màu nền cho các hàng chẵn */
+}
+
+#product-table tr:hover {
+  background-color: #eaeaea; /* Màu nền khi hover hàng */
+}
+
+#product-table td {
+  vertical-align: middle; /* Căn giữa nội dung ô */
+}
+
+#product-table tbody tr {
+  transition: background-color 0.3s; /* Hiệu ứng chuyển đổi màu nền */
+}
+
+#product-table tbody tr:hover {
+  background-color: #eaeaea; /* Màu nền khi hover hàng */
+}
+
+#product-table tbody td {
+  border: 1px solid #ddd; /* Đường viền cho các ô trong tbody */
+  padding: 8px; /* Khoảng cách bên trong ô */
+}
+
+#product-table tbody tr:nth-child(even) {
+  background-color: #f9f9f9; /* Màu nền cho các hàng chẵn */
 }

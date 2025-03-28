@@ -75,7 +75,6 @@
                           </div>
                       </div>
 
-
                       <div class="input-row">
                           <div class="input-group">
                               <label for="unit">Đơn vị tính:</label>
@@ -84,9 +83,9 @@
                               }" />
                           </div>
                           <div class="input-group">
-                              <label for="converted-stock-quantity">Số lượng tồn quy đổi:</label>
+                              <label for="converted-stock-quantity">Số lượng tồn:</label>
                               <input type="text" id="converted-stock-quantity" value="${
-                                product.SoLuongTonQuyDoi
+                                product.SoLuongTon
                               }" />
                           </div>
                       </div>
@@ -94,18 +93,15 @@
                       <div class="input-row">
                           <div class="input-group">
                               <label for="conversion-rate">Tỷ lệ quy đổi:</label>
-                              <input type="text" id="conversion-rate" value="${
-                                product.TyleQuyDoi
-                              }" disabled/>
+                      <input  type="text" id="conversion-rate" value="${
+                        product.TyleQuyDoi
+                      }" disabled/>   
                           </div>
                           <div class="input-group">
-                              <label for="quantity">Số lượng tồn:</label>
-                              <input type="number" id="quantity" value="${
-                                product.SoLuongTon
-                              }"disabled/>
+                             
                           </div>
                       </div>
-
+                                                            
                       <div class="input-row">
                           <div class="input-group">
                               <label for="weight">Trọng lượng:</label>
@@ -114,12 +110,12 @@
                       }" />
                           </div>
                           <div class="input-group">
-                              <label for="price">Giá sản phẩm:</label>
-                              <input type="number" id="price" value="${formatCurrency(
-                                product.GiaSanPham
-                              )}"/>
-                          </div>
-                      </div>
+                        <label for="price">Giá sản phẩm:</label>
+                        <input type="text" id="price" value="${formatCurrency(
+                          product.GiaSanPham
+                        )}" oninput="this.value = formatInput(this.value)" />
+                    </div>
+                  </div>
 
                       <label for="description">Mô tả sản phẩm:</label>
       <textarea id="description" rows="3" >${product.MoTaSanPham}</textarea>

@@ -57,7 +57,7 @@
           >
           <ul class="submenu">
             <li>
-              <a href="../entry/entryList.html">Phiếu nhập</a>
+              <a href="../receipt/receiptList.html">Phiếu nhập</a>
             </li>
             <li><a href="../export/exportList.html">Phiếu xuất</a></li>
           </ul>
@@ -109,7 +109,7 @@
           />
 
           <div class="table">
-            <table id="sanpham-container">
+            <table id="receipt-container">
               <thead>
                 <tr>
                   <th>Mã phiếu</th>
@@ -139,15 +139,13 @@
       </main>
     </div>
     <script>
-      fetchProducts();
       function create() {
         // Chuyển hướng đến trang tạo sản phẩm
-        window.location.href = "../entry/createEntry.html"; // Thay đổi thành URL của trang bạn muốn chuyển đến
+        window.location.href = "../receipt/createReceipt.html"; // Thay đổi thành URL của trang bạn muốn chuyển đến
       }
     </script>
 
-    <script src="../../../javascript/tab.js"></script>
-    <script src="../../../javascript/products.js"></script>
-    <script src="../../../javascript/page.js"></script>
+    <script src="../../../javascript/screens/receipt.js"></script>
+    <script src="../../../javascript/elements/page.js"></script>
   </body>
 </html>
