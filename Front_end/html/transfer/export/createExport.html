@@ -3,9 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Quản lý kho - Thêm sản phẩm</title>
-    <link rel="stylesheet" href="/Front_end/css/createProduct.css" />
-    <link rel="stylesheet" href="/Front_end/css/sidebar.css" />
+    <title>Quản lý kho - Thêm phiếu xuất</title>
+    <link rel="stylesheet" href="../../../css/createProduct.css" />
+    <link rel="stylesheet" href="../../../css/sidebar.css" />
+    <link rel="stylesheet" href="../../../css/receipt.css" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
@@ -14,8 +15,8 @@
   <body>
     <header>
       <button onclick="cancel()" class="button-cancel">Hủy</button>
-      <button id="add-product-button" type="button" class="add-product-button">
-        Thêm sản phẩm
+      <button id="add-button" type="button" class="add-button">
+        Tạo phiếu xuất
       </button>
     </header>
     <div class="container">
@@ -25,100 +26,80 @@
             <button id="back-button" onclick="cancel()" class="button-back">
               <i class="fas fa-arrow-left"></i>
             </button>
-            <h1 id="back-title">Thêm sản phẩm</h1>
+            <h1 id="back-title">Tạo phiếu xuất</h1>
           </div>
           <div class="main-content">
-            <section class="form-container">
-              <h3 id="title">Thông tin sản phẩm</h3>
-              <form id="product-form">
+            <section class="form-container full-width">
+              <h3>Thông tin phiếu xuất</h3>
+              <form id="export-form">
                 <div class="input-row">
                   <div class="input-group">
-                    <label for="product-id">Mã sản phẩm</label>
+                    <label for="export-id">Mã phiếu xuất</label>
                     <input
                       type="text"
-                      id="product-id"
-                      placeholder="Nhập mã sản phẩm"
-                      value="SP"
+                      id="export-id"
+                      placeholder="Nhập mã phiếu xuất"
                       required
                     />
                   </div>
                   <div class="input-group">
-                    <label for="product-group">Loại sản phẩm</label>
-                    <select id="product-group" required>
+                    <label for="customer">Khách hàng</label>
+                    <select id="customer">
                       <option value="" disabled selected>
-                        Chọn loại sản phẩm
+                        Chọn khách hàng
                       </option>
                     </select>
                   </div>
                 </div>
 
-                <label for="product-name">Tên sản phẩm</label>
-                <input
-                  type="text"
-                  id="product-name"
-                  placeholder="Nhập tên sản phẩm"
-                  required
-                />
-
                 <div class="input-row">
                   <div class="input-group">
-                    <label for="unit">Đơn vị tính</label>
-                    <select id="unit" required>
-                      <option value="" disabled selected>
-                        Chọn đơn vị tính
-                      </option>
-                      <!-- Các đơn vị tính sẽ được thêm vào đây -->
-                    </select>
-                  </div>
-                  <div class="input-group">
-                    <label for="converted-stock-quantity"
-                      >Số lượng tồn quy đổi</label
-                    >
+                    <label for="date-create">Ngày tạo</label>
                     <input
-                      type="number"
-                      id="converted-stock-quantity"
-                      placeholder="Nhập số lượng tồn quy đổi"
-                      oninput="updateQuantity()"
+                      type="date"
+                      id="date-create"
+                      value="{{currentDate}}"
+                      required
                     />
                   </div>
-                </div>
-
-                <div class="input-row">
                   <div class="input-group">
-                    <label for="conversion-rate">Tỷ lệ quy đổi</label>
-                    <input type="text" id="conversion-rate" disabled />
-                  </div>
-                  <div class="input-group">
-                    <label for="quantity">Số lượng tồn</label>
-                    <input type="number" id="quantity" disabled />
+                    <label for="employee">Nhân viên</label>
+                    <select id="employee">
+                      <option value="" disabled selected>Chọn nhân viên</option>
+                    </select>
                   </div>
                 </div>
 
-                <label for="weight">Trọng lượng</label>
+                <label>Chọn sản phẩm</label>
                 <input
-                  class="input-small"
                   type="text"
-                  id="weight"
-                  placeholder="Nhập trọng lượng (gram/ml)"
-                  required
+                  id="search-product"
+                  placeholder="Nhập mã sản phẩm hoặc tên sản phẩm"
                 />
+                <ul
+                  id="product-list"
+                  class="product-list"
+                  style="display: none"
+                >
+                  <!-- Danh sách sản phẩm sẽ được thêm vào đây -->
+                </ul>
+
+                <h3>Sản phẩm đã chọn:</h3>
+                <div id="selected-products" class="selected-products">
+                  <!-- Thông tin sản phẩm đã chọn sẽ được thêm vào đây -->
+                </div>
+
+                <div id="total-price">Tổng giá trị: 0 đ</div>
 
                 <label for="description">Mô tả</label>
                 <textarea id="description" placeholder="Nhập mô tả"></textarea>
               </form>
             </section>
-            <aside class="side-panel">
-              <h3>Thông tin khác</h3>
-              <div class="info-item">
-                <p>Ảnh sản phẩm</p>
-                <button class="upload-button">Thêm ảnh</button>
-              </div>
-            </aside>
           </div>
         </div>
       </main>
     </div>
-    <script src="../../javascript/products.js"></script>
-    <script src="../../javascript/unit.js"></script>
+
+    <script src="../../../javascript/screens/export/export.js"></script>
   </body>
 </html>

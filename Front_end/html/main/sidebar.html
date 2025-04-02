@@ -1,37 +1,74 @@
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/Front_end/css/sidebar.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <title>Quản lý kho</title>
-</head>
-<link rel="stylesheet" href="/Front_end/css/sidebar.css">
 <div class="sidebar">
-    <h2>Quản lý kho</h2>
-    <ul>
-        <li><a href="#" onclick="showSection('/Front_end/html/overview/overview')"><i class="fa-solid fa-house"></i> Tổng quan</a></li>
+  <h2>WHM</h2>
+  <ul>
+    <li>
+      <a href=""><i class="fa-solid fa-house"></i>Tổng quan</a>
+    </li>
+    <!-- <li>
+        <a href="#"><i class="fa-solid fa-file-invoice"></i>Đơn hàng</a>
+        <ul class="submenu">
+          <li>
+            <a href="../overview/overview.html">Danh sách đơn hàng</a>
+          </li>
+          <li><a href="#">Đơn hàng nháp</a></li>
+          <li><a href="#">Trả hàng</a></li>
+          <li><a href="#">Đơn chưa hoàn tất</a></li>
+        </ul>
+      </li> -->
+    <li>
+      <a href="#"><i class="fa-solid fa-truck-fast"></i>Vận chuyển</a>
+      <ul class="submenu">
+        <li><a href="#">Tổng quan</a></li>
+        <li><a href="#">Vận đơn</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#"><i class="fas fa-box"></i>Sản phẩm</a>
+      <ul class="submenu">
         <li>
-            <a href="#" class="menu-toggle"><i class="fa-solid fa-file-invoice"></i> Đơn hàng</a>
-            <ul>
-                <li><a href="#" onclick="showSection('/Front_end/html/order/orderList')"> Danh sách đơn hàng</a></li>
-            </ul>
+          <a href="../product/productList.html">Danh sách sản phẩm</a>
         </li>
         <li>
-            <a href="#" class="menu-toggle"><i class="fas fa-box"></i> Sản phẩm</a>
-            <ul>
-                <li><a href="#" onclick="showSection('/Front_end/html/product/productList')"> Danh sách sản phẩm</a></li>
-                <li><a href="#" onclick="showSection('/Front_end/html/product/categoryList')"> Danh mục sản phẩm</a></li>
-            </ul>
+          <a href="../product/group/groupList.html">Nhóm sản phẩm</a>
+        </li>
+      </ul>
+    </li>
+
+    <li>
+      <a href="#"
+        ><i class="fa-solid fa-arrow-right-arrow-left"></i>Nhập - xuất</a
+      >
+      <ul class="submenu">
+        <li>
+          <a href="../receipt/receiptList.html">Phiếu nhập</a>
+        </li>
+        <li><a href="../export/exportList.html">Phiếu xuất</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#"><i class="fas fa-warehouse"></i>Quản lý kho</a>
+      <ul class="submenu">
+        <li>
+          <a href="../warehouse/inventory.html">Tồn kho</a>
         </li>
         <li>
-            <a href="#" class="menu-toggle"><i class="fas fa-warehouse"></i> Quản lý kho</a>
-            <ul>
-                <li><a href="#" onclick="showSection('/Front_end/html/warehouse/inventory')"> Tồn kho</a></li>
-                <li><a href="#" onclick="showSection('/Front_end/html/product/productList')"> Đặt hàng nhập</a></li>
-                <li><a href="#" onclick="showSection('/Front_end/html/product/productList')"> Nhập hàng</a></li>
-                <li><a href="#" onclick="showSection('/Front_end/html/product/productList')"> Trả hàng nhập</a></li>
-                <li><a href="#" onclick="showSection('/Front_end/html/product/productList')"> Nhà cung cấp</a></li>
-            </ul>
+          <a href="../order/createOrder.html">Đặt hàng nhập</a>
         </li>
-    </ul>
+        <li><a href="#">Nhập hàng</a></li>
+        <li><a href="#">Trả hàng nhập</a></li>
+        <li><a href="../supplier/supplierList.html">Nhà cung cấp</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#"><i class="fa-solid fa-user"></i>Khách hàng</a>
+      <ul class="submenu">
+        <li><a href="#">Khách hàng</a></li>
+        <li><a href="#">Nhóm khách hàng</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#"><i class="fa-solid fa-file-invoice-dollar"></i>Kiểm kê</a>
+    </li>
+  </ul>
 </div>
+<script src="../../javascript/elements/sidebar.js"></script>

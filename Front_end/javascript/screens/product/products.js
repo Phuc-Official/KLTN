@@ -108,32 +108,6 @@ async function addProduct() {
 //   }
 // }
 
-async function fetchProducts() {
-  try {
-    const response = await fetch("http://localhost:3000/api/sanpham");
-    const products = await response.json();
-
-    const container = document.querySelector("#sanpham-container tbody");
-    container.innerHTML = ""; // Xóa nội dung cũ
-
-    products.forEach((product) => {
-      const row = document.createElement("tr");
-      row.innerHTML = `
-          <td>${product.MaSanPham}</td>
-          <td>${product.TenSanPham}</td>
-          <td>${product.TenNhom || " "}</td> 
-          <td>${product.SoLuongTon || " "}</td>
-      `;
-      row.addEventListener("click", () => {
-        viewProductDetails(product.MaSanPham);
-      });
-      container.appendChild(row);
-    });
-  } catch (error) {
-    console.error("Lỗi khi tải sản phẩm:", error);
-  }
-}
-
 async function loadGroups() {
   try {
     const response = await fetch("http://localhost:3000/api/nhomsanpham");
@@ -150,6 +124,7 @@ async function loadGroups() {
     console.error("Lỗi khi tải đơn vị tính:", error);
   }
 }
+
 function formatCurrency(value) {
   // Chuyển đổi giá thành chuỗi, loại bỏ các ký tự không phải số, sau đó định dạng
   return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."); // Thêm dấu chấm
@@ -164,7 +139,7 @@ function formatPriceInput() {
   }
 }
 
-fetchProducts();
+// fetchProducts();
 loadGroups();
 // Gọi hàm khi trang được tải
 document.addEventListener("DOMContentLoaded", () => {

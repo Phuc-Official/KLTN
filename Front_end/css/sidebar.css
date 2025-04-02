@@ -66,7 +66,7 @@
 /* Khoảng cách cho menu con */
 .sidebar ul li ul {
   margin-left: 24px; /* Khoảng cách từ bên trái cho menu con */
-  padding: 10px 0;
+  margin-top: 15px;
 }
 
 .sidebar ul li ul li {
@@ -102,6 +102,10 @@
 }
 /* Màu nền cho menu lớn đang được chọn */
 .sidebar ul li.active {
-  background: #1e293b; /* Màu nền cho menu lớn đang chọn */
-  color: #1e293b; /* Thay đổi màu chữ cho menu lớn đang chọn */
+  background: #334155; /* Màu nền cho menu lớn */
+  color: #ffd700; /* Màu chữ cho menu lớn */
+}
+.active-submenu {
+  background-color: #007bff; /* Màu nền */
+  color: #ffffff; /* Màu chữ */
 }

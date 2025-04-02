@@ -1,9 +1,23 @@
 let selectedProductIds = new Set();
+let productSelectCount = {};
+let unitOfMeasurements = []; // Biến toàn cục để lưu danh sách đơn vị tính
 const today = new Date().toISOString().split("T")[0];
 
 // Hàm quay về trang trước
 function cancel() {
   window.history.back();
+}
+
+async function fetchUnitOfMeasurements() {
+  try {
+    const response = await fetch("http://localhost:3000/api/donvitinh");
+    if (!response.ok) {
+      throw new Error("Không thể tải danh sách đơn vị tính.");
+    }
+    unitOfMeasurements = await response.json(); // Lưu trữ đơn vị tính vào mảng
+  } catch (error) {
+    console.error("Lỗi khi tải đơn vị tính:", error);
+  }
 }
 
 // Hàm chuyển hướng đến trang chi tiết phiếu nhập
@@ -40,10 +54,12 @@ function generateNextReceiptId(maxId) {
 async function addReceipt() {
   const receipt = getReceiptDetailsFromForm();
 
-  console.log("Dữ liệu phiếu nhập:", receipt); // Log dữ liệu phiếu nhập
+  if (!receipt) {
+    alert("Vui lòng điền đầy đủ thông tin phiếu nhập.");
+    return;
+  }
 
   try {
-    // Thêm phiếu nhập
     const response = await fetch("http://localhost:3000/api/phieunhap", {
       method: "POST",
       headers: {
@@ -54,7 +70,6 @@ async function addReceipt() {
 
     if (!response.ok) {
       const errorData = await response.json();
-      console.error("Lỗi khi thêm phiếu nhập:", errorData);
       throw new Error(
         `Không thể thêm phiếu nhập: ${errorData.message || response.statusText}`
       );
@@ -62,54 +77,44 @@ async function addReceipt() {
 
     const result = await response.json();
     const receiptId = result.MaPhieuNhap;
-    if (!receiptId) {
-      throw new Error("Mã phiếu nhập không được trả về.");
-    }
 
-    // Cập nhật số lượng tồn kho cho từng sản phẩm đã chọn
-    const productPromises = Array.from(selectedProductIds)
-      .map((MaSanPham) => {
-        const product = window.productsList.find(
-          (p) => p.MaSanPham === MaSanPham
-        );
-        if (product) {
-          const quantity =
-            parseInt(
-              document.getElementById(`${product.MaSanPham}-quantity`).value,
-              10
-            ) || 1;
+    // Cập nhật chi tiết phiếu nhập cho từng sản phẩm
+    const productPromises = selectedProducts.map(async (productInfo) => {
+      const productDetails = {
+        MaPhieuNhap: receiptId,
+        MaSanPham: productInfo.MaSanPham,
+        SoLuong: productInfo.quantity,
+        GiaSanPham: productInfo.price,
+        MaDonVi: productInfo.MaDonVi,
+      };
 
-          // Tạo chi tiết phiếu nhập
-          const productDetails = {
-            MaPhieuNhap: receiptId,
-            MaSanPham: product.MaSanPham,
-            SoLuong: quantity, // Số lượng cho chi tiết phiếu nhập
-            GiaSanPham: product.GiaSanPham || 0,
-          };
+      // Log chi tiết sản phẩm trước khi thêm
+      console.log("Thêm chi tiết phiếu nhập cho sản phẩm:", productDetails);
 
-          console.log("Dữ liệu chi tiết phiếu nhập:", productDetails);
-
-          // Gửi yêu cầu thêm chi tiết phiếu nhập
-          return fetch("http://localhost:3000/api/chitietphieunhap", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(productDetails),
-          }).then(() => {
-            // Cập nhật số lượng tồn kho trong danh sách sản phẩm
-            updateProductStock(product.MaSanPham, quantity); // Cộng số lượng tồn kho
-          });
+      // Gửi yêu cầu thêm chi tiết phiếu nhập
+      const detailResponse = await fetch(
+        "http://localhost:3000/api/chitietphieunhap",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(productDetails),
         }
-      })
-      .filter(Boolean);
+      );
+
+      if (!detailResponse.ok) {
+        const errorData = await detailResponse.json();
+        throw new Error(
+          `Không thể thêm chi tiết phiếu nhập: ${errorData.message}`
+        );
+      }
+    });
 
     await Promise.all(productPromises);
-    console.log("Tất cả chi tiết phiếu nhập đã được thêm thành công.");
-
     alert("Phiếu nhập và sản phẩm đã được thêm thành công.");
     document.getElementById("receipt-form").reset();
-    selectedProductIds.clear();
+    selectedProducts = [];
     updateSelectedProducts();
   } catch (error) {
     console.error("Lỗi khi thêm phiếu nhập:", error);
@@ -117,43 +122,41 @@ async function addReceipt() {
   }
 }
 
-// Hàm cập nhật số lượng tồn kho
-function updateProductStock(productId, change) {
-  const product = window.productsList.find((p) => p.MaSanPham === productId);
-  if (product) {
-    // Nếu SoLuongTon là null, gán giá trị mặc định là 0
-    product.SoLuongTon = (product.SoLuongTon || 0) + change; // Cộng số lượng tồn
-    console.log(
-      `Số lượng tồn kho của sản phẩm ${productId} đã được cập nhật: ${product.SoLuongTon}`
-    );
-  }
-}
-
 // Hàm lấy thông tin phiếu nhập từ form
 function getReceiptDetailsFromForm() {
-  const selectedProducts = Array.from(selectedProductIds);
-
-  if (!Array.isArray(selectedProducts) || selectedProducts.length === 0) {
+  // Kiểm tra xem có sản phẩm nào đã được chọn không
+  if (selectedProducts.length === 0) {
     console.error("Không có sản phẩm nào được chọn.");
+    return null; // Trả về null nếu không có sản phẩm nào
   }
 
-  console.log(selectedProducts);
+  const receiptId = document.getElementById("receipt-id").value.trim();
+  const supplierId = document.getElementById("supplier").value.trim();
+  const employeeId = document.getElementById("employee").value.trim();
+  const dateCreated = document.getElementById("date-create").value.trim();
+  const description = document.getElementById("description").value.trim();
+
+  // Kiểm tra tất cả các trường có giá trị hợp lệ
+  if (!receiptId || !supplierId || !employeeId || !dateCreated) {
+    console.error("Thiếu thông tin cần thiết.");
+    return null; // Trả về null nếu thiếu thông tin
+  }
+
   return {
-    MaPhieuNhap: document.getElementById("receipt-id").value || "",
-    MaNhaCungCap: document.getElementById("supplier").value || "",
-    MaNhanVien: document.getElementById("employee").value || "",
-    NgayNhap: document.getElementById("date-create").value || "",
-    MoTa: document.getElementById("description").value || "",
-    TongGiaTri: calculateTotalValue(),
-    // MaSanPham: selectedProducts,
+    MaPhieuNhap: receiptId,
+    MaNhaCungCap: supplierId,
+    MaNhanVien: employeeId,
+    NgayNhap: dateCreated,
+    MoTa: description,
+    TongGiaTri: calculateTotalValue(), // Tính tổng giá trị
   };
 }
 
 // Hàm tính tổng giá trị phiếu nhập
 function calculateTotalValue() {
-  const products = getProductsFromForm();
-  return products.reduce(
-    (total, product) => total + product.GiaSanPham * product.SoLuong,
+  return selectedProducts.reduce(
+    (total, productInfo) =>
+      total + (productInfo.price * productInfo.quantity || 0),
     0
   );
 }
@@ -328,30 +331,22 @@ function displayFilteredProducts(filteredProducts) {
 }
 
 // Hàm chọn sản phẩm
+let selectedProducts = []; // Mảng để lưu trữ thông tin sản phẩm đã chọn
+
 function selectProduct(product) {
-  const productId = product.MaSanPham;
+  const productInfo = {
+    uniqueId: `${product.MaSanPham}-${selectedProducts.length + 1}`, // Đảm bảo uniqueId là duy nhất
+    MaSanPham: product.MaSanPham,
+    quantity: 1,
+    MaDonVi: product.MaDonVi, // Đơn vị được chọn
+    price: product.GiaSanPham, // Giá được chọn
+  };
 
-  // Nếu sản phẩm đã được chọn, bỏ chọn
-  if (selectedProductIds.has(productId)) {
-    selectedProductIds.delete(productId);
-  } else {
-    selectedProductIds.add(productId);
-  }
-
-  updateSelectedProducts();
+  // Thêm sản phẩm vào danh sách đã chọn
+  selectedProducts.push(productInfo);
+  updateSelectedProducts(); // Cập nhật giao diện hiển thị danh sách sản phẩm đã chọn
   filterProducts(); // Cập nhật lại danh sách sản phẩm
   document.getElementById("product-list").style.display = "none"; // Ẩn danh sách sản phẩm
-}
-
-let unitOfMeasurements = []; // Biến toàn cục để lưu danh sách đơn vị tính
-
-async function fetchUnitOfMeasurements() {
-  try {
-    const response = await fetch("http://localhost:3000/api/donvitinh");
-    unitOfMeasurements = await response.json(); // Lưu trữ đơn vị tính vào mảng
-  } catch (error) {
-    console.error("Lỗi khi tải đơn vị tính:", error);
-  }
 }
 
 // Cập nhật thông tin sản phẩm đã chọn
@@ -379,40 +374,61 @@ function updateSelectedProducts() {
 
   let totalValue = 0; // Biến lưu tổng giá trị
 
-  selectedProductIds.forEach((productId) => {
-    const product = window.productsList.find((p) => p.MaSanPham === productId);
+  selectedProducts.forEach((productInfo) => {
+    const product = window.productsList.find(
+      (p) => p.MaSanPham === productInfo.MaSanPham
+    );
     if (product) {
-      const quantity = product.quantity || 1; // Số lượng
-      const price = product.GiaSanPham || 0; // Giá sản phẩm
+      const quantity = productInfo.quantity; // Lấy số lượng từ thông tin sản phẩm
+      const price = productInfo.price; // Lấy giá từ thông tin sản phẩm
       const totalPrice = price * quantity; // Tính thành tiền
 
       totalValue += totalPrice; // Cộng dồn vào tổng giá trị
-
-      // Tìm tên đơn vị tính tương ứng
-      const unit = unitOfMeasurements.find(
-        (u) => u.MaDonVi === product.MaDonVi
-      );
-      const unitName = unit ? unit.TenDonVi : "Không tìm thấy"; // Lấy tên đơn vị hoặc thông báo không tìm thấy
 
       const row = document.createElement("tr");
       row.innerHTML = `
               <td>${index++}</td>
               <td>${product.MaSanPham}</td>
               <td>${product.TenSanPham}</td>
-              <td>${unitName}</td>
+              <td>
+                  <select id="${
+                    productInfo.uniqueId
+                  }-unit" onchange="updateUnit('${
+        productInfo.uniqueId
+      }', this.value)">
+                    <option value="" disabled ${
+                      !productInfo.MaDonVi ? "selected" : ""
+                    }>Chọn đơn vị</option>
+                    ${unitOfMeasurements
+                      .map(
+                        (unit) => `
+                        <option value="${unit.MaDonVi}" ${
+                          unit.MaDonVi === productInfo.MaDonVi ? "selected" : ""
+                        }>${unit.TenDonVi}</option>
+                      `
+                      )
+                      .join("")}
+                  </select>
+              </td>
               <td>
                   <input type="number" id="${
-                    product.MaSanPham
+                    productInfo.uniqueId
                   }-quantity" value="${quantity}" min="1" onchange="setQuantity('${
-        product.MaSanPham
+        productInfo.uniqueId
       }', this.value)" />
               </td>
-              <td>${price.toLocaleString()} đ</td>
+              <td>
+                  <input type="number" id="${
+                    productInfo.uniqueId
+                  }-price" value="${price}" min="0" onchange="updatePrice('${
+        productInfo.uniqueId
+      }', this.value)" />
+              </td>
               <td id="${
-                product.MaSanPham
+                productInfo.uniqueId
               }-total">${totalPrice.toLocaleString()} đ</td>
               <td><button onclick="removeProduct('${
-                product.MaSanPham
+                productInfo.uniqueId
               }')">Xóa</button></td>
           `;
       productTable.querySelector("tbody").appendChild(row);
@@ -445,32 +461,62 @@ function updateQuantity(productId, change) {
 }
 
 // Hàm thiết lập số lượng từ ô nhập
-function setQuantity(productId, value) {
-  const product = window.productsList.find((p) => p.MaSanPham === productId);
-  if (product) {
+function updateUnit(uniqueId, unitId) {
+  const productInfo = selectedProducts.find((p) => p.uniqueId === uniqueId);
+  if (productInfo) {
+    productInfo.MaDonVi = unitId; // Cập nhật mã đơn vị
+    updateSelectedProducts(); // Cập nhật bảng
+  }
+}
+
+function setQuantity(uniqueId, value) {
+  const productInfo = selectedProducts.find((p) => p.uniqueId === uniqueId);
+  if (productInfo) {
     const quantity = Math.max(1, parseInt(value, 10)); // Đảm bảo số lượng không âm
-    product.quantity = quantity;
+    productInfo.quantity = quantity; // Cập nhật số lượng
 
     // Cập nhật lại thành tiền
-    const totalPrice = product.GiaSanPham * quantity;
-    document.getElementById(`${productId}-total`).textContent =
+    const totalPrice = productInfo.price * quantity;
+    document.getElementById(`${productInfo.MaSanPham}-total`).textContent =
       totalPrice.toLocaleString() + " đ";
 
-    // Cập nhật lại tổng giá trị
-    updateSelectedProducts();
+    updateSelectedProducts(); // Cập nhật lại bảng
+  }
+}
+
+function updatePrice(uniqueId, value) {
+  const productInfo = selectedProducts.find((p) => p.uniqueId === uniqueId);
+  if (productInfo) {
+    const price = Math.max(0, parseFloat(value)); // Đảm bảo giá không âm
+    productInfo.price = price; // Cập nhật giá
+
+    // Cập nhật lại thành tiền
+    const totalPrice = price * productInfo.quantity;
+    document.getElementById(`${uniqueId}-total`).textContent =
+      totalPrice.toLocaleString() + " đ";
+
+    // Cập nhật tổng giá trị vào phiếu nhập
+    const totalValue = calculateTotalValue();
+    document.getElementById(
+      "total-price"
+    ).textContent = `Tổng giá trị: ${totalValue.toLocaleString()} đ`;
+
+    updateSelectedProducts(); // Cập nhật lại bảng
   }
 }
 
 // Hàm xóa sản phẩm
-function removeProduct(productId) {
-  selectedProductIds.delete(productId);
+function removeProduct(uniqueId) {
+  // Tìm và xóa sản phẩm khỏi danh sách đã chọn
+  selectedProducts = selectedProducts.filter((p) => p.uniqueId !== uniqueId);
+
+  // Cập nhật lại giao diện hiển thị sản phẩm đã chọn
   updateSelectedProducts();
-  filterProducts(); // Cập nhật danh sách sản phẩm
 }
 
 // Khởi tạo các hàm khi trang được tải
 document.addEventListener("DOMContentLoaded", () => {
-  fetchReceipts();
+  // fetchReceipts();
   loadSuppliers();
   fetchUnitOfMeasurements();
   suggestNextReceiptId(); // Gợi ý mã phiếu nhập khi trang tải

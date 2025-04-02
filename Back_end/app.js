@@ -8,6 +8,8 @@ const supplierRouter = require("./routes/supplier.route");
 const groupRouter = require("./routes/group.route");
 const receiptRouter = require("./routes/receipt.route");
 const receiptDetailRouter = require("./routes/receiptDetail.route");
+const exportRouter = require("./routes/export.route");
+const exportDetailRouter = require("./routes/exportDetail.route");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -47,6 +49,8 @@ app.use(supplierRouter);
 app.use(groupRouter);
 app.use(receiptRouter);
 app.use(receiptDetailRouter);
+app.use(exportRouter);
+app.use(exportDetailRouter);
 
 // Khởi động server
 app.listen(PORT, () => {

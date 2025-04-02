@@ -1,4 +1,3 @@
-// script.js
 document.addEventListener("DOMContentLoaded", function () {
   // Ẩn tất cả các submenu khi trang được tải
   document.querySelectorAll(".submenu").forEach((submenu) => {
@@ -26,12 +25,6 @@ document.addEventListener("DOMContentLoaded", function () {
       } else {
         submenu.style.display = "block"; // Hiển thị submenu
         this.parentElement.classList.add("active"); // Thêm lớp active
-
-        // Mở submenu đầu tiên nếu có
-        const firstSubmenuItem = submenu.querySelector("li");
-        if (firstSubmenuItem) {
-          firstSubmenuItem.classList.add("active"); // Đánh dấu submenu đầu tiên là active
-        }
       }
     });
   });
@@ -43,11 +36,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // Bỏ lớp active khỏi tất cả submenu
       document.querySelectorAll(".sidebar ul li ul li").forEach((item) => {
-        item.classList.remove("active");
+        item.classList.remove("active"); // Bỏ lớp active khỏi submenu
       });
 
       // Thêm lớp active cho submenu đang được chọn
       this.parentElement.classList.add("active");
+
+      // Cập nhật lớp active cho menu cha
+      const parentMenu = this.closest("ul").previousElementSibling; // Lấy menu cha
+      if (parentMenu) {
+        parentMenu.parentElement.classList.add("active"); // Thêm lớp active cho menu cha
+      }
     });
   });
 
@@ -60,5 +59,20 @@ document.addEventListener("DOMContentLoaded", function () {
     const submenu = warehouseMenu.nextElementSibling;
     submenu.style.display = "block"; // Hiển thị submenu của Quản lý kho
     warehouseMenu.parentElement.classList.add("active"); // Thêm lớp active cho menu lớn
+  }
+
+  // Khôi phục trạng thái menu từ localStorage
+  const activeMenu = localStorage.getItem("activeMenu");
+  if (activeMenu) {
+    const menuLink = [
+      ...document.querySelectorAll(".sidebar > ul > li > a"),
+    ].find((link) => link.innerText === activeMenu);
+    if (menuLink) {
+      const submenu = menuLink.nextElementSibling;
+      if (submenu) {
+        submenu.style.display = "block"; // Hiển thị submenu
+        menuLink.parentElement.classList.add("active"); // Thêm lớp active
+      }
+    }
   }
 });

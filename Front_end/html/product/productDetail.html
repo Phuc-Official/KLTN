@@ -24,13 +24,59 @@
           </div>
           <div class="main-content">
             <section class="form-container" id="product-details">
-              <!-- Chi tiết sản phẩm sẽ được hiển thị ở đây -->
+              <div class="details-container">
+                <h3 id="product-name"></h3>
+                <div class="input-row">
+                  <div class="input-group">
+                    <label for="sku">Mã sản phẩm:</label>
+                    <input type="text" id="product-id" />
+                  </div>
+                  <div class="input-group">
+                    <label for="type">Loại sản phẩm:</label>
+                    <input type="text" id="type" />
+                  </div>
+                </div>
+                <div class="input-row">
+                  <div class="input-group">
+                    <label for="unit">Đơn vị tính:</label>
+                    <select id="unit" onchange="updateConversionRate(this)">
+                      <option value="" disabled selected>Chọn đơn vị</option>
+                    </select>
+                  </div>
+                  <div class="input-group">
+                    <label for="converted-stock-quantity">Số lượng tồn:</label>
+                    <input
+                      type="number"
+                      id="converted-stock-quantity"
+                      min="0"
+                      required
+                    />
+                  </div>
+                </div>
+                <div class="input-row">
+                  <div class="input-group">
+                    <label for="conversion-rate">Tỷ lệ quy đổi:</label>
+                    <input type="text" id="conversion-rate" value="" readonly />
+                  </div>
+                  <div class="input-group">
+                    <label for="converted-stock">Số lượng tồn quy đổi:</label>
+                    <input type="text" id="converted-stock" value="" readonly />
+                  </div>
+                </div>
+                <div class="input-row">
+                  <div class="input-group">
+                    <label for="weight">Trọng lượng:</label>
+                    <input type="text" id="weight" />
+                  </div>
+                </div>
+                <label for="description">Mô tả sản phẩm:</label>
+                <textarea id="description" rows="3"></textarea>
+              </div>
             </section>
             <aside class="side-panel">
               <h3>Thông tin khác</h3>
               <div class="info-item">
-                <p>Ảnh sản phẩm</p>
-                <button class="upload-button">Thêm ảnh</button>
+                <!-- Thêm thông tin khác nếu cần -->
               </div>
             </aside>
           </div>
@@ -38,106 +84,6 @@
       </main>
     </div>
 
-    <script>
-      async function fetchProductDetails() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const maSanPham = urlParams.get("id");
-
-        try {
-          const response = await fetch(
-            `http://localhost:3000/api/sanpham/${maSanPham}`
-          );
-
-          // Kiểm tra nếu phản hồi không thành công
-          if (!response.ok) {
-            const errorText = await response.text();
-            console.error("Lỗi từ server:", errorText);
-            throw new Error("Không thể tải chi tiết sản phẩm.");
-          }
-
-          const product = await response.json(); // Phân tích cú pháp JSON
-          const detailsContainer = document.getElementById("product-details");
-          detailsContainer.innerHTML = `
-                  <div class="details-container">
-                      <h3>${product.TenSanPham}</h3>
-                      <div class="input-row">
-                          <div class="input-group">
-                              <label for="sku">Mã sản phẩm:</label>
-                      <input type="text" id="product-id" value="${
-                        product.MaSanPham
-                      }" />
-                          </div>
-                          <div class="input-group">
-                              <label for="converted-stock-quantity">Loại sản phẩm:</label>
-                              <input type="text" id="converted-stock-quantity" value="${
-                                product.TenNhom
-                              }" />
-                          </div>
-                      </div>
-
-                      <div class="input-row">
-                          <div class="input-group">
-                              <label for="unit">Đơn vị tính:</label>
-                              <input type="text" id="unit" value="${
-                                product.TenDonVi
-                              }" />
-                          </div>
-                          <div class="input-group">
-                              <label for="converted-stock-quantity">Số lượng tồn:</label>
-                              <input type="text" id="converted-stock-quantity" value="${
-                                product.SoLuongTon
-                              }" />
-                          </div>
-                      </div>
-
-                      <div class="input-row">
-                          <div class="input-group">
-                              <label for="conversion-rate">Tỷ lệ quy đổi:</label>
-                      <input  type="text" id="conversion-rate" value="${
-                        product.TyleQuyDoi
-                      }" disabled/>   
-                          </div>
-                          <div class="input-group">
-                             
-                          </div>
-                      </div>
-                                                            
-                      <div class="input-row">
-                          <div class="input-group">
-                              <label for="weight">Trọng lượng:</label>
-                      <input type="text" id="weight" value="${
-                        product.TrongLuong
-                      }" />
-                          </div>
-                          <div class="input-group">
-                        <label for="price">Giá sản phẩm:</label>
-                        <input type="text" id="price" value="${formatCurrency(
-                          product.GiaSanPham
-                        )}" oninput="this.value = formatInput(this.value)" />
-                    </div>
-                  </div>
-
-                      <label for="description">Mô tả sản phẩm:</label>
-      <textarea id="description" rows="3" >${product.MoTaSanPham}</textarea>
-                  </div>
-              `;
-        } catch (error) {
-          console.error("Lỗi khi tải chi tiết sản phẩm:", error);
-          document.getElementById("product-details").innerHTML =
-            "<p>Không thể tải chi tiết sản phẩm.</p>";
-        }
-      }
-
-      fetchProductDetails(); // Gọi hàm khi trang được tải
-
-      function cancel() {
-        // Quay về trang trước
-        window.history.back();
-      }
-      function formatCurrency(value) {
-        // Chuyển đổi giá thành chuỗi, loại bỏ các ký tự không phải số, sau đó định dạng
-        return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."); // Thêm dấu chấm
-      }
-    </script>
+    <script src="../../javascript/screens/product/productDetail.js"></script>
   </body>
 </html>

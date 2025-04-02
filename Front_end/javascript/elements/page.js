@@ -1,8 +1,10 @@
 let currentPage = 1;
 const productsPerPage = 10;
-const receiptsPerPage = 10; // Thay đổi số lượng phiếu nhập mỗi trang
+const receiptsPerPage = 10; // Số lượng phiếu nhập mỗi trang
+const exportsPerPage = 10; // Số lượng phiếu xuất mỗi trang
 let products = []; // Mảng chứa tất cả sản phẩm
 let receipts = []; // Mảng chứa tất cả phiếu nhập
+let exports = []; // Mảng chứa tất cả phiếu xuất
 
 async function fetchProducts() {
   try {
@@ -24,14 +26,29 @@ async function fetchReceipts() {
   }
 }
 
-// Hàm để hiển thị sản phẩm hoặc phiếu nhập theo trang
+async function fetchExports() {
+  try {
+    const response = await fetch("http://localhost:3000/api/phieuxuat");
+    exports = await response.json(); // Lưu trữ phiếu xuất vào mảng
+    displayItems("export"); // Gọi để hiển thị phiếu xuất sau khi lấy được
+  } catch (error) {
+    console.error("Lỗi khi tải phiếu xuất:", error);
+  }
+}
+
+// Hàm để hiển thị sản phẩm, phiếu nhập hoặc phiếu xuất theo trang
 function displayItems(type) {
-  console.log("Displaying items for type:", type); // Kiểm tra loại
   const container = document.querySelector(`#${type}-container tbody`);
   container.innerHTML = ""; // Xóa nội dung cũ
 
-  const items = type === "product" ? products : receipts; // Chọn mảng dựa trên loại
-  const itemsPerPage = type === "product" ? productsPerPage : receiptsPerPage; // Số lượng trên mỗi trang
+  const items =
+    type === "product" ? products : type === "receipt" ? receipts : exports; // Chọn mảng dựa trên loại
+  const itemsPerPage =
+    type === "product"
+      ? productsPerPage
+      : type === "receipt"
+      ? receiptsPerPage
+      : exportsPerPage; // Số lượng trên mỗi trang
 
   const start = (currentPage - 1) * itemsPerPage;
   const end = start + itemsPerPage;
@@ -45,20 +62,29 @@ function displayItems(type) {
         <td>${item.MaSanPham}</td>
         <td>${item.TenSanPham}</td>
         <td>${item.TenNhom || ""}</td>
-        <td>${item.SoLuongTon}</td>
+        <td>${item.SoLuongTon !== null ? item.SoLuongTon : 0}</td>
     `
-        : `
+        : type === "receipt"
+        ? `
         <td>${item.MaPhieuNhap}</td>
         <td>${item.TenNhaCungCap}</td>
         <td>${item.TenNhanVien || ""}</td>
         <td>${formatDate(item.NgayNhap)}</td>
+    `
+        : `
+        <td>${item.MaPhieuXuat}</td>
+        <td>${item.TenKhachHang}</td>
+        <td>${item.TenNhanVien || ""}</td>
+        <td>${formatDate(item.NgayXuat)}</td>
     `;
 
     row.addEventListener("click", () => {
       if (type === "product") {
         viewProductDetails(item.MaSanPham);
-      } else {
+      } else if (type === "receipt") {
         viewReceiptDetails(item.MaPhieuNhap);
+      } else {
+        viewExportDetails(item.MaPhieuXuat); // Hàm hiển thị chi tiết phiếu xuất
       }
     });
     container.appendChild(row);
@@ -72,12 +98,16 @@ function updatePagination(type) {
   const pageNumbersContainer = document.getElementById("page-numbers");
   pageNumbersContainer.innerHTML = ""; // Xóa nội dung cũ
 
-  const items = type === "product" ? products : receipts; // Chọn mảng dựa trên loại
+  const items =
+    type === "product" ? products : type === "receipt" ? receipts : exports; // Chọn mảng dựa trên loại
   const totalPages = Math.ceil(
-    items.length / (type === "product" ? productsPerPage : receiptsPerPage)
+    items.length /
+      (type === "product"
+        ? productsPerPage
+        : type === "receipt"
+        ? receiptsPerPage
+        : exportsPerPage)
   );
-
-  console.log("Total pages for type:", type, totalPages); // Kiểm tra tổng số trang
 
   for (let i = 1; i <= totalPages; i++) {
     const pageButton = document.createElement("button");
@@ -85,7 +115,7 @@ function updatePagination(type) {
     pageButton.className = "page-button";
     pageButton.onclick = () => {
       currentPage = i;
-      displayItems(type); // Hiển thị sản phẩm hoặc phiếu nhập của trang đã chọn
+      displayItems(type); // Hiển thị sản phẩm, phiếu nhập hoặc phiếu xuất của trang đã chọn
     };
 
     // Đánh dấu nút hiện tại
@@ -111,17 +141,33 @@ function changePage(direction, type) {
   } else if (
     currentPage >
     Math.ceil(
-      (type === "product" ? products.length : receipts.length) /
-        (type === "product" ? productsPerPage : receiptsPerPage)
+      (type === "product"
+        ? products.length
+        : type === "receipt"
+        ? receipts.length
+        : exports.length) /
+        (type === "product"
+          ? productsPerPage
+          : type === "receipt"
+          ? receiptsPerPage
+          : exportsPerPage)
     )
   ) {
     currentPage = Math.ceil(
-      (type === "product" ? products.length : receipts.length) /
-        (type === "product" ? productsPerPage : receiptsPerPage)
+      (type === "product"
+        ? products.length
+        : type === "receipt"
+        ? receipts.length
+        : exports.length) /
+        (type === "product"
+          ? productsPerPage
+          : type === "receipt"
+          ? receiptsPerPage
+          : exportsPerPage)
     ); // Không cho phép vượt quá trang cuối
   }
 
-  displayItems(type); // Hiển thị sản phẩm hoặc phiếu nhập của trang đã chọn
+  displayItems(type); // Hiển thị sản phẩm, phiếu nhập hoặc phiếu xuất của trang đã chọn
   updatePagination(type); // Cập nhật trạng thái của các nút phân trang
 }
 
@@ -137,4 +183,5 @@ function formatDate(dateString) {
 document.addEventListener("DOMContentLoaded", () => {
   fetchProducts();
   fetchReceipts(); // Gọi để lấy phiếu nhập
+  fetchExports(); // Gọi để lấy phiếu xuất
 });
