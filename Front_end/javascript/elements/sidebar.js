@@ -7,8 +7,14 @@ document.addEventListener("DOMContentLoaded", function () {
   // Thêm sự kiện click cho các menu lớn
   document.querySelectorAll(".sidebar > ul > li > a").forEach((menuLink) => {
     menuLink.addEventListener("click", function (e) {
-      e.preventDefault(); // Ngăn chặn hành vi mặc định của liên kết
       const submenu = this.nextElementSibling;
+
+      // Nếu không có submenu, không ngăn chặn hành vi mặc định
+      if (!submenu) {
+        return; // Cho phép điều hướng đến href
+      }
+
+      e.preventDefault(); // Ngăn chặn hành vi mặc định của liên kết nếu có submenu
 
       // Đóng tất cả submenu khác
       document.querySelectorAll(".submenu").forEach((sub) => {

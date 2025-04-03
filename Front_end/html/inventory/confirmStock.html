@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Xác Nhận Kho - Danh Sách Sản Phẩm</title>
+
+    <link rel="stylesheet" href="../../css/createProduct.css" />
+    <link rel="stylesheet" href="../../css/sidebar.css" />
+    <link rel="stylesheet" href="../../css/receipt.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+  </head>
+  <body>
+    <header>
+      <button onclick="cancel()" class="button-cancel">Hủy</button>
+      <button id="confirm-button" type="button" class="confirm-button">
+        Xác nhận kiểm kê
+      </button>
+    </header>
+    <div class="container">
+      <main class="content">
+        <div class="main-section">
+          <div class="header-container">
+            <button id="back-button" onclick="cancel()" class="button-back">
+              <i class="fas fa-arrow-left"></i>
+            </button>
+          </div>
+          <div class="main-content">
+            <section class="form-container full-width">
+              <h3>Thông tin sản phẩm đã chọn</h3>
+              <div id="selected-products" class="selected-products">
+                <!-- Thông tin sản phẩm đã chọn sẽ được thêm vào đây -->
+              </div>
+            </section>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="../../javascript/screens/inventory/confirmStock.js"></script>
+  </body>
+</html>

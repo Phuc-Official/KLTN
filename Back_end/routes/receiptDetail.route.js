@@ -4,28 +4,6 @@ const sql = require("mssql");
 const receiptDetailRouter = new Router();
 
 // API để lấy tỷ lệ quy đổi theo mã đơn vị
-receiptDetailRouter.get("/api/donvitinh/:unitId", async (req, res) => {
-  const unitId = req.params.unitId;
-
-  try {
-    const pool = await sql.connect(req.app.get("dbConfig")); // Lấy config từ app
-    const request = new sql.Request(pool);
-    request.input("MaDonVi", sql.NVarChar, unitId);
-
-    const result = await request.query(
-      "SELECT TyLeQuyDoi FROM DonViTinh WHERE MaDonVi = @MaDonVi"
-    );
-
-    if (result.recordset.length > 0) {
-      res.json({ conversionRate: result.recordset[0].TyLeQuyDoi });
-    } else {
-      res.status(404).json({ message: "Không tìm thấy đơn vị tính." });
-    }
-  } catch (error) {
-    console.error("Lỗi:", error);
-    res.status(500).json({ message: "Lỗi khi lấy tỷ lệ quy đổi." });
-  }
-});
 
 // 1. Thêm chi tiết phiếu nhập
 receiptDetailRouter.post("/api/chitietphieunhap", async (req, res) => {
@@ -66,9 +44,8 @@ receiptDetailRouter.post("/api/chitietphieunhap", async (req, res) => {
     );
 
     // Gọi API lấy tỷ lệ quy đổi
-    const conversionRateResponse = await fetch(
-      `http://localhost:3000/api/donvitinh/${MaDonVi}`
-    );
+    const conversionRateResponse = await fetch();
+    `http://localhost:3000/api/donvitinh/${MaDonVi}`;
     const conversionRateData = await conversionRateResponse.json();
     const conversionRate = conversionRateData.conversionRate; // Lấy tỷ lệ quy đổi
 

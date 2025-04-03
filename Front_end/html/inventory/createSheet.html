@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quản lý kho - Thêm phiếu nhập</title>
+
+    <link rel="stylesheet" href="../../css/createProduct.css" />
+    <link rel="stylesheet" href="../../css/sidebar.css" />
+    <link rel="stylesheet" href="../../css/receipt.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+  </head>
+  <body>
+    <header>
+      <button onclick="cancel()" class="button-cancel">Hủy</button>
+      <button id="confirm" type="button" class="confirm">
+        Bắt đầu kiểm kê
+      </button>
+    </header>
+    <div class="container">
+      <main class="content">
+        <div class="main-section">
+          <div class="header-container">
+            <button id="back-button" onclick="cancel()" class="button-back">
+              <i class="fas fa-arrow-left"></i>
+            </button>
+            <h1 id="back-title">Tạo phiếu kiểm kê</h1>
+          </div>
+          <div class="main-content">
+            <section class="form-container full-width">
+              <h3>Thông tin phiếu kiểm kê</h3>
+              <form id="sheet-form">
+                <div class="input-row">
+                  <div class="input-group">
+                    <label for="sheet-id">Mã phiếu</label>
+                    <input
+                      type="text"
+                      id="sheet-id"
+                      placeholder="Nhập mã phiếu"
+                      required
+                    />
+                  </div>
+                  <div class="input-group">
+                    <label for="sheet-name">Tên phiếu</label>
+                    <input
+                      type="text"
+                      id="sheet-name"
+                      placeholder="Nhập tên phiếu"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div class="input-row">
+                  <div class="input-group">
+                    <label for="date-create">Ngày tạo</label>
+                    <input
+                      type="date"
+                      id="date-create"
+                      value="{{currentDate}}"
+                      required
+                    />
+                  </div>
+                  <div class="input-group">
+                    <label for="employee">Nhân viên</label>
+                    <select id="employee">
+                      <option value="" disabled selected>Chọn nhân viên</option>
+                    </select>
+                  </div>
+                </div>
+
+                <label>Chọn sản phẩm</label>
+                <input
+                  type="text"
+                  id="search-product"
+                  placeholder="Nhập mã sản phẩm hoặc tên sản phẩm"
+                />
+                <ul
+                  id="product-list"
+                  class="product-list"
+                  style="display: none"
+                >
+                  <!-- Danh sách sản phẩm sẽ được thêm vào đây -->
+                </ul>
+
+                <h3>Sản phẩm đã chọn:</h3>
+                <div id="selected-products" class="selected-products">
+                  <!-- Thông tin sản phẩm đã chọn sẽ được thêm vào đây -->
+                </div>
+
+                <div id="selected-products"></div>
+
+                <label for="description">Mô tả</label>
+                <textarea id="description" placeholder="Nhập mô tả"></textarea>
+              </form>
+            </section>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="../../javascript/screens/inventory/sheet.js"></script>
+
+    <!-- <script src="../../../javascript/screens/unit.js"></script> -->
+  </body>
+</html>

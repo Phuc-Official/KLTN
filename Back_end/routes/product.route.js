@@ -4,16 +4,16 @@ const sql = require("mssql"); // Import thư viện mssql
 const productRouter = new Router();
 
 // Endpoint để lấy danh sách đơn vị tính
-productRouter.get("/api/donvitinh", async (req, res) => {
-  try {
-    const sqlQuery = `SELECT * FROM DonViTinh`;
-    const result = await sql.query(sqlQuery);
-    res.json(result.recordset);
-  } catch (err) {
-    console.error("Lỗi khi lấy danh sách đơn vị tính:", err);
-    res.status(500).send("Lỗi khi truy vấn cơ sở dữ liệu");
-  }
-});
+// productRouter.get("/api/donvitinh", async (req, res) => {
+//   try {
+//     const sqlQuery = `SELECT * FROM DonViTinh`;
+//     const result = await sql.query(sqlQuery);
+//     res.json(result.recordset);
+//   } catch (err) {
+//     console.error("Lỗi khi lấy danh sách đơn vị tính:", err);
+//     res.status(500).send("Lỗi khi truy vấn cơ sở dữ liệu");
+//   }
+// });
 
 productRouter.get("/api/nhomsanpham", async (req, res) => {
   try {

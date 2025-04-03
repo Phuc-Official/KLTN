@@ -122,8 +122,8 @@ async function fetchReceiptDetails() {
       row.innerHTML = `
                 <td>${product.MaSanPham}</td>
                 <td>${productName}</td>
-                <td>${product.SoLuong}</td>
                 <td>${unitName}</td>
+                <td>${product.SoLuong}</td>          
                 <td>${product.GiaSanPham}</td>
             `;
       productList.appendChild(row);
