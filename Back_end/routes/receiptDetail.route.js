@@ -3,8 +3,6 @@ const sql = require("mssql");
 
 const receiptDetailRouter = new Router();
 
-// API để lấy tỷ lệ quy đổi theo mã đơn vị
-
 // 1. Thêm chi tiết phiếu nhập
 receiptDetailRouter.post("/api/chitietphieunhap", async (req, res) => {
   const { MaPhieuNhap, MaSanPham, SoLuong, GiaSanPham, MaDonVi } = req.body;
@@ -44,8 +42,9 @@ receiptDetailRouter.post("/api/chitietphieunhap", async (req, res) => {
     );
 
     // Gọi API lấy tỷ lệ quy đổi
-    const conversionRateResponse = await fetch();
-    `http://localhost:3000/api/donvitinh/${MaDonVi}`;
+    const conversionRateResponse = await fetch(
+      `http://localhost:3000/api/donvitinh/${MaDonVi}`
+    );
     const conversionRateData = await conversionRateResponse.json();
     const conversionRate = conversionRateData.conversionRate; // Lấy tỷ lệ quy đổi
 

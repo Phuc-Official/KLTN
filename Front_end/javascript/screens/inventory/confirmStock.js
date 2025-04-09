@@ -70,7 +70,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         row.innerHTML = `
                     <td>${product.MaSanPham}</td>
                     <td>${productDetails.TenSanPham || ""}</td>
-                    <td>${unitDetails ? unitDetails.TenDonVi : ""}</td>
+                    <td>${product ? product.MaDonVi : ""}</td>
                     <td>${product.quantity || ""}</td>
                     <td>
                         <input type="number" id="${

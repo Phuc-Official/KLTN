@@ -73,7 +73,8 @@ function updateConversionRate(selectElement) {
     const conversionRateInput = document.getElementById("conversion-rate");
     const convertedStockInput = document.getElementById("converted-stock");
 
-    conversionRateInput.value = conversionRate > 0 ? conversionRate : ""; // Cập nhật tỷ lệ quy đổi
+    // Cập nhật tỷ lệ quy đổi vào ô conversion-rate
+    conversionRateInput.value = conversionRate > 0 ? conversionRate : "";
 
     // Lấy số lượng tồn và đảm bảo nó là một số nguyên
     const originalStockValue = document.getElementById(
@@ -81,8 +82,8 @@ function updateConversionRate(selectElement) {
     ).value;
     const originalStock = parseInt(originalStockValue, 10);
 
-    if (isNaN(originalStock) || originalStock < 0) {
-      convertedStockInput.value = ""; // Đặt lại giá trị về chuỗi rỗng
+    if (isNaN(originalStock) || originalStock < 0 || conversionRate <= 0) {
+      convertedStockInput.value = ""; // Đặt lại giá trị về chuỗi rỗng nếu có lỗi
       return;
     }
 
@@ -90,7 +91,8 @@ function updateConversionRate(selectElement) {
     let convertedStock = originalStock / conversionRate;
     convertedStock = Math.floor(convertedStock); // Làm tròn xuống
 
-    convertedStockInput.value = convertedStock; // Cập nhật số lượng tồn quy đổi
+    // Cập nhật số lượng tồn quy đổi vào ô converted-stock
+    convertedStockInput.value = convertedStock;
   });
 }
 
@@ -103,7 +105,15 @@ async function getConversionRate(unitId) {
       throw new Error(`Không thể lấy tỷ lệ quy đổi cho mã đơn vị: ${unitId}`);
     }
     const data = await response.json();
-    return data.conversionRate; // Giả định rằng API trả về tỷ lệ quy đổi
+
+    // Kiểm tra xem có tỷ lệ quy đổi không
+    if (data.conversionRate === undefined) {
+      throw new Error(
+        `Tỷ lệ quy đổi không được xác định cho mã đơn vị: ${unitId}`
+      );
+    }
+
+    return data.conversionRate; // Trả về tỷ lệ quy đổi
   } catch (error) {
     console.error("Lỗi khi lấy tỷ lệ quy đổi:", error);
     return 1; // Trả về 1 nếu có lỗi

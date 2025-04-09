@@ -3,17 +3,16 @@ const sql = require("mssql"); // Import thư viện mssql
 
 const productRouter = new Router();
 
-// Endpoint để lấy danh sách đơn vị tính
-// productRouter.get("/api/donvitinh", async (req, res) => {
-//   try {
-//     const sqlQuery = `SELECT * FROM DonViTinh`;
-//     const result = await sql.query(sqlQuery);
-//     res.json(result.recordset);
-//   } catch (err) {
-//     console.error("Lỗi khi lấy danh sách đơn vị tính:", err);
-//     res.status(500).send("Lỗi khi truy vấn cơ sở dữ liệu");
-//   }
-// });
+productRouter.get("/api/donvitinh", async (req, res) => {
+  try {
+    const sqlQuery = `SELECT * FROM DonViTinh`;
+    const result = await sql.query(sqlQuery);
+    res.json(result.recordset);
+  } catch (err) {
+    console.error("Lỗi khi lấy danh sách đơn vị tính:", err);
+    res.status(500).send("Lỗi khi truy vấn cơ sở dữ liệu");
+  }
+});
 
 productRouter.get("/api/nhomsanpham", async (req, res) => {
   try {
@@ -136,8 +135,7 @@ productRouter.post("/api/sanpham", async (req, res) => {
 
 productRouter.put("/api/sanpham/:maSanPham", async (req, res) => {
   const maSanPham = req.params.maSanPham;
-  const { TenSanPham, MoTaSanPham, TrongLuong, DonViTinh, SoLuongTon, MaSKU } =
-    req.body;
+  const { TenSanPham, MoTaSanPham, TrongLuong, MaNhom, SoLuongTon } = req.body;
 
   try {
     const sqlQuery = `
@@ -145,9 +143,8 @@ productRouter.put("/api/sanpham/:maSanPham", async (req, res) => {
           SET TenSanPham = @TenSanPham,
               MoTaSanPham = @MoTaSanPham,
               TrongLuong = @TrongLuong,
-              DonViTinh = @DonViTinh,
+              MaNhom = @MaNhom
               SoLuongTon = @SoLuongTon,
-              DonViQuyDoi = @DonViQuyDoi
           WHERE MaSanPham = @maSanPham
       `;
 
@@ -156,9 +153,8 @@ productRouter.put("/api/sanpham/:maSanPham", async (req, res) => {
     request.input("TenSanPham", sql.NVarChar, TenSanPham);
     request.input("MoTaSanPham", sql.NVarChar, MoTaSanPham);
     request.input("TrongLuong", sql.Decimal, TrongLuong);
-    request.input("DonViTinh", sql.NVarChar, DonViTinh);
+    request.input("MaNhom", sql.Int, MaNhom);
     request.input("SoLuongTon", sql.Int, SoLuongTon);
-    request.input("DonViQuyDoi", sql.NVarChar, DonViQuyDoi);
 
     const result = await request.query(sqlQuery);
     if (result.rowsAffected[0] === 0) {
@@ -188,6 +184,33 @@ productRouter.delete("/api/sanpham/:maSanPham", async (req, res) => {
   } catch (err) {
     console.error("Lỗi khi xóa sản phẩm:", err);
     res.status(500).send("Lỗi khi xóa sản phẩm");
+  }
+});
+
+productRouter.put("/api/sanpham/:maSanPham/stock", async (req, res) => {
+  const maSanPham = req.params.maSanPham;
+  const { SoLuong } = req.body; // Số lượng cần cập nhật
+
+  try {
+    const sqlQuery = `
+      UPDATE SanPham
+      SET SoLuongTon = SoLuongTon + @SoLuong
+      WHERE MaSanPham = @maSanPham
+    `;
+
+    const request = new sql.Request();
+    request.input("maSanPham", sql.NVarChar, maSanPham);
+    request.input("SoLuong", sql.Int, SoLuong);
+
+    const result = await request.query(sqlQuery);
+    if (result.rowsAffected[0] === 0) {
+      return res.status(404).send("Sản phẩm không tìm thấy.");
+    }
+
+    res.json({ message: "Số lượng tồn đã được cập nhật thành công!" });
+  } catch (err) {
+    console.error("Lỗi khi cập nhật số lượng tồn:", err);
+    res.status(500).send("Lỗi khi cập nhật số lượng tồn");
   }
 });
 

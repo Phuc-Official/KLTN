@@ -42,8 +42,9 @@ exportDetailRouter.post("/api/chitietphieuxuat", async (req, res) => {
     );
 
     // Gọi API lấy tỷ lệ quy đổi
-    const conversionRateResponse = await fetch();
-    `http://localhost:3000/api/donvitinh/${MaDonVi}`;
+    const conversionRateResponse = await fetch(
+      `http://localhost:3000/api/donvitinh/${MaDonVi}`
+    );
     const conversionRateData = await conversionRateResponse.json();
     const conversionRate = conversionRateData.conversionRate; // Lấy tỷ lệ quy đổi
 
