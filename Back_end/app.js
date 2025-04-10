@@ -12,6 +12,8 @@ const exportRouter = require("./routes/export.route");
 const exportDetailRouter = require("./routes/exportDetail.route");
 const sheetRouter = require("./routes/sheet.route");
 const unitRouter = require("./routes/unit.route");
+const orderRouter = require("./routes/order.route");
+const orderDetailRouter = require("./routes/orderDetail.route");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -55,6 +57,8 @@ app.use(exportRouter);
 app.use(exportDetailRouter);
 app.use(sheetRouter);
 app.use(unitRouter);
+app.use(orderRouter);
+app.use(orderDetailRouter);
 
 // Khởi động server
 app.listen(PORT, () => {

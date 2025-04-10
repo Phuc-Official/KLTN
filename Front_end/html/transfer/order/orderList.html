@@ -57,6 +57,9 @@
           >
           <ul class="submenu">
             <li>
+              <a href="../order/orderList.html">Đặt hàng nhập</a>
+            </li>
+            <li>
               <a href="../receipt/receiptList.html">Phiếu nhập</a>
             </li>
             <li><a href="../export/exportList.html">Phiếu xuất</a></li>
@@ -95,10 +98,10 @@
     <div class="container">
       <main class="content">
         <div class="header-container">
-          <h1>Danh sách phiếu nhập</h1>
+          <h1>Danh sách phiếu đặt hàng</h1>
           <button id="add-button" class="create-button" onclick="create()">
             <i class="fa-solid fa-circle-plus"></i>
-            Tạo phiếu nhập
+            Tạo phiếu đặt hàng
           </button>
         </div>
         <div class="container_a">
@@ -109,7 +112,7 @@
           /> -->
 
           <div class="table">
-            <table id="receipt-container">
+            <table id="order-container">
               <thead>
                 <tr>
                   <th>Mã phiếu</th>
@@ -141,11 +144,16 @@
     <script>
       function create() {
         // Chuyển hướng đến trang tạo sản phẩm
-        window.location.href = "../receipt/createReceipt.html"; // Thay đổi thành URL của trang bạn muốn chuyển đến
+        window.location.href = "../order/createOrder.html"; // Thay đổi thành URL của trang bạn muốn chuyển đến
       }
     </script>
 
-    <script src="../../../javascript/screens/receipt/receipt.js"></script>
+    <!-- <script src="../../../javascript/screens/order/order.js"></script> -->
     <script src="../../../javascript/elements/page.js"></script>
+    <script>
+      function viewOrderDetails(orderId) {
+        window.location.href = `../order/orderDetail.html?id=${orderId}`;
+      }
+    </script>
   </body>
 </html>

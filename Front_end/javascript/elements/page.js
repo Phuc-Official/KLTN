@@ -1,13 +1,16 @@
 let currentPage = 1;
+let currentOrderPage = 1; // Biến cho trang đơn hàng
 const productsPerPage = 10;
 const receiptsPerPage = 10;
 const exportsPerPage = 10;
 const inventoriesPerPage = 10; // Số lượng phiếu kiểm kê mỗi trang
+const ordersPerPage = 10; // Số lượng đơn hàng mỗi trang
 
 let products = [];
 let receipts = [];
 let exports = [];
 let inventories = []; // Mảng chứa tất cả phiếu kiểm kê
+let orders = []; // Mảng chứa đơn hàng
 
 async function fetchProducts() {
   try {
@@ -15,7 +18,7 @@ async function fetchProducts() {
     products = await response.json();
     displayItems("product");
   } catch (error) {
-    console.error("Lỗi khi tải sản phẩm:", error);
+    // console.error("Lỗi khi tải sản phẩm:", error);
   }
 }
 
@@ -25,7 +28,7 @@ async function fetchReceipts() {
     receipts = await response.json();
     displayItems("receipt");
   } catch (error) {
-    console.error("Lỗi khi tải phiếu nhập:", error);
+    // console.error("Lỗi khi tải phiếu nhập:", error);
   }
 }
 
@@ -35,7 +38,7 @@ async function fetchExports() {
     exports = await response.json();
     displayItems("export");
   } catch (error) {
-    console.error("Lỗi khi tải phiếu xuất:", error);
+    // console.error("Lỗi khi tải phiếu xuất:", error);
   }
 }
 
@@ -45,11 +48,21 @@ async function fetchInventories() {
     inventories = await response.json();
     displayItems("inventory");
   } catch (error) {
-    console.error("Lỗi khi tải phiếu kiểm kê:", error);
+    // console.error("Lỗi khi tải phiếu kiểm kê:", error);
   }
 }
 
-// Hàm để hiển thị sản phẩm, phiếu nhập, phiếu xuất hoặc phiếu kiểm kê theo trang
+async function fetchOrders() {
+  try {
+    const response = await fetch("http://localhost:3000/api/donhang");
+    orders = await response.json();
+    displayItems("order"); // Hiển thị đơn hàng
+  } catch (error) {
+    // console.error("Lỗi khi tải đơn hàng:", error);
+  }
+}
+
+// Hàm để hiển thị sản phẩm, phiếu nhập, phiếu xuất, phiếu kiểm kê hoặc đơn hàng theo trang
 function displayItems(type) {
   const container = document.querySelector(`#${type}-container tbody`);
   container.innerHTML = ""; // Xóa nội dung cũ
@@ -61,7 +74,9 @@ function displayItems(type) {
       ? receipts
       : type === "export"
       ? exports
-      : inventories; // Chọn mảng dựa trên loại
+      : type === "inventory"
+      ? inventories
+      : orders; // Chọn mảng dựa trên loại
 
   const itemsPerPage =
     type === "product"
@@ -70,7 +85,9 @@ function displayItems(type) {
       ? receiptsPerPage
       : type === "export"
       ? exportsPerPage
-      : inventoriesPerPage; // Số lượng trên mỗi trang
+      : type === "inventory"
+      ? inventoriesPerPage
+      : ordersPerPage; // Số lượng trên mỗi trang
 
   const start = (currentPage - 1) * itemsPerPage;
   const end = start + itemsPerPage;
@@ -100,12 +117,18 @@ function displayItems(type) {
                 <td>${item.TenNhanVien || ""}</td>
                 <td>${formatDate(item.NgayXuat)}</td>
             `
-        : `
+        : type === "inventory"
+        ? `
                 <td>${item.MaPhieuKiemKe}</td>
                 <td>${item.TenPhieu || ""}</td>
                 <td>${item.TenNhanVien || ""}</td>
                 <td>${item.NgayTao ? formatDate(item.NgayTao) : ""}</td>
-
+            `
+        : `
+                <td>${item.MaDonHang}</td>
+                <td>${item.TenNhaCungCap}</td>
+                <td>${item.TenNhanVien}</td>
+                <td>${formatDate(item.NgayNhap)}</td>
             `;
 
     row.addEventListener("click", () => {
@@ -115,8 +138,10 @@ function displayItems(type) {
         viewReceiptDetails(item.MaPhieuNhap);
       } else if (type === "export") {
         viewExportDetails(item.MaPhieuXuat);
-      } else {
+      } else if (type === "inventory") {
         viewSheetDetails(item.MaPhieuKiemKe); // Hàm hiển thị chi tiết phiếu kiểm kê
+      } else {
+        viewOrderDetails(item.MaDonHang); // Hàm hiển thị chi tiết đơn hàng
       }
     });
     container.appendChild(row);
@@ -128,6 +153,7 @@ function displayItems(type) {
 // Cập nhật trạng thái các nút phân trang
 function updatePagination(type) {
   const pageNumbersContainer = document.getElementById("page-numbers");
+
   pageNumbersContainer.innerHTML = ""; // Xóa nội dung cũ
 
   const items =
@@ -137,8 +163,9 @@ function updatePagination(type) {
       ? receipts
       : type === "export"
       ? exports
-      : inventories; // Chọn mảng dựa trên loại
-
+      : type === "inventories"
+      ? inventories
+      : orders; // Chọn mảng dựa trên loại
   const totalPages = Math.ceil(
     items.length /
       (type === "product"
@@ -147,7 +174,9 @@ function updatePagination(type) {
         ? receiptsPerPage
         : type === "export"
         ? exportsPerPage
-        : inventoriesPerPage)
+        : type === "inventories"
+        ? inventoriesPerPage
+        : ordersPerPage)
   );
 
   for (let i = 1; i <= totalPages; i++) {
@@ -172,6 +201,46 @@ function updatePagination(type) {
   document.getElementById("next-page").disabled = currentPage === totalPages;
 }
 
+function changePage(direction, type) {
+  // Cập nhật trang hiện tại
+  currentPage += direction;
+
+  // Đảm bảo trang không vượt quá giới hạn
+  if (currentPage < 1) {
+    currentPage = 1; // Không cho phép quay về trang trước
+  } else if (
+    currentPage >
+    Math.ceil(
+      (type === "product"
+        ? products.length
+        : type === "receipt"
+        ? receipts.length
+        : exports.length) /
+        (type === "product"
+          ? productsPerPage
+          : type === "receipt"
+          ? receiptsPerPage
+          : exportsPerPage)
+    )
+  ) {
+    currentPage = Math.ceil(
+      (type === "product"
+        ? products.length
+        : type === "receipt"
+        ? receipts.length
+        : exports.length) /
+        (type === "product"
+          ? productsPerPage
+          : type === "receipt"
+          ? receiptsPerPage
+          : exportsPerPage)
+    ); // Không cho phép vượt quá trang cuối
+  }
+
+  displayItems(type); // Hiển thị sản phẩm, phiếu nhập hoặc phiếu xuất của trang đã chọn
+  updatePagination(type); // Cập nhật trạng thái của các nút phân trang
+}
+
 function formatDate(dateString) {
   const date = new Date(dateString);
   const day = String(date.getDate()).padStart(2, "0");
@@ -186,4 +255,5 @@ document.addEventListener("DOMContentLoaded", () => {
   fetchReceipts(); // Gọi để lấy phiếu nhập
   fetchExports(); // Gọi để lấy phiếu xuất
   fetchInventories(); // Gọi để lấy phiếu kiểm kê
+  fetchOrders(); // Gọi để lấy đơn hàng
 });

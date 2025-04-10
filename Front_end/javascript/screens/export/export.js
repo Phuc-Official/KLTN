@@ -85,7 +85,7 @@ async function addExport() {
         MaPhieuXuat: exportId,
         MaSanPham: productInfo.MaSanPham,
         SoLuong: productInfo.quantity,
-        GiaSanPham: productInfo.price,
+        // GiaSanPham: productInfo.price,
         MaDonVi: productInfo.MaDonVi,
       };
 
@@ -146,18 +146,14 @@ function getExportDetailsFromForm() {
     MaNhanVien: employeeId,
     NgayXuat: dateCreated, // Ngày xuất
     MoTa: description,
-    TongGiaTri: calculateTotalValue(), // Tính tổng giá trị
+    // TongGiaTri: calculateTotalValue(), // Tính tổng giá trị
   };
 }
 
 // Hàm tính tổng giá trị phiếu xuất
-function calculateTotalValue() {
-  return selectedProducts.reduce(
-    (total, productInfo) =>
-      total + (productInfo.price * productInfo.quantity || 0),
-    0
-  );
-}
+// function calculateTotalValue() {
+//   return selectedProducts.reduce((total, productInfo) => total, 0);
+// }
 
 // Hàm lấy danh sách sản phẩm từ form
 function getProductsFromForm() {
@@ -292,7 +288,7 @@ function selectProduct(product) {
     MaSanPham: product.MaSanPham,
     quantity: 1,
     MaDonVi: product.MaDonVi, // Đơn vị được chọn
-    price: product.GiaSanPham, // Giá được chọn
+    // price: product.GiaSanPham, // Giá được chọn
   };
 
   // Thêm sản phẩm vào danh sách đã chọn
@@ -317,8 +313,7 @@ function updateSelectedProducts() {
               <th>Tên sản phẩm</th>
               <th>Tên đơn vị</th>
               <th>Số lượng</th>
-              <th>Giá sản phẩm</th>
-              <th>Thành tiền</th>
+
               <th>Hành động</th>
           </tr>
       </thead>
@@ -333,10 +328,10 @@ function updateSelectedProducts() {
     );
     if (product) {
       const quantity = productInfo.quantity; // Lấy số lượng từ thông tin sản phẩm
-      const price = productInfo.price; // Lấy giá từ thông tin sản phẩm
-      const totalPrice = price * quantity; // Tính thành tiền
+      // const price = productInfo.price; // Lấy giá từ thông tin sản phẩm
+      // const totalPrice = price * quantity; // Tính thành tiền
 
-      totalValue += totalPrice; // Cộng dồn vào tổng giá trị
+      // totalValue += totalPrice; // Cộng dồn vào tổng giá trị
 
       const row = document.createElement("tr");
       row.innerHTML = `
@@ -370,16 +365,7 @@ function updateSelectedProducts() {
         productInfo.uniqueId
       }', this.value)" />
               </td>
-              <td>
-                  <input type="number" id="${
-                    productInfo.uniqueId
-                  }-price" value="${price}" min="0" onchange="updatePrice('${
-        productInfo.uniqueId
-      }', this.value)" />
-              </td>
-              <td id="${
-                productInfo.uniqueId
-              }-total">${totalPrice.toLocaleString()} đ</td>
+              
               <td><button onclick="removeProduct('${
                 productInfo.uniqueId
               }')">Xóa</button></td>
@@ -392,9 +378,9 @@ function updateSelectedProducts() {
   selectedProductsDiv.appendChild(productTable);
 
   // Cập nhật tổng giá trị vào phiếu xuất
-  document.getElementById(
-    "total-price"
-  ).textContent = `Tổng giá trị: ${totalValue.toLocaleString()} đ`;
+  // document.getElementById(
+  //   "total-price"
+  // ).textContent = `Tổng giá trị: ${totalValue.toLocaleString()} đ`;
 }
 
 // Hàm cập nhật số lượng sản phẩm

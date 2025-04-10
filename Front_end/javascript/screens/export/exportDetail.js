@@ -54,7 +54,7 @@ async function loadUnitOfMeasurement() {
   }
 }
 
-async function fetchReceiptDetails() {
+async function fetchExportDetails() {
   const urlParams = new URLSearchParams(window.location.search);
   const maPhieuXuat = urlParams.get("id");
 
@@ -72,12 +72,12 @@ async function fetchReceiptDetails() {
     }
 
     const textResponse = await response.text(); // Lấy phản hồi dưới dạng chuỗi
-    const receipt = JSON.parse(textResponse); // Phân tích cú pháp nếu cần
+    const exports = JSON.parse(textResponse); // Phân tích cú pháp nếu cần
 
-    const detailsContainer = document.getElementById("receipt-details");
+    const detailsContainer = document.getElementById("export-details");
 
     if (!detailsContainer) {
-      throw new Error("Phần tử receipt-details không tồn tại.");
+      throw new Error("Phần tử export-details không tồn tại.");
     }
 
     // Tải danh sách sản phẩm, đơn vị tính, khách hàng, và nhân viên
@@ -88,15 +88,17 @@ async function fetchReceiptDetails() {
       loadEmployees(),
     ]);
 
+    document.getElementById("export-id").textContent = exports.MaPhieuXuat;
+
     // Tìm tên khách hàng trong danh sách
     const customer = customers.find(
-      (c) => c.MaKhachHang === receipt.MaKhachHang // Thay đổi từ MaNhaCungCap thành MaKhachHang
+      (c) => c.MaKhachHang === exports.MaKhachHang // Thay đổi từ MaNhaCungCap thành MaKhachHang
     );
     const customerName = customer ? customer.TenKhachHang : "Không tìm thấy";
     document.getElementById("customer").value = customerName; // Thay đổi từ supplier thành customer
 
     // Tìm tên nhân viên trong danh sách
-    const employee = employees.find((e) => e.MaNhanVien === receipt.MaNhanVien);
+    const employee = employees.find((e) => e.MaNhanVien === exports.MaNhanVien);
     const employeeName = employee ? employee.TenNhanVien : "Không tìm thấy";
     document.getElementById("employee").value = employeeName;
 
@@ -107,7 +109,7 @@ async function fetchReceiptDetails() {
       return;
     }
 
-    receipt.SanPhamList.forEach((product) => {
+    exports.SanPhamList.forEach((product) => {
       const foundProduct = products.find(
         (p) => p.MaSanPham === product.MaSanPham
       );
@@ -124,27 +126,27 @@ async function fetchReceiptDetails() {
                 <td>${productName}</td>
                  <td>${unitName}</td>
                 <td>${product.SoLuong}</td>              
-                <td>${product.GiaSanPham}</td>
+
             `;
       productList.appendChild(row);
     });
 
     // Cập nhật thông tin khác vào side-panel
     document.getElementById("date").value = new Date(
-      receipt.NgayXuat // Thay đổi từ NgayNhap thành NgayXuat
+      exports.NgayXuat // Thay đổi từ NgayNhap thành NgayXuat
     ).toLocaleDateString();
-    document.getElementById("total-price").value = receipt.TongGiaTri;
-    document.getElementById("description").value = receipt.MoTa;
+    // document.getElementById("total-price").value = exports.TongGiaTri;
+    document.getElementById("description").value = exports.MoTa;
   } catch (error) {
     console.error("Lỗi khi tải chi tiết phiếu xuất:", error);
-    const detailsContainer = document.getElementById("receipt-details");
+    const detailsContainer = document.getElementById("export-details");
     if (detailsContainer) {
       detailsContainer.innerHTML = "<p>Không thể tải chi tiết phiếu xuất.</p>";
     }
   }
 }
 
-document.addEventListener("DOMContentLoaded", fetchReceiptDetails);
+document.addEventListener("DOMContentLoaded", fetchExportDetails);
 
 function cancel() {
   // Quay về trang trước

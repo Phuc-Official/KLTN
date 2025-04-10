@@ -1,5 +1,5 @@
-let selectedProductIds = new Set();
-let productSelectCount = {};
+let selectedOrderIds = new Set();
+let orderSelectCount = {};
 let unitOfMeasurements = []; // Biến toàn cục để lưu danh sách đơn vị tính
 const today = new Date().toISOString().split("T")[0];
 
@@ -20,80 +20,84 @@ async function fetchUnitOfMeasurements() {
   }
 }
 
-// Hàm chuyển hướng đến trang chi tiết phiếu nhập
-function viewReceiptDetails(receiptId) {
-  window.location.href = `../receipt/receiptDetail.html?id=${receiptId}`;
+// Hàm chuyển hướng đến trang chi tiết đơn hàng
+function viewOrderDetails(orderId) {
+  window.location.href = `../order/orderDetail.html?id=${orderId}`;
 }
 
-// Hàm gợi ý mã phiếu nhập tiếp theo
-async function suggestNextReceiptId() {
+// Hàm gợi ý mã đơn hàng tiếp theo
+async function suggestNextOrderId() {
   try {
     const response = await fetch(
-      "http://localhost:3000/api/phieunhap/max-maphieunhap"
+      "http://localhost:3000/api/donhang/max-madonhang"
     );
     const data = await response.json();
-    const nextReceiptId = data.maxMaPhieuNhap
-      ? generateNextReceiptId(data.maxMaPhieuNhap)
-      : "PN0001"; // Giá trị mặc định nếu chưa có phiếu nhập nào
+    const nextOrderId = data.maxMaDonHang
+      ? generateNextOrderId(data.maxMaDonHang)
+      : "DH0001"; // Giá trị mặc định nếu chưa có đơn hàng nào
 
-    document.getElementById("receipt-id").value = nextReceiptId; // Hiển thị mã phiếu nhập gợi ý
+    document.getElementById("order-id").value = nextOrderId; // Hiển thị mã đơn hàng gợi ý
   } catch (error) {
-    console.error("Lỗi khi gợi ý mã phiếu nhập:", error);
+    console.error("Lỗi khi gợi ý mã đơn hàng:", error);
   }
 }
 
-// Hàm tạo mã phiếu nhập tiếp theo
-function generateNextReceiptId(maxId) {
+// Hàm tạo mã đơn hàng tiếp theo
+function generateNextOrderId(maxId) {
   const prefix = maxId.slice(0, 2);
   const currentNumber = parseInt(maxId.slice(2), 10);
   const nextNumber = (currentNumber + 1).toString().padStart(4, "0");
   return prefix + nextNumber;
 }
 
-// Hàm thêm phiếu nhập
-async function addReceipt() {
-  const receipt = getReceiptDetailsFromForm();
+// Hàm thêm đơn hàng
+async function addOrder() {
+  const order = getOrderDetailsFromForm();
 
-  if (!receipt) {
-    alert("Vui lòng điền đầy đủ thông tin phiếu nhập.");
+  if (!order) {
+    alert("Vui lòng điền đầy đủ thông tin đơn hàng.");
     return;
   }
 
   try {
-    const response = await fetch("http://localhost:3000/api/phieunhap", {
+    const response = await fetch("http://localhost:3000/api/donhang", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(receipt),
+      body: JSON.stringify(order),
     });
 
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(
-        `Không thể thêm phiếu nhập: ${errorData.message || response.statusText}`
+        `Không thể thêm đơn hàng: ${errorData.message || response.statusText}`
       );
     }
 
     const result = await response.json();
-    const receiptId = result.MaPhieuNhap;
+    const orderId = result.MaDonHang;
 
-    // Cập nhật chi tiết phiếu nhập cho từng sản phẩm
+    // Cập nhật chi tiết đơn hàng cho từng sản phẩm
     const productPromises = selectedProducts.map(async (productInfo) => {
+      // Lấy giá trị MaDonVi từ dropdown
+      const selectedUnit = document.getElementById(
+        `${productInfo.uniqueId}-unit`
+      ).value;
+
       const productDetails = {
-        MaPhieuNhap: receiptId,
+        MaDonHang: orderId,
         MaSanPham: productInfo.MaSanPham,
         SoLuong: productInfo.quantity,
         GiaSanPham: productInfo.price,
-        MaDonVi: productInfo.MaDonVi,
+        MaDonVi: selectedUnit, // Gán giá trị từ dropdown
       };
 
-      // Log chi tiết sản phẩm trước khi thêm
-      console.log("Thêm chi tiết phiếu nhập cho sản phẩm:", productDetails);
+      console.log("Thông tin chi tiết đơn hàng:", productDetails); // Log thông tin chi tiết
 
-      // Gửi yêu cầu thêm chi tiết phiếu nhập
+      // Gửi yêu cầu thêm chi tiết đơn hàng
       const detailResponse = await fetch(
-        "http://localhost:3000/api/chitietphieunhap",
+        "http://localhost:3000/api/chitietdonhang",
         {
           method: "POST",
           headers: {
@@ -106,44 +110,44 @@ async function addReceipt() {
       if (!detailResponse.ok) {
         const errorData = await detailResponse.json();
         throw new Error(
-          `Không thể thêm chi tiết phiếu nhập: ${errorData.message}`
+          `Không thể thêm chi tiết đơn hàng: ${errorData.message}`
         );
       }
     });
 
     await Promise.all(productPromises);
-    alert("Phiếu nhập và sản phẩm đã được thêm thành công.");
-    document.getElementById("receipt-form").reset();
+    alert("Đơn hàng và sản phẩm đã được thêm thành công.");
+    document.getElementById("order-form").reset();
     selectedProducts = [];
     updateSelectedProducts();
   } catch (error) {
-    console.error("Lỗi khi thêm phiếu nhập:", error);
+    console.error("Lỗi khi thêm đơn hàng:", error);
     alert(error.message);
   }
 }
 
-// Hàm lấy thông tin phiếu nhập từ form
-function getReceiptDetailsFromForm() {
+// Hàm lấy thông tin đơn hàng từ form
+function getOrderDetailsFromForm() {
   // Kiểm tra xem có sản phẩm nào đã được chọn không
   if (selectedProducts.length === 0) {
     console.error("Không có sản phẩm nào được chọn.");
     return null; // Trả về null nếu không có sản phẩm nào
   }
 
-  const receiptId = document.getElementById("receipt-id").value.trim();
+  const orderId = document.getElementById("order-id").value.trim();
   const supplierId = document.getElementById("supplier").value.trim();
   const employeeId = document.getElementById("employee").value.trim();
   const dateCreated = document.getElementById("date-create").value.trim();
   const description = document.getElementById("description").value.trim();
 
   // Kiểm tra tất cả các trường có giá trị hợp lệ
-  if (!receiptId || !supplierId || !employeeId || !dateCreated) {
+  if (!orderId || !supplierId || !employeeId || !dateCreated) {
     console.error("Thiếu thông tin cần thiết.");
     return null; // Trả về null nếu thiếu thông tin
   }
 
   return {
-    MaPhieuNhap: receiptId,
+    MaDonHang: orderId,
     MaNhaCungCap: supplierId,
     MaNhanVien: employeeId,
     NgayNhap: dateCreated,
@@ -152,7 +156,7 @@ function getReceiptDetailsFromForm() {
   };
 }
 
-// Hàm tính tổng giá trị phiếu nhập
+// Hàm tính tổng giá trị đơn hàng
 function calculateTotalValue() {
   return selectedProducts.reduce((total, productInfo) => total, 0);
 }
@@ -168,44 +172,42 @@ function getProductsFromForm() {
   }));
 }
 
-// Hàm lấy danh sách phiếu nhập và hiển thị
-async function fetchReceipts() {
+// Hàm lấy danh sách đơn hàng và hiển thị
+async function fetchOrders() {
   try {
-    const response = await fetch("http://localhost:3000/api/phieunhap");
-    const receipts = await response.json();
+    const response = await fetch("http://localhost:3000/api/donhang");
+    const orders = await response.json();
 
-    // Lấy chi tiết phiếu nhập cho từng phiếu
-    const detailPromises = receipts.map(async (receipt) => {
+    // Lấy chi tiết đơn hàng cho từng đơn
+    const detailPromises = orders.map(async (order) => {
       const detailsResponse = await fetch(
-        `http://localhost:3000/api/chitietphieunhap/${receipt.MaPhieuNhap}`
+        `http://localhost:3000/api/chitietdonhang/${order.MaDonHang}`
       );
       const details = await detailsResponse.json();
-      return { ...receipt, details };
+      return { ...order, details };
     });
 
-    const fullReceipts = await Promise.all(detailPromises);
-    displayReceipts(fullReceipts);
+    const fullOrders = await Promise.all(detailPromises);
+    displayOrders(fullOrders);
   } catch (error) {
-    console.error("Lỗi khi tải phiếu nhập:", error);
+    console.error("Lỗi khi tải đơn hàng:", error);
   }
 }
 
-// Hàm hiển thị phiếu nhập
-function displayReceipts(receipts) {
-  const container = document.querySelector("#receipt-container tbody");
+// Hàm hiển thị đơn hàng
+function displayOrders(orders) {
+  const container = document.querySelector("#order-container tbody");
   container.innerHTML = "";
 
-  receipts.forEach((receipt) => {
+  orders.forEach((order) => {
     const row = document.createElement("tr");
     row.innerHTML = `
-      <td>${receipt.MaPhieuNhap}</td>
-      <td>${receipt.TenNhaCungCap}</td>
-      <td>${receipt.TenNhanVien}</td>
-      <td>${receipt.NgayNhap}</td>
+      <td>${order.MaDonHang}</td>
+      <td>${order.TenNhaCungCap}</td>
+      <td>${order.TenNhanVien}</td>
+      <td>${order.NgayNhap}</td>
     `;
-    row.addEventListener("click", () =>
-      viewReceiptDetails(receipt.MaPhieuNhap)
-    );
+    row.addEventListener("click", () => viewOrderDetails(order.MaDonHang));
     container.appendChild(row);
   });
 }
@@ -236,8 +238,6 @@ function populateSupplierSelect(suppliers) {
 async function loadEmployees() {
   try {
     const response = await fetch("http://localhost:3000/api/nhanvien");
-
-    // Kiểm tra nếu phản hồi không thành công
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -304,7 +304,7 @@ function filterProducts() {
     (product) =>
       (product.TenSanPham.toLowerCase().includes(searchValue) ||
         product.MaSanPham.toLowerCase().includes(searchValue)) &&
-      !selectedProductIds.has(product.MaSanPham) // Ẩn sản phẩm đã chọn
+      !selectedOrderIds.has(product.MaSanPham) // Ẩn sản phẩm đã chọn
   );
 
   displayFilteredProducts(filteredProducts);
@@ -331,18 +331,17 @@ let selectedProducts = []; // Mảng để lưu trữ thông tin sản phẩm đ
 
 function selectProduct(product) {
   const productInfo = {
-    uniqueId: `${product.MaSanPham}-${selectedProducts.length + 1}`, // Đảm bảo uniqueId là duy nhất
+    uniqueId: `${product.MaSanPham}-${selectedProducts.length + 1}`,
     MaSanPham: product.MaSanPham,
     quantity: 1,
-    MaDonVi: product.MaDonVi, // Đơn vị được chọn
-    price: product.GiaSanPham, // Giá được chọn
+    MaDonVi: product.MaDonVi,
+    price: product.GiaSanPham,
   };
 
-  // Thêm sản phẩm vào danh sách đã chọn
   selectedProducts.push(productInfo);
-  updateSelectedProducts(); // Cập nhật giao diện hiển thị danh sách sản phẩm đã chọn
-  filterProducts(); // Cập nhật lại danh sách sản phẩm
-  document.getElementById("product-list").style.display = "none"; // Ẩn danh sách sản phẩm
+  updateSelectedProducts();
+  filterProducts();
+  document.getElementById("product-list").style.display = "none";
 }
 
 // Cập nhật thông tin sản phẩm đã chọn
@@ -434,26 +433,10 @@ function updateSelectedProducts() {
   productTable.innerHTML += `</tbody>`;
   selectedProductsDiv.appendChild(productTable);
 
-  // Cập nhật tổng giá trị vào phiếu nhập
+  // Cập nhật tổng giá trị vào đơn hàng
   document.getElementById(
     "total-price"
   ).textContent = `Tổng giá trị: ${totalValue.toLocaleString()} đ`;
-}
-
-// Hàm cập nhật số lượng sản phẩm
-function updateQuantity(productId, change) {
-  const product = window.productsList.find((p) => p.MaSanPham === productId);
-  if (product) {
-    product.quantity = (product.quantity || 1) + change;
-
-    // Đảm bảo số lượng không âm
-    if (product.quantity < 1) {
-      product.quantity = 1;
-    }
-
-    // Cập nhật lại bảng
-    updateSelectedProducts();
-  }
 }
 
 // Hàm thiết lập số lượng từ ô nhập
@@ -532,10 +515,9 @@ function removeProduct(uniqueId) {
 
 // Khởi tạo các hàm khi trang được tải
 document.addEventListener("DOMContentLoaded", () => {
-  // fetchReceipts();
   loadSuppliers();
   fetchUnitOfMeasurements();
-  suggestNextReceiptId(); // Gợi ý mã phiếu nhập khi trang tải
+  suggestNextOrderId(); // Gợi ý mã đơn hàng khi trang tải
   loadProducts(); // Tải sản phẩm
   loadEmployees();
 
@@ -544,8 +526,8 @@ document.addEventListener("DOMContentLoaded", () => {
     .getElementById("search-product")
     .addEventListener("input", filterProducts);
 
-  // Gọi hàm khi thêm phiếu nhập
-  document.getElementById("add-button").addEventListener("click", addReceipt);
+  // Gọi hàm khi thêm đơn hàng
+  document.getElementById("add-button").addEventListener("click", addOrder);
 });
 
 // Ẩn danh sách sản phẩm khi nhấn ra ngoài ô tìm kiếm
@@ -559,10 +541,6 @@ document.addEventListener("click", (event) => {
   ) {
     productList.style.display = "none"; // Ẩn danh sách sản phẩm
   }
-});
-
-document.addEventListener("DOMContentLoaded", () => {
-  loadProducts();
 });
 
 document.getElementById("date-create").value = today;

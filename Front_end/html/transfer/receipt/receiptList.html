@@ -57,6 +57,9 @@
           >
           <ul class="submenu">
             <li>
+              <a href="../order/orderList.html">Đặt hàng nhập</a>
+            </li>
+            <li>
               <a href="../receipt/receiptList.html">Phiếu nhập</a>
             </li>
             <li><a href="../export/exportList.html">Phiếu xuất</a></li>
@@ -147,7 +150,12 @@
       }
     </script>
 
-    <script src="../../../javascript/screens/receipt/receipt.js"></script>
+    <!-- <script src="../../../javascript/screens/receipt/receipt.js"></script> -->
     <script src="../../../javascript/elements/page.js"></script>
+    <script>
+      function viewReceiptDetails(receiptId) {
+        window.location.href = `../receipt/receiptDetail.html?id=${receiptId}`;
+      }
+    </script>
   </body>
 </html>

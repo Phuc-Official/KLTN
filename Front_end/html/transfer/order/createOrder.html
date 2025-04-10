@@ -16,7 +16,7 @@
     <header>
       <button onclick="cancel()" class="button-cancel">Hủy</button>
       <button id="add-button" type="button" class="add-button">
-        Tạo phiếu nhập
+        Tạo phiếu đặt hàng
       </button>
     </header>
     <div class="container">
@@ -26,19 +26,19 @@
             <button id="back-button" onclick="cancel()" class="button-back">
               <i class="fas fa-arrow-left"></i>
             </button>
-            <h1 id="back-title">Tạo phiếu nhập</h1>
+            <h1 id="back-title">Tạo phiếu đặt hàng</h1>
           </div>
           <div class="main-content">
             <section class="form-container full-width">
-              <h3>Thông tin phiếu nhập</h3>
-              <form id="receipt-form">
+              <h3>Thông tin phiếu đặt hàng</h3>
+              <form id="order-form">
                 <div class="input-row">
                   <div class="input-group">
-                    <label for="receipt-id">Mã phiếu nhập</label>
+                    <label for="order-id">Mã phiếu đặt hàng</label>
                     <input
                       type="text"
-                      id="receipt-id"
-                      placeholder="Nhập mã phiếu nhập"
+                      id="order-id"
+                      placeholder="Nhập mã phiếu đặt hàng"
                       required
                     />
                   </div>
@@ -101,7 +101,7 @@
       </main>
     </div>
 
-    <script src="../../../javascript/screens/receipt/receipt.js"></script>
+    <script src="../../../javascript/screens/order/order.js"></script>
 
     <!-- <script src="../../../javascript/screens/unit.js"></script> -->
   </body>

@@ -5,17 +5,17 @@ const exportDetailRouter = new Router();
 
 // 1. Thêm chi tiết phiếu xuất
 exportDetailRouter.post("/api/chitietphieuxuat", async (req, res) => {
-  const { MaPhieuXuat, MaSanPham, SoLuong, GiaSanPham, MaDonVi } = req.body;
+  const { MaPhieuXuat, MaSanPham, SoLuong, MaDonVi } = req.body;
 
-  if (!MaPhieuXuat || !MaSanPham || !SoLuong || !GiaSanPham || !MaDonVi) {
+  if (!MaPhieuXuat || !MaSanPham || !SoLuong || !MaDonVi) {
     return res.status(400).json({ message: "Thiếu thông tin cần thiết." });
   }
 
-  if (SoLuong <= 0 || GiaSanPham < 0) {
-    return res
-      .status(400)
-      .json({ message: "Số lượng và giá sản phẩm phải lớn hơn 0." });
-  }
+  // if (SoLuong <= 0 || GiaSanPham < 0) {
+  //   return res
+  //     .status(400)
+  //     .json({ message: "Số lượng và giá sản phẩm phải lớn hơn 0." });
+  // }
 
   try {
     const pool = await sql.connect(req.app.get("dbConfig")); // Lấy config từ app
@@ -24,22 +24,22 @@ exportDetailRouter.post("/api/chitietphieuxuat", async (req, res) => {
     request.input("MaPhieuXuat", sql.NVarChar, MaPhieuXuat);
     request.input("MaSanPham", sql.NVarChar, MaSanPham);
     request.input("SoLuong", sql.Int, SoLuong);
-    request.input("GiaSanPham", sql.Decimal, GiaSanPham);
+    // request.input("GiaSanPham", sql.Decimal, GiaSanPham);
     request.input("MaDonVi", sql.NVarChar, MaDonVi);
 
     await request.query(
-      "INSERT INTO ChiTietPhieuXuat (MaPhieuXuat, MaSanPham, SoLuong, GiaSanPham, MaDonVi) VALUES (@MaPhieuXuat, @MaSanPham, @SoLuong, @GiaSanPham, @MaDonVi)"
+      "INSERT INTO ChiTietPhieuXuat (MaPhieuXuat, MaSanPham, SoLuong,  MaDonVi) VALUES (@MaPhieuXuat, @MaSanPham, @SoLuong,  @MaDonVi)"
     );
 
-    const totalProductValue = SoLuong * GiaSanPham;
+    // const totalProductValue = SoLuong * GiaSanPham;
 
-    const updateRequest = new sql.Request(pool);
-    updateRequest.input("MaPhieuXuat", sql.NVarChar, MaPhieuXuat);
-    updateRequest.input("TongGiaTri", sql.Decimal, totalProductValue);
+    // const updateRequest = new sql.Request(pool);
+    // updateRequest.input("MaPhieuXuat", sql.NVarChar, MaPhieuXuat);
+    // updateRequest.input("TongGiaTri", sql.Decimal, totalProductValue);
 
-    await updateRequest.query(
-      "UPDATE PhieuXuat SET TongGiaTri = ISNULL(TongGiaTri, 0) + @TongGiaTri WHERE MaPhieuXuat = @MaPhieuXuat"
-    );
+    // await updateRequest.query(
+    //   "UPDATE PhieuXuat SET TongGiaTri = ISNULL(TongGiaTri, 0) + @TongGiaTri WHERE MaPhieuXuat = @MaPhieuXuat"
+    // );
 
     // Gọi API lấy tỷ lệ quy đổi
     const conversionRateResponse = await fetch(

@@ -102,7 +102,7 @@ async function fetchInventoryCheckDetails() {
 
       // Tính toán số lượng tồn theo đơn vị
       const quantityInBaseUnit = foundProduct
-        ? foundProduct.SoLuongTon / (unit ? unit.TyleQuyDoi : 1)
+        ? Math.floor(foundProduct.SoLuongTon / (unit ? unit.TyleQuyDoi : 1)) // Làm tròn
         : 0;
 
       const row = document.createElement("tr");

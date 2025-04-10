@@ -91,12 +91,11 @@ exportRouter.get("/api/phieuxuat/:maPhieuXuat", async (req, res) => {
 // Endpoint cho thêm phiếu xuất
 exportRouter.post("/api/phieuxuat", async (req, res) => {
   try {
-    const { MaPhieuXuat, MaKhachHang, MaNhanVien, NgayXuat, MoTa, TongGiaTri } =
-      req.body;
+    const { MaPhieuXuat, MaKhachHang, MaNhanVien, NgayXuat, MoTa } = req.body;
 
     const sqlQuery = `
-      INSERT INTO PhieuXuat (MaPhieuXuat, MaKhachHang, MaNhanVien, NgayXuat, MoTa, TongGiaTri)
-      VALUES (@MaPhieuXuat, @MaKhachHang, @MaNhanVien, @NgayXuat, @MoTa, @TongGiaTri)
+      INSERT INTO PhieuXuat (MaPhieuXuat, MaKhachHang, MaNhanVien, NgayXuat, MoTa)
+      VALUES (@MaPhieuXuat, @MaKhachHang, @MaNhanVien, @NgayXuat, @MoTa)
     `;
 
     const request = new sql.Request();
@@ -105,7 +104,7 @@ exportRouter.post("/api/phieuxuat", async (req, res) => {
     request.input("MaNhanVien", sql.NVarChar, MaNhanVien);
     request.input("NgayXuat", sql.DateTime, NgayXuat);
     request.input("MoTa", sql.NVarChar, MoTa);
-    request.input("TongGiaTri", sql.Decimal, TongGiaTri);
+    // request.input("TongGiaTri", sql.Decimal, TongGiaTri);
 
     await request.query(sqlQuery);
 

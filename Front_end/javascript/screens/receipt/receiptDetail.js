@@ -88,6 +88,8 @@ async function fetchReceiptDetails() {
       loadEmployees(),
     ]);
 
+    document.getElementById("receipt-id").textContent = receipt.MaPhieuNhap;
+
     // Tìm tên nhà cung cấp trong danh sách
     const supplier = suppliers.find(
       (s) => s.MaNhaCungCap === receipt.MaNhaCungCap

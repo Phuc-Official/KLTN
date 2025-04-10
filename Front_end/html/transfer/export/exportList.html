@@ -56,6 +56,9 @@
           >
           <ul class="submenu">
             <li>
+              <a href="../order/orderList.html">Đặt hàng nhập</a>
+            </li>
+            <li>
               <a href="../receipt/receiptList.html">Phiếu nhập</a>
             </li>
             <li><a href="../export/exportList.html">Phiếu xuất</a></li>
@@ -136,8 +139,13 @@
       }
     </script>
 
-    <script src="../../../javascript/screens/export/export.js"></script>
+    <!-- <script src="../../../javascript/screens/export/export.js"></script> -->
     <!-- Cập nhật script cho phiếu xuất -->
     <script src="../../../javascript/elements/page.js"></script>
+    <script>
+      function viewExportDetails(exportId) {
+        window.location.href = `../export/exportDetail.html?id=${exportId}`;
+      }
+    </script>
   </body>
 </html>

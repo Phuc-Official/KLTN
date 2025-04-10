@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Quản lý kho - Chi tiết sản phẩm</title>
+    <title>Quản lý kho - Chi tiết đơn hàng</title>
     <link rel="stylesheet" href="../../../css/createProduct.css" />
     <link rel="stylesheet" href="../../../css/sidebar.css" />
     <link
@@ -12,7 +12,11 @@
     />
   </head>
   <body>
-    <header></header>
+    <header>
+      <button id="add-receipt-button" type="button" class="add-receipt-button">
+        Tạo phiếu nhập
+      </button>
+    </header>
     <div class="container">
       <main class="content">
         <div class="main-section">
@@ -20,18 +24,20 @@
             <button id="back-button" onclick="cancel()" class="button-back">
               <i class="fas fa-arrow-left"></i>
             </button>
-            <h1 id="back-title">Chi tiết phiếu nhập</h1>
+            <h1 id="back-title">
+              Chi tiết đơn hàng <span id="order-id"></span>
+            </h1>
           </div>
           <div class="main-content">
-            <section class="form-container" id="receipt-details">
-              <h2>Danh sách sản phẩm</h2>
+            <section class="form-container" id="order-details">
+              <h2>Danh sách sản phẩm trong đơn hàng</h2>
               <table id="product-table">
                 <thead>
                   <tr>
                     <th>Mã SP</th>
                     <th>Tên SP</th>
-                    <th>Số lượng</th>
                     <th>Đơn vị tính</th>
+                    <th>Số lượng</th>
                     <th>Giá</th>
                   </tr>
                 </thead>
@@ -39,7 +45,7 @@
               </table>
             </section>
             <aside class="side-panel">
-              <h3>Thông tin phiếu nhập</h3>
+              <h3>Thông tin đơn hàng</h3>
               <div class="input-row">
                 <div class="input-group">
                   <label for="supplier">Nhà cung cấp:</label>
@@ -53,7 +59,7 @@
 
               <div class="input-row">
                 <div class="input-group">
-                  <label for="date">Ngày nhập:</label>
+                  <label for="date">Ngày tạo:</label>
                   <input type="text" id="date" value="" disabled />
                 </div>
                 <div class="input-group">
@@ -62,7 +68,7 @@
                 </div>
               </div>
               <div class="input-group">
-                <label for="description">Mô tả phiếu nhập:</label>
+                <label for="description">Mô tả đơn hàng:</label>
                 <textarea id="description" rows="4" disabled></textarea>
               </div>
             </aside>
@@ -71,6 +77,6 @@
       </main>
     </div>
 
-    <script src="../../..//javascript/screens/receipt/receiptDetail.js"></script>
+    <script src="../../..//javascript/screens/order/orderDetail.js"></script>
   </body>
 </html>

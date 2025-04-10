@@ -176,8 +176,13 @@
       }
     </script>
 
-    <script src="../../javascript/screens/product/products.js"></script>
+    <!-- <script src="../../javascript/screens/product/products.js"></script> -->
     <script src="../../javascript/elements/tab.js"></script>
     <script src="../../javascript/elements/page.js"></script>
+    <script>
+      function viewProductDetails(productId) {
+        window.location.href = `../product/productDetail.html?id=${productId}`;
+      }
+    </script>
   </body>
 </html>

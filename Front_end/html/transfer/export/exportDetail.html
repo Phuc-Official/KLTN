@@ -20,10 +20,12 @@
             <button id="back-button" onclick="cancel()" class="button-back">
               <i class="fas fa-arrow-left"></i>
             </button>
-            <h1 id="back-title">Chi tiết phiếu xuất</h1>
+            <h1 id="back-title">
+              Chi tiết phiếu xuất <span id="export-id"></span>
+            </h1>
           </div>
           <div class="main-content">
-            <section class="form-container" id="receipt-details">
+            <section class="form-container" id="export-details">
               <h2>Danh sách sản phẩm</h2>
               <table id="product-table">
                 <thead>
@@ -32,7 +34,7 @@
                     <th>Tên SP</th>
                     <th>Đơn vị tính</th>
                     <th>Số lượng</th>
-                    <th>Giá</th>
+                    <!-- <th>Giá</th> -->
                   </tr>
                 </thead>
                 <tbody id="product-list"></tbody>
@@ -57,8 +59,8 @@
                   <input type="text" id="date" value="" disabled />
                 </div>
                 <div class="input-group">
-                  <label for="total-price">Tổng giá trị:</label>
-                  <input type="text" id="total-price" value="" disabled />
+                  <!-- <label for="total-price">Tổng giá trị:</label>
+                  <input type="text" id="total-price" value="" disabled /> -->
                 </div>
               </div>
               <div class="input-group">

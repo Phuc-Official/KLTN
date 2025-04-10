@@ -196,7 +196,8 @@ button.upload-button:hover {
 }
 
 /* ///////////// */
-.add-button {
+.add-button,
+.add-receipt-button {
   margin-left: 10px;
   margin-right: 185px;
 }
