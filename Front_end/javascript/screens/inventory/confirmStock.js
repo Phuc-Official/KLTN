@@ -79,6 +79,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           product.quantity || 0
         }" min="0" class="actual-quantity" />
                     </td>
+                    
                 `;
         productTable.querySelector("tbody").appendChild(row);
       }

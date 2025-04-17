@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="css/sidebar.css" />
     <link rel="stylesheet" href="css/button.css" />
     <link rel="stylesheet" href="css/page.css" />
+
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
@@ -93,27 +94,27 @@
     <div class="container">
       <main class="content">
         <div class="header-container">
-          <h1>Danh sách sản phẩm</h1>
+          <h1>Danh sách phiếu kiểm kê</h1>
           <button id="add-button" class="create-button" onclick="create()">
             <i class="fa-solid fa-circle-plus"></i>
-            Thêm sản phẩm
+            Tạo phiếu kiểm kê
           </button>
         </div>
         <div class="container_a">
           <!-- <input
             class="search"
             type="text"
-            placeholder=" 🔍︎  Tìm kiếm theo Mã sản phẩm, Tên sản phẩm, ..."
+            placeholder=" 🔍︎  Tìm kiếm theo Mã phiếu, ..."
           /> -->
 
           <div class="table">
-            <table id="product-container">
+            <table id="inventory-container">
               <thead>
                 <tr>
-                  <th>Mã sản phẩm</th>
-                  <th>Tên sản phẩm</th>
-                  <th>Loại</th>
-                  <th>Số lượng tồn</th>
+                  <th>Mã phiếu</th>
+                  <th>Tên phiếu</th>
+                  <th>Phụ trách</th>
+                  <th>Ngày tạo</th>
                 </tr>
               </thead>
               <tbody>
@@ -136,48 +137,14 @@
         </div>
       </main>
     </div>
-
-    <!-- <script>
-      // Tải template tab
-      fetch("../../html/template/tab.html")
-        .then((response) => response.text())
-        .then((data) => {
-          document.getElementById("tab-section").innerHTML = data;
-
-          // Dữ liệu cho các tab
-          const tabsData = [
-            {
-              title: "Tất cả",
-              content: `<table id="sanpham-container"></table>`,
-            },
-            {
-              title: "Chưa xử lý giao hàng",
-              content: "<p>Nội dung của Tab 2</p>",
-            },
-            { title: "Chờ lấy hàng", content: "<p>Nội dung của Tab 3</p>" },
-            { title: "Đang lấy hàng", content: "<p>Nội dung của Tab 3</p>" },
-            { title: "Chưa thanh toán", content: "<p>Nội dung của Tab 3</p>" },
-            // Bạn có thể thêm nhiều tab khác
-          ];
-
-          initializeTabs(tabsData); // Khởi tạo tab với dữ liệu
-        })
-        .catch((error) => console.error("Error loading tab template:", error));
-    </script> -->
     <script>
       function create() {
         // Chuyển hướng đến trang tạo sản phẩm
-        window.location.href = "createProduct.html"; // Thay đổi thành URL của trang bạn muốn chuyển đến
+        window.location.href = "createSheet.html"; // Thay đổi thành URL của trang bạn muốn chuyển đến
       }
     </script>
 
-    <!-- <script src="../../javascript/screens/product/products.js"></script> -->
-    <script src="javascript/elements/tab.js"></script>
+    <script src="javascript/screens/inventory/sheet.js"></script>
     <script src="javascript/elements/page.js"></script>
-    <script>
-      function viewProductDetails(productId) {
-        window.location.href = `product/productDetail.html?id=${productId}`;
-      }
-    </script>
   </body>
 </html>

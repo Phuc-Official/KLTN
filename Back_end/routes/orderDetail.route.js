@@ -5,13 +5,13 @@ const orderDetailRouter = new Router();
 
 // 1. Thêm chi tiết đơn hàng
 orderDetailRouter.post("/api/chitietdonhang", async (req, res) => {
-  const { MaDonHang, MaSanPham, SoLuong, GiaSanPham, MaDonVi } = req.body;
+  const { MaDonHang, MaSanPham, SoLuong, MaDonVi } = req.body;
 
-  if (!MaDonHang || !MaSanPham || !SoLuong || !GiaSanPham || !MaDonVi) {
+  if (!MaDonHang || !MaSanPham || !SoLuong || !MaDonVi) {
     return res.status(400).json({ message: "Thiếu thông tin cần thiết." });
   }
 
-  if (SoLuong <= 0 || GiaSanPham < 0) {
+  if (SoLuong <= 0) {
     return res
       .status(400)
       .json({ message: "Số lượng và giá sản phẩm phải lớn hơn 0." });
@@ -24,22 +24,22 @@ orderDetailRouter.post("/api/chitietdonhang", async (req, res) => {
     request.input("MaDonHang", sql.NVarChar, MaDonHang);
     request.input("MaSanPham", sql.NVarChar, MaSanPham);
     request.input("SoLuong", sql.Int, SoLuong);
-    request.input("GiaSanPham", sql.Decimal, GiaSanPham);
+    // request.input("GiaSanPham", sql.Decimal, GiaSanPham);
     request.input("MaDonVi", sql.NVarChar, MaDonVi);
 
     await request.query(
-      "INSERT INTO ChiTietDonHang (MaDonHang, MaSanPham, SoLuong, GiaSanPham, MaDonVi) VALUES (@MaDonHang, @MaSanPham, @SoLuong, @GiaSanPham, @MaDonVi)"
+      "INSERT INTO ChiTietDonHang (MaDonHang, MaSanPham, SoLuong,  MaDonVi) VALUES (@MaDonHang, @MaSanPham, @SoLuong, @MaDonVi)"
     );
 
-    const totalProductValue = SoLuong * GiaSanPham;
+    // const totalProductValue = SoLuong * GiaSanPham;
 
     const updateRequest = new sql.Request(pool);
     updateRequest.input("MaDonHang", sql.NVarChar, MaDonHang);
-    updateRequest.input("TongGiaTri", sql.Decimal, totalProductValue);
+    // updateRequest.input("TongGiaTri", sql.Decimal, totalProductValue);
 
-    await updateRequest.query(
-      "UPDATE DonHang SET TongGiaTri = ISNULL(TongGiaTri, 0) + @TongGiaTri WHERE MaDonHang = @MaDonHang"
-    );
+    // await updateRequest.query(
+    //   "UPDATE DonHang SET TongGiaTri = ISNULL(TongGiaTri, 0) + @TongGiaTri WHERE MaDonHang = @MaDonHang"
+    // );
 
     res
       .status(201)

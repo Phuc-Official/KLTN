@@ -297,9 +297,9 @@ function updateSelectedProducts() {
           <tr>
               <th>Mã sản phẩm</th>
               <th>Tên sản phẩm</th>
-              <th>Đơn vị</th>
+
               <th>Số lượng tồn</th>
-              <th>Số lượng quy đổi</th>
+
               <th>Hành động</th>
           </tr>
       </thead>
@@ -315,37 +315,10 @@ function updateSelectedProducts() {
       row.innerHTML = `
               <td>${product.MaSanPham}</td>
               <td>${product.TenSanPham}</td>
-              <td>
-                  <select id="${
-                    productInfo.uniqueId
-                  }-unit" onchange="updateUnit('${
-        productInfo.uniqueId
-      }', this.value)">
-                    <option value="" disabled ${
-                      !productInfo.MaDonVi ? "selected" : ""
-                    }>Chọn đơn vị</option>
-                    ${unitOfMeasurements
-                      .map(
-                        (unit) => `
-                      <option value="${unit.MaDonVi}" ${
-                          unit.MaDonVi === productInfo.MaDonVi ? "selected" : ""
-                        }>${unit.TenDonVi}</option>
-                    `
-                      )
-                      .join("")}
-                  </select>
-              </td>
+              
               <td>${productInfo.SoLuongTon}</td> <!-- Hiển thị số lượng tồn -->
-              <td>
-                  <input type="number" id="${
-                    productInfo.uniqueId
-                  }-quantity" value="${
-        productInfo.quantity
-      }" min="0" readonly />
-              </td>
-              <td><button onclick="removeProduct('${
-                productInfo.uniqueId
-              }')">Xóa</button></td>
+              
+              <td><button onclick="removeProduct('${productInfo.uniqueId}')">Xóa</button></td>
           `;
       productTable.querySelector("tbody").appendChild(row);
     }
@@ -456,3 +429,33 @@ document.addEventListener("click", (event) => {
 });
 
 document.getElementById("date-create").value = today;
+
+{
+  /* <td>
+                  <select id="${
+                    productInfo.uniqueId
+                  }-unit" onchange="updateUnit('${
+        productInfo.uniqueId
+      }', this.value)">
+                    <option value="" disabled ${
+                      !productInfo.MaDonVi ? "selected" : ""
+                    }>Chọn đơn vị</option>
+                    ${unitOfMeasurements
+                      .map(
+                        (unit) => `
+                      <option value="${unit.MaDonVi}" ${
+                          unit.MaDonVi === productInfo.MaDonVi ? "selected" : ""
+                        }>${unit.TenDonVi}</option>
+                    `
+                      )
+                      .join("")}
+                  </select>
+              </td> */
+  //         <td>
+  //             <input type="number" id="${
+  //               productInfo.uniqueId
+  //             }-quantity" value="${
+  //   productInfo.quantity
+  // }" min="0" readonly />
+  //         </td>
+}

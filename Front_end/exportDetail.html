@@ -3,9 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Quản lý kho - Chi tiết sản phẩm</title>
-    <link rel="stylesheet" href="../../../css/createProduct.css" />
-    <link rel="stylesheet" href="../../../css/sidebar.css" />
+    <title>Quản lý kho - Chi tiết phiếu xuất</title>
+    <link rel="stylesheet" href="css/createProduct.css" />
+    <link rel="stylesheet" href="css/sidebar.css" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
@@ -21,11 +21,11 @@
               <i class="fas fa-arrow-left"></i>
             </button>
             <h1 id="back-title">
-              Chi tiết phiếu nhập <span id="receipt-id"></span>
+              Chi tiết phiếu xuất <span id="export-id"></span>
             </h1>
           </div>
           <div class="main-content">
-            <section class="form-container" id="receipt-details">
+            <section class="form-container" id="export-details">
               <h2>Danh sách sản phẩm</h2>
               <table id="product-table">
                 <thead>
@@ -41,11 +41,11 @@
               </table>
             </section>
             <aside class="side-panel">
-              <h3>Thông tin phiếu nhập</h3>
+              <h3>Thông tin phiếu xuất</h3>
               <div class="input-row">
                 <div class="input-group">
-                  <label for="supplier">Nhà cung cấp:</label>
-                  <input type="text" id="supplier" value="" disabled />
+                  <label for="customer">Khách hàng:</label>
+                  <input type="text" id="customer" value="" disabled />
                 </div>
                 <div class="input-group">
                   <label for="employee">Nhân viên tạo:</label>
@@ -55,7 +55,7 @@
 
               <div class="input-row">
                 <div class="input-group">
-                  <label for="date">Ngày nhập:</label>
+                  <label for="date">Ngày xuất:</label>
                   <input type="text" id="date" value="" disabled />
                 </div>
                 <div class="input-group">
@@ -64,7 +64,7 @@
                 </div>
               </div>
               <div class="input-group">
-                <label for="description">Mô tả phiếu nhập:</label>
+                <label for="description">Mô tả phiếu xuất:</label>
                 <textarea id="description" rows="4" disabled></textarea>
               </div>
             </aside>
@@ -73,6 +73,6 @@
       </main>
     </div>
 
-    <script src="../../..//javascript/screens/receipt/receiptDetail.js"></script>
+    <script src="javascript/screens/export/exportDetail.js"></script>
   </body>
 </html>

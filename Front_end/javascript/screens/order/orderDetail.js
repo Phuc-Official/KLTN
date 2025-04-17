@@ -119,7 +119,7 @@ async function fetchOrderDetails() {
         <td>${productName}</td>
         <td>${unitName}</td>
         <td>${product.SoLuong}</td>          
-        <td>${product.GiaSanPham}</td>
+        
       `;
       productList.appendChild(row);
     });
@@ -128,7 +128,7 @@ async function fetchOrderDetails() {
     document.getElementById("date").value = new Date(
       order.NgayNhap
     ).toLocaleDateString();
-    document.getElementById("total-price").value = order.TongGiaTri;
+    // document.getElementById("total-price").value = order.TongGiaTri;
     document.getElementById("description").value = order.MoTa;
   } catch (error) {
     console.error("Lỗi khi tải chi tiết đơn hàng:", error);
@@ -151,7 +151,7 @@ document
   .addEventListener("click", function () {
     const orderId = document.getElementById("order-id").textContent.trim();
     const date = document.getElementById("date").value.trim();
-    const totalPrice = document.getElementById("total-price").value.trim();
+    // const totalPrice = document.getElementById("total-price").value.trim();
     const description = document.getElementById("description").value.trim();
 
     // Lấy danh sách sản phẩm đã chọn
@@ -161,7 +161,7 @@ document
       const maSanPham = row.cells[0].textContent.trim();
       const tenSanPham = row.cells[1].textContent.trim();
       const soLuong = row.cells[3].textContent.trim();
-      const gia = row.cells[4].textContent.trim();
+      // const gia = row.cells[4].textContent.trim();
       const maDonVi = order.SanPhamList.find(
         (p) => p.MaSanPham === maSanPham
       ).MaDonVi; // Lấy MaDonVi từ chi tiết đơn hàng
@@ -170,7 +170,7 @@ document
         MaSanPham: maSanPham,
         TenSanPham: tenSanPham,
         SoLuong: soLuong,
-        Gia: gia,
+        // Gia: gia,
         MaDonVi: maDonVi, // Lưu mã đơn vị
       };
     });
@@ -186,8 +186,8 @@ document
       selectedSupplierId
     )}&employee=${encodeURIComponent(
       selectedEmployeeId
-    )}&date=${encodeURIComponent(date)}&totalPrice=${encodeURIComponent(
-      totalPrice
+    )}&date=${encodeURIComponent(date)}
+
     )}&description=${encodeURIComponent(
       description
     )}&products=${selectedProductsJson}`;

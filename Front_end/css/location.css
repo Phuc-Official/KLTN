@@ -1,0 +1,30 @@
+.warehouse {
+  display: flex;
+  flex-wrap: wrap; /* Để các cột tự động xuống dòng nếu cần */
+}
+
+.column {
+  display: flex;
+  flex-direction: column; /* Hiển thị kệ theo chiều dọc */
+  align-items: center;
+}
+
+.cell {
+  border: 2px solid grey;
+  width: 50px; /* Tăng chiều rộng của ô */
+  height: 50px; /* Tăng chiều cao của ô */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px; /* Tăng kích thước chữ trong ô */
+  color: black;
+}
+
+.label {
+  margin-top: 5px;
+  font-weight: bold;
+}
+
+.spacer {
+  width: 50px; /* Khoảng cách giữa các cặp dãy */
+}

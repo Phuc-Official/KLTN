@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("receipt-id").value = params.orderId || "";
   document.getElementById("supplier").value = params.supplier || "";
   document.getElementById("employee").value = params.employee || "";
-  document.getElementById("total-price").value = params.totalPrice || "";
+  // document.getElementById("total-price").value = params.totalPrice || "";
   document.getElementById("description").value = params.description || "";
 
   // Kiểm tra và hiển thị sản phẩm đã chọn
@@ -49,8 +49,7 @@ function displaySelectedProducts(products) {
           <th>Tên SP</th>
           <th>Đơn vị</th>
           <th>Số lượng</th>
-          <th>Giá</th>
-          <th>Thành tiền</th>
+
         </tr>
       </thead>
       <tbody>
@@ -65,8 +64,8 @@ function displaySelectedProducts(products) {
         <td>${product.TenSanPham}</td>
         <td>${product.MaDonVi || ""}</td>
         <td>${product.SoLuong}</td>
-        <td>${product.Gia.toLocaleString()} đ</td>
-        <td>${totalPrice} đ</td>
+      
+       
       `;
     productTable.querySelector("tbody").appendChild(row);
   });
@@ -93,7 +92,7 @@ document
 
     const supplierId = document.getElementById("supplier").value.trim();
     const employeeId = document.getElementById("employee").value.trim();
-    const totalPrice = document.getElementById("total-price").value.trim();
+    // const totalPrice = document.getElementById("total-price").value.trim();
     const description = document.getElementById("description").value.trim();
 
     // Lấy danh sách sản phẩm từ table
@@ -104,10 +103,10 @@ document
       TenSanPham: row.cells[2].textContent.trim(),
       MaDonVi: row.cells[3].textContent.trim(), // Sử dụng MaDonVi thay vì TenDonVi
       SoLuong: row.cells[4].textContent.trim(),
-      Gia: row.cells[5].textContent
-        .trim()
-        .replace(/ đ/g, "")
-        .replace(/\./g, ""),
+      // Gia: row.cells[5].textContent
+      //   .trim()
+      //   .replace(/ đ/g, "")
+      //   .replace(/\./g, ""),
     }));
 
     // Tạo đối tượng phiếu nhập
@@ -117,7 +116,7 @@ document
       MaNhanVien: employeeId,
       NgayNhap: new Date().toISOString(),
       MoTa: description,
-      TongGiaTri: totalPrice,
+      // TongGiaTri: totalPrice,
       products,
     };
 
@@ -146,7 +145,7 @@ document
           MaPhieuNhap: newReceiptId, // ID phiếu nhập mới
           MaSanPham: productInfo.MaSanPham,
           SoLuong: parseInt(productInfo.SoLuong, 10), // Chuyển đổi thành số
-          GiaSanPham: parseFloat(productInfo.Gia), // Chuyển đổi thành số
+          // GiaSanPham: parseFloat(productInfo.Gia), // Chuyển đổi thành số
           MaDonVi: productInfo.MaDonVi, // Sử dụng MaDonVi
         };
 

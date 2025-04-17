@@ -77,14 +77,13 @@ orderRouter.get("/api/donhang/:maDonHang", async (req, res) => {
 // Endpoint cho thêm đơn hàng
 orderRouter.post("/api/donhang", async (req, res) => {
   try {
-    const { MaDonHang, MaNhaCungCap, MaNhanVien, NgayNhap, MoTa, TongGiaTri } =
-      req.body;
+    const { MaDonHang, MaNhaCungCap, MaNhanVien, NgayNhap, MoTa } = req.body;
 
     console.log("Dữ liệu nhận được:", req.body); // Log dữ liệu nhận được
 
     const sqlQuery = `
-        INSERT INTO DonHang (MaDonHang, MaNhaCungCap, MaNhanVien, NgayNhap, MoTa, TongGiaTri)
-        VALUES (@MaDonHang, @MaNhaCungCap, @MaNhanVien, @NgayNhap, @MoTa, @TongGiaTri)
+        INSERT INTO DonHang (MaDonHang, MaNhaCungCap, MaNhanVien, NgayNhap, MoTa)
+        VALUES (@MaDonHang, @MaNhaCungCap, @MaNhanVien, @NgayNhap, @MoTa)
       `;
 
     const request = new sql.Request();
@@ -93,7 +92,7 @@ orderRouter.post("/api/donhang", async (req, res) => {
     request.input("MaNhanVien", sql.NVarChar, MaNhanVien);
     request.input("NgayNhap", sql.DateTime, NgayNhap);
     request.input("MoTa", sql.NVarChar, MoTa);
-    request.input("TongGiaTri", sql.Decimal, TongGiaTri);
+    // request.input("TongGiaTri", sql.Decimal, TongGiaTri);
 
     await request.query(sqlQuery);
 

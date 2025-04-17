@@ -35,7 +35,7 @@ async function fetchProductDetails() {
     document.getElementById("weight").value = product.TrongLuong;
     document.getElementById("description").value = product.MoTaSanPham;
     document.getElementById("converted-stock-quantity").value =
-      product.SoLuongTon;
+      product.SoLuongTon ? product.SoLuongTon : 0;
 
     // Thêm các đơn vị tính vào dropdown
     const unitSelect = document.getElementById("unit");
@@ -48,11 +48,49 @@ async function fetchProductDetails() {
       }
       unitSelect.appendChild(option);
     });
+
+    // Cập nhật bảng đơn vị tính
+    // await updateConversionTable(product.SoLuongTon); // Gọi hàm để cập nhật bảng
   } catch (error) {
     console.error("Lỗi khi tải chi tiết sản phẩm:", error);
     document.getElementById("product-details").innerHTML =
       "<p>Không thể tải chi tiết sản phẩm.</p>";
   }
+}
+
+async function updateConversionTable(originalStock) {
+  const conversionBody = document.getElementById("conversion-body");
+  conversionBody.innerHTML = ""; // Xóa nội dung cũ
+
+  // Tạo một mảng chứa thông tin đơn vị và tỷ lệ quy đổi
+  const conversionData = await Promise.all(
+    unitOfMeasurements.map(async (unit) => {
+      const conversionRate = await getConversionRate(unit.MaDonVi);
+      const convertedStock = Math.floor(originalStock / conversionRate); // Tính số lượng tồn quy đổi
+      return {
+        unit: unit.TenDonVi,
+        convertedStock: convertedStock,
+        conversionRate: conversionRate,
+      };
+    })
+  );
+
+  // Sắp xếp mảng dựa theo tỷ lệ quy đổi từ cao đến thấp
+  conversionData.sort((a, b) => b.conversionRate - a.conversionRate);
+
+  // Điền dữ liệu vào bảng
+  conversionData.forEach((data) => {
+    const row = document.createElement("tr");
+    const unitCell = document.createElement("td");
+    const stockCell = document.createElement("td");
+
+    unitCell.textContent = data.unit; // Đơn vị tính
+    stockCell.textContent = data.convertedStock > 0 ? data.convertedStock : "0"; // Số lượng tồn quy đổi
+
+    row.appendChild(unitCell);
+    row.appendChild(stockCell);
+    conversionBody.appendChild(row); // Thêm hàng vào bảng
+  });
 }
 
 // Gọi hàm để tải danh sách đơn vị tính trước khi tải chi tiết sản phẩm
@@ -89,7 +127,7 @@ function updateConversionRate(selectElement) {
 
     // Tính số lượng tồn quy đổi
     let convertedStock = originalStock / conversionRate;
-    convertedStock = Math.floor(convertedStock); // Làm tròn xuống
+    convertedStock = Math.floor(convertedStock);
 
     // Cập nhật số lượng tồn quy đổi vào ô converted-stock
     convertedStockInput.value = convertedStock;

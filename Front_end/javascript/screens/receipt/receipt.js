@@ -84,7 +84,7 @@ async function addReceipt() {
         MaPhieuNhap: receiptId,
         MaSanPham: productInfo.MaSanPham,
         SoLuong: productInfo.quantity,
-        GiaSanPham: productInfo.price,
+        // GiaSanPham: productInfo.price,
         MaDonVi: productInfo.MaDonVi,
       };
 
@@ -360,15 +360,14 @@ function updateSelectedProducts() {
               <th>Tên sản phẩm</th>
               <th>Tên đơn vị</th>
               <th>Số lượng</th>
-              <th>Giá sản phẩm</th>
-              <th>Thành tiền</th>
+              
               <th>Hành động</th>
           </tr>
       </thead>
       <tbody>
   `;
 
-  let totalValue = 0; // Biến lưu tổng giá trị
+  // let totalValue = 0; // Biến lưu tổng giá trị
 
   selectedProducts.forEach((productInfo) => {
     const product = window.productsList.find(
@@ -376,10 +375,10 @@ function updateSelectedProducts() {
     );
     if (product) {
       const quantity = productInfo.quantity; // Lấy số lượng từ thông tin sản phẩm
-      const price = productInfo.price; // Lấy giá từ thông tin sản phẩm
-      const totalPrice = price * quantity; // Tính thành tiền
+      // const price = productInfo.price; // Lấy giá từ thông tin sản phẩm
+      // const totalPrice = price * quantity; // Tính thành tiền
 
-      totalValue += totalPrice; // Cộng dồn vào tổng giá trị
+      // totalValue += totalPrice; // Cộng dồn vào tổng giá trị
 
       const row = document.createElement("tr");
       row.innerHTML = `
@@ -413,16 +412,7 @@ function updateSelectedProducts() {
         productInfo.uniqueId
       }', this.value)" />
               </td>
-              <td>
-                  <input type="number" id="${
-                    productInfo.uniqueId
-                  }-price" value="${price}" min="0" onchange="updatePrice('${
-        productInfo.uniqueId
-      }', this.value)" />
-              </td>
-              <td id="${
-                productInfo.uniqueId
-              }-total">${totalPrice.toLocaleString()} đ</td>
+              
               <td><button onclick="removeProduct('${
                 productInfo.uniqueId
               }')">Xóa</button></td>
@@ -435,9 +425,9 @@ function updateSelectedProducts() {
   selectedProductsDiv.appendChild(productTable);
 
   // Cập nhật tổng giá trị vào phiếu nhập
-  document.getElementById(
-    "total-price"
-  ).textContent = `Tổng giá trị: ${totalValue.toLocaleString()} đ`;
+  // document.getElementById(
+  //   "total-price"
+  // ).textContent = `Tổng giá trị: ${totalValue.toLocaleString()} đ`;
 }
 
 // Hàm cập nhật số lượng sản phẩm
@@ -481,10 +471,10 @@ function setQuantity(uniqueId, value) {
       totalPrice.toLocaleString() + " đ";
 
     // Cập nhật tổng giá trị vào phiếu nhập
-    const totalValue = calculateTotalValue();
-    document.getElementById(
-      "total-price"
-    ).textContent = `Tổng giá trị: ${totalValue.toLocaleString()} đ`;
+    // const totalValue = calculateTotalValue();
+    // document.getElementById(
+    //   "total-price"
+    // ).textContent = `Tổng giá trị: ${totalValue.toLocaleString()} đ`;
 
     updateSelectedProducts(); // Gọi hàm cập nhật
   }
@@ -510,10 +500,10 @@ function updatePrice(uniqueId, value) {
       totalPrice.toLocaleString() + " đ";
 
     // Cập nhật tổng giá trị vào phiếu nhập
-    const totalValue = calculateTotalValue();
-    document.getElementById(
-      "total-price"
-    ).textContent = `Tổng giá trị: ${totalValue.toLocaleString()} đ`;
+    // const totalValue = calculateTotalValue();
+    // document.getElementById(
+    //   "total-price"
+    // ).textContent = `Tổng giá trị: ${totalValue.toLocaleString()} đ`;
 
     updateSelectedProducts(); // Gọi hàm cập nhật
   }
@@ -566,3 +556,16 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 document.getElementById("date-create").value = today;
+
+{
+  /* <td>
+                  <input type="number" id="${
+                    productInfo.uniqueId
+                  }-price" value="${price}" min="0" onchange="updatePrice('${
+        productInfo.uniqueId
+      }', this.value)" />
+              </td>
+              <td id="${
+                productInfo.uniqueId
+              }-total">${totalPrice.toLocaleString()} đ</td> */
+}

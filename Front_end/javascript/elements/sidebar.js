@@ -75,10 +75,10 @@ document.addEventListener("DOMContentLoaded", function () {
     ].find((link) => link.innerText === activeMenu);
     if (menuLink) {
       const submenu = menuLink.nextElementSibling;
-      if (submenu) {
-        submenu.style.display = "block"; // Hiển thị submenu
-        menuLink.parentElement.classList.add("active"); // Thêm lớp active
-      }
+      // if (submenu) {
+      //   submenu.style.display = "block"; // Hiển thị submenu
+      //   menuLink.parentElement.classList.add("active"); // Thêm lớp active
+      // }
     }
   }
 });

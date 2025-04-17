@@ -14,6 +14,7 @@ const sheetRouter = require("./routes/sheet.route");
 const unitRouter = require("./routes/unit.route");
 const orderRouter = require("./routes/order.route");
 const orderDetailRouter = require("./routes/orderDetail.route");
+const locationRoute = require("./routes/location.route");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -59,6 +60,7 @@ app.use(sheetRouter);
 app.use(unitRouter);
 app.use(orderRouter);
 app.use(orderDetailRouter);
+app.use(locationRoute);
 
 // Khởi động server
 app.listen(PORT, () => {

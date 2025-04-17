@@ -126,7 +126,7 @@ async function fetchReceiptDetails() {
                 <td>${productName}</td>
                 <td>${unitName}</td>
                 <td>${product.SoLuong}</td>          
-                <td>${product.GiaSanPham}</td>
+                
             `;
       productList.appendChild(row);
     });
@@ -135,7 +135,7 @@ async function fetchReceiptDetails() {
     document.getElementById("date").value = new Date(
       receipt.NgayNhap
     ).toLocaleDateString();
-    document.getElementById("total-price").value = receipt.TongGiaTri;
+    // document.getElementById("total-price").value = receipt.TongGiaTri;
     document.getElementById("description").value = receipt.MoTa;
   } catch (error) {
     console.error("Lỗi khi tải chi tiết phiếu nhập:", error);

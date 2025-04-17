@@ -3,8 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Quản lý Kho</title>
-    <!-- <link rel="stylesheet" href="../../css/tab.css" /> -->
+    <title>Quản lý Kho - Phiếu Xuất</title>
     <link rel="stylesheet" href="css/inventory.css" />
     <link rel="stylesheet" href="css/sidebar.css" />
     <link rel="stylesheet" href="css/button.css" />
@@ -93,27 +92,21 @@
     <div class="container">
       <main class="content">
         <div class="header-container">
-          <h1>Danh sách sản phẩm</h1>
+          <h1>Danh sách phiếu xuất</h1>
           <button id="add-button" class="create-button" onclick="create()">
             <i class="fa-solid fa-circle-plus"></i>
-            Thêm sản phẩm
+            Tạo phiếu xuất
           </button>
         </div>
         <div class="container_a">
-          <!-- <input
-            class="search"
-            type="text"
-            placeholder=" 🔍︎  Tìm kiếm theo Mã sản phẩm, Tên sản phẩm, ..."
-          /> -->
-
           <div class="table">
-            <table id="product-container">
+            <table id="export-container">
               <thead>
                 <tr>
-                  <th>Mã sản phẩm</th>
-                  <th>Tên sản phẩm</th>
-                  <th>Loại</th>
-                  <th>Số lượng tồn</th>
+                  <th>Mã phiếu</th>
+                  <th>Khách hàng</th>
+                  <th>Phụ trách</th>
+                  <th>Thời gian</th>
                 </tr>
               </thead>
               <tbody>
@@ -125,58 +118,28 @@
           <div class="pagination" id="pagination-container">
             <button id="prev-page" onclick="changePage(-1)" disabled>
               <i class="fas fa-arrow-left"></i>
-              <!-- Biểu tượng mũi tên trái -->
             </button>
             <div id="page-numbers"></div>
             <button id="next-page" onclick="changePage(1)">
               <i class="fas fa-arrow-right"></i>
-              <!-- Biểu tượng mũi tên phải -->
             </button>
           </div>
         </div>
       </main>
     </div>
-
-    <!-- <script>
-      // Tải template tab
-      fetch("../../html/template/tab.html")
-        .then((response) => response.text())
-        .then((data) => {
-          document.getElementById("tab-section").innerHTML = data;
-
-          // Dữ liệu cho các tab
-          const tabsData = [
-            {
-              title: "Tất cả",
-              content: `<table id="sanpham-container"></table>`,
-            },
-            {
-              title: "Chưa xử lý giao hàng",
-              content: "<p>Nội dung của Tab 2</p>",
-            },
-            { title: "Chờ lấy hàng", content: "<p>Nội dung của Tab 3</p>" },
-            { title: "Đang lấy hàng", content: "<p>Nội dung của Tab 3</p>" },
-            { title: "Chưa thanh toán", content: "<p>Nội dung của Tab 3</p>" },
-            // Bạn có thể thêm nhiều tab khác
-          ];
-
-          initializeTabs(tabsData); // Khởi tạo tab với dữ liệu
-        })
-        .catch((error) => console.error("Error loading tab template:", error));
-    </script> -->
     <script>
       function create() {
-        // Chuyển hướng đến trang tạo sản phẩm
-        window.location.href = "createProduct.html"; // Thay đổi thành URL của trang bạn muốn chuyển đến
+        // Chuyển hướng đến trang tạo phiếu xuất
+        window.location.href = "createExport.html"; // Thay đổi thành URL của trang bạn muốn chuyển đến
       }
     </script>
 
-    <!-- <script src="../../javascript/screens/product/products.js"></script> -->
-    <script src="javascript/elements/tab.js"></script>
+    <!-- <script src="../../../javascript/screens/export/export.js"></script> -->
+    <!-- Cập nhật script cho phiếu xuất -->
     <script src="javascript/elements/page.js"></script>
     <script>
-      function viewProductDetails(productId) {
-        window.location.href = `product/productDetail.html?id=${productId}`;
+      function viewExportDetails(exportId) {
+        window.location.href = `exportDetail.html?id=${exportId}`;
       }
     </script>
   </body>

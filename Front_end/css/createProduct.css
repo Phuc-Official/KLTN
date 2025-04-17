@@ -236,16 +236,20 @@ button {
 }
 
 select {
-  padding: 12px; /* Padding cho select */
+  padding: 10px; /* Padding cho select */
   border: 1px solid #cbd5e1; /* Viền cho select */
-  border-radius: 8px; /* Viền tròn */
+  border-radius: 6px; /* Viền tròn */
   width: 100%; /* Chiều rộng đầy đủ */
+}
+
+#selected-products {
+  border-radius: 8px;
 }
 
 #selected-products table {
   width: 100%; /* Chiều rộng bảng */
   border-collapse: collapse; /* Bỏ khoảng cách giữa các ô */
-  margin-top: 20px; /* Khoảng cách trên bảng */
+  /* margin-top: 20px; Khoảng cách trên bảng */
 }
 
 #selected-products th,
@@ -267,16 +271,20 @@ select {
   background-color: #eaeaea; /* Màu nền khi hover hàng */
 }
 
+#conversion-table,
 #product-table {
   width: 100%; /* Đặt chiều rộng bảng là 100% */
   border-collapse: collapse; /* Bỏ khoảng cách giữa các ô */
   margin-top: 20px; /* Khoảng cách trên bảng */
 }
 
+#conversion-table thead,
 #product-table thead {
   background-color: #f2f2f2; /* Màu nền cho tiêu đề */
 }
 
+#conversion-table th,
+#conversion-table td,
 #product-table th,
 #product-table td {
   border: 1px solid #ddd; /* Đường viền cho các ô */
@@ -288,6 +296,7 @@ select {
   font-weight: bold; /* Làm đậm tiêu đề */
 }
 
+#conversion-table tr:nth-child(even),
 #product-table tr:nth-child(even) {
   background-color: #f9f9f9; /* Màu nền cho các hàng chẵn */
 }
@@ -308,11 +317,24 @@ select {
   background-color: #eaeaea; /* Màu nền khi hover hàng */
 }
 
+#conversion-table tbody td,
 #product-table tbody td {
   border: 1px solid #ddd; /* Đường viền cho các ô trong tbody */
   padding: 8px; /* Khoảng cách bên trong ô */
 }
 
+#conversion-table tbody tr:nth-child(even),
 #product-table tbody tr:nth-child(even) {
   background-color: #f9f9f9; /* Màu nền cho các hàng chẵn */
+}
+
+/* #total-price {
+  margin-top: 20px;
+  margin-bottom: 15x;
+  font-size: 17px;
+  font-weight: bold;
+} */
+
+#search-product {
+  margin-bottom: 20px;
 }

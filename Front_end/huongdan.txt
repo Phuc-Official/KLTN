@@ -1,2 +1,0 @@
-npm install mssql
-chạy: node app.js

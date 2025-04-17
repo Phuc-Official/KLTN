@@ -5,16 +5,14 @@ const receiptDetailRouter = new Router();
 
 // 1. Thêm chi tiết phiếu nhập
 receiptDetailRouter.post("/api/chitietphieunhap", async (req, res) => {
-  const { MaPhieuNhap, MaSanPham, SoLuong, GiaSanPham, MaDonVi } = req.body;
+  const { MaPhieuNhap, MaSanPham, SoLuong, MaDonVi } = req.body;
 
-  if (!MaPhieuNhap || !MaSanPham || !SoLuong || !GiaSanPham || !MaDonVi) {
+  if (!MaPhieuNhap || !MaSanPham || !SoLuong || !MaDonVi) {
     return res.status(400).json({ message: "Thiếu thông tin cần thiết." });
   }
 
-  if (SoLuong <= 0 || GiaSanPham < 0) {
-    return res
-      .status(400)
-      .json({ message: "Số lượng và giá sản phẩm phải lớn hơn 0." });
+  if (SoLuong <= 0) {
+    return res.status(400).json({ message: "Số lượng phải lớn hơn 0." });
   }
 
   try {
@@ -24,22 +22,22 @@ receiptDetailRouter.post("/api/chitietphieunhap", async (req, res) => {
     request.input("MaPhieuNhap", sql.NVarChar, MaPhieuNhap);
     request.input("MaSanPham", sql.NVarChar, MaSanPham);
     request.input("SoLuong", sql.Int, SoLuong);
-    request.input("GiaSanPham", sql.Decimal, GiaSanPham);
+    // request.input("GiaSanPham", sql.Decimal, GiaSanPham);
     request.input("MaDonVi", sql.NVarChar, MaDonVi);
 
     await request.query(
-      "INSERT INTO ChiTietPhieuNhap (MaPhieuNhap, MaSanPham, SoLuong, GiaSanPham, MaDonVi) VALUES (@MaPhieuNhap, @MaSanPham, @SoLuong, @GiaSanPham, @MaDonVi)"
+      "INSERT INTO ChiTietPhieuNhap (MaPhieuNhap, MaSanPham, SoLuong, MaDonVi) VALUES (@MaPhieuNhap, @MaSanPham, @SoLuong, @MaDonVi)"
     );
 
-    const totalProductValue = SoLuong * GiaSanPham;
+    // const totalProductValue = SoLuong * GiaSanPham;
 
     const updateRequest = new sql.Request(pool);
     updateRequest.input("MaPhieuNhap", sql.NVarChar, MaPhieuNhap);
-    updateRequest.input("TongGiaTri", sql.Decimal, totalProductValue);
+    // updateRequest.input("TongGiaTri", sql.Decimal, totalProductValue);
 
-    await updateRequest.query(
-      "UPDATE PhieuNhap_Copy SET TongGiaTri = ISNULL(TongGiaTri, 0) + @TongGiaTri WHERE MaPhieuNhap = @MaPhieuNhap"
-    );
+    // await updateRequest.query(
+    //   "UPDATE PhieuNhap_Copy SET TongGiaTri = ISNULL(TongGiaTri, 0) + @TongGiaTri WHERE MaPhieuNhap = @MaPhieuNhap"
+    // );
 
     // Gọi API lấy tỷ lệ quy đổi
     const conversionRateResponse = await fetch(

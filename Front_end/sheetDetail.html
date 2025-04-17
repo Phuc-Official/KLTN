@@ -3,9 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Quản lý kho - Chi tiết sản phẩm</title>
-    <link rel="stylesheet" href="../../../css/createProduct.css" />
-    <link rel="stylesheet" href="../../../css/sidebar.css" />
+    <title>Quản lý kho - Chi tiết phiếu kiểm kê</title>
+    <link rel="stylesheet" href="css/createProduct.css" />
+    <link rel="stylesheet" href="css/sidebar.css" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
@@ -20,51 +20,49 @@
             <button id="back-button" onclick="cancel()" class="button-back">
               <i class="fas fa-arrow-left"></i>
             </button>
-            <h1 id="back-title">
-              Chi tiết phiếu nhập <span id="receipt-id"></span>
-            </h1>
+            <h1 id="back-title">Chi tiết phiếu kiểm kê</h1>
           </div>
           <div class="main-content">
-            <section class="form-container" id="receipt-details">
-              <h2>Danh sách sản phẩm</h2>
+            <section class="form-container" id="inventory-details">
+              <h2>Danh sách sản phẩm kiểm kê</h2>
               <table id="product-table">
                 <thead>
                   <tr>
                     <th>Mã SP</th>
                     <th>Tên SP</th>
                     <th>Đơn vị tính</th>
-                    <th>Số lượng</th>
-                    <!-- <th>Giá</th> -->
+                    <th>Số lượng tồn</th>
+                    <th>Số lượng thực tế</th>
                   </tr>
                 </thead>
                 <tbody id="product-list"></tbody>
               </table>
             </section>
             <aside class="side-panel">
-              <h3>Thông tin phiếu nhập</h3>
+              <h3>Thông tin phiếu kiểm kê</h3>
               <div class="input-row">
                 <div class="input-group">
-                  <label for="supplier">Nhà cung cấp:</label>
-                  <input type="text" id="supplier" value="" disabled />
+                  <label for="sheet-id">Mã phiếu:</label>
+                  <input type="text" id="sheet-id" value="" disabled />
                 </div>
                 <div class="input-group">
-                  <label for="employee">Nhân viên tạo:</label>
-                  <input type="text" id="employee" value="" disabled />
+                  <label for="sheet-name">Tên phiếu:</label>
+                  <input type="text" id="sheet-name" value="" disabled />
                 </div>
               </div>
 
               <div class="input-row">
                 <div class="input-group">
-                  <label for="date">Ngày nhập:</label>
-                  <input type="text" id="date" value="" disabled />
+                  <label for="employee">Nhân viên kiểm kê:</label>
+                  <input type="text" id="employee" value="" disabled />
                 </div>
                 <div class="input-group">
-                  <!-- <label for="total-price">Tổng giá trị:</label>
-                  <input type="text" id="total-price" value="" disabled /> -->
+                  <label for="date">Ngày kiểm kê:</label>
+                  <input type="text" id="date" value="" disabled />
                 </div>
               </div>
               <div class="input-group">
-                <label for="description">Mô tả phiếu nhập:</label>
+                <label for="description">Mô tả phiếu kiểm kê:</label>
                 <textarea id="description" rows="4" disabled></textarea>
               </div>
             </aside>
@@ -73,6 +71,6 @@
       </main>
     </div>
 
-    <script src="../../..//javascript/screens/receipt/receiptDetail.js"></script>
+    <script src="javascript/screens/inventory/sheetDetail.js"></script>
   </body>
 </html>

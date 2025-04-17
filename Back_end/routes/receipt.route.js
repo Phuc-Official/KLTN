@@ -141,12 +141,12 @@ receiptRouter.post("/api/phieunhap", async (req, res) => {
       MaNhanVien,
       NgayNhap,
       MoTa,
-      TongGiaTri,
+      // TongGiaTri,
     } = req.body;
 
     const sqlQuery = `
-      INSERT INTO PhieuNhap_Copy (MaPhieuNhap, MaNhaCungCap, MaNhanVien, NgayNhap, MoTa, TongGiaTri)
-      VALUES (@MaPhieuNhap, @MaNhaCungCap, @MaNhanVien, @NgayNhap, @MoTa, @TongGiaTri)
+      INSERT INTO PhieuNhap_Copy (MaPhieuNhap, MaNhaCungCap, MaNhanVien, NgayNhap, MoTa)
+      VALUES (@MaPhieuNhap, @MaNhaCungCap, @MaNhanVien, @NgayNhap, @MoTa)
     `;
 
     const request = new sql.Request();
@@ -155,7 +155,7 @@ receiptRouter.post("/api/phieunhap", async (req, res) => {
     request.input("MaNhanVien", sql.NVarChar, MaNhanVien);
     request.input("NgayNhap", sql.DateTime, NgayNhap);
     request.input("MoTa", sql.NVarChar, MoTa);
-    request.input("TongGiaTri", sql.Decimal, TongGiaTri);
+    // request.input("TongGiaTri", sql.Decimal, TongGiaTri);
 
     await request.query(sqlQuery);
 

@@ -4,9 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Quản lý kho - Thêm phiếu nhập</title>
-    <link rel="stylesheet" href="../../../css/createProduct.css" />
-    <link rel="stylesheet" href="../../../css/sidebar.css" />
-    <link rel="stylesheet" href="../../../css/receipt.css" />
+    <link rel="stylesheet" href="css/createProduct.css" />
+    <link rel="stylesheet" href="css/sidebar.css" />
+    <link rel="stylesheet" href="css/receipt.css" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
@@ -15,7 +15,7 @@
   <body>
     <header>
       <button onclick="cancel()" class="button-cancel">Hủy</button>
-      <button id="save-receipt-button" type="button" class="add-button">
+      <button id="add-button" type="button" class="add-button">
         Tạo phiếu nhập
       </button>
     </header>
@@ -44,7 +44,11 @@
                   </div>
                   <div class="input-group">
                     <label for="supplier">Nhà cung cấp</label>
-                    <input type="text" id="supplier" disabled />
+                    <select id="supplier">
+                      <option value="" disabled selected>
+                        Chọn nhà cung cấp
+                      </option>
+                    </select>
                   </div>
                 </div>
 
@@ -60,10 +64,26 @@
                   </div>
                   <div class="input-group">
                     <label for="employee">Nhân viên</label>
-                    <input type="text" id="employee" disabled />
+                    <select id="employee">
+                      <option value="" disabled selected>Chọn nhân viên</option>
+                    </select>
                   </div>
                 </div>
-                <br />
+
+                <label>Chọn sản phẩm</label>
+                <input
+                  type="text"
+                  id="search-product"
+                  placeholder="Nhập mã sản phẩm hoặc tên sản phẩm"
+                />
+                <ul
+                  id="product-list"
+                  class="product-list"
+                  style="display: none"
+                >
+                  <!-- Danh sách sản phẩm sẽ được thêm vào đây -->
+                </ul>
+
                 <h3>Sản phẩm đã chọn:</h3>
                 <div id="selected-products" class="selected-products">
                   <!-- Thông tin sản phẩm đã chọn sẽ được thêm vào đây -->
@@ -81,8 +101,7 @@
       </main>
     </div>
 
-    <script src="../../../javascript/screens/order/confirmReceipt.js"></script>
-    <script src="../../../javascript/screens/confirmOrder.js"></script>
+    <script src="javascript/screens/receipt/receipt.js"></script>
 
     <!-- <script src="../../../javascript/screens/unit.js"></script> -->
   </body>
