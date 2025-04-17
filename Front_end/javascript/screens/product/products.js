@@ -2,9 +2,6 @@ function cancel() {
   // Quay về trang trước
   window.history.back();
 }
-function viewProductDetails(productId) {
-  window.location.href = `../product/productDetail.html?id=${productId}`; // Chuyển hướng đến trang chi tiết
-}
 
 async function suggestNextProductId() {
   try {

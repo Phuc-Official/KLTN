@@ -9,6 +9,11 @@ function cancel() {
   window.history.back();
 }
 
+function create() {
+  // Chuyển hướng đến trang tạo phiếu xuất
+  window.location.href = "createExport.html"; // Thay đổi thành URL của trang bạn muốn chuyển đến
+}
+
 async function fetchUnitOfMeasurements() {
   try {
     const response = await fetch("http://localhost:3000/api/donvitinh");
