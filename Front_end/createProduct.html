@@ -59,40 +59,6 @@
                   required
                 />
 
-                <!-- <div class="input-row">
-                  <div class="input-group">
-                    <label for="unit">Đơn vị tính</label>
-                    <select id="unit">
-                      <option value="" disabled selected>
-                        Chọn đơn vị tính
-                      </option>
-                     
-                    </select>
-                  </div>
-                  <div class="input-group">
-                    <div class="input-group">
-                      <label for="conversion-rate">Tỷ lệ quy đổi</label>
-                      <input type="text" id="conversion-rate" disabled />
-                    </div> -->
-                <!-- <label for="converted-stock-quantity"
-                      >Số lượng tồn quy đổi</label
-                    >
-                    <input
-                      type="number"
-                      id="converted-stock-quantity"
-                      placeholder="Nhập số lượng tồn quy đổi"
-                      oninput="updateQuantity()"
-                    /> -->
-                <!-- </div>
-                </div> -->
-
-                <div class="input-row">
-                  <!-- <div class="input-group">
-                    <label for="quantity">Số lượng tồn</label>
-                    <input type="number" id="quantity" disabled />
-                  </div> -->
-                </div>
-
                 <div class="input-row">
                   <div class="input-group">
                     <label for="weight">Trọng lượng</label>
@@ -102,14 +68,32 @@
                       placeholder="Nhập trọng lượng (kg/lít)"
                     />
                   </div>
-                  <div class="input-group">
-                    <!-- <label for="price">Giá sản phẩm</label>
-                    <input
-                      type="number"
-                      id="price"
-                      placeholder="Nhập giá (VND)"
-                      oninput="formatPriceInput()"
-                    /> -->
+                </div>
+
+                <div
+                  id="unit-container"
+                  style="
+                    border: 1px solid #ccc;
+                    padding: 10px;
+                    margin-top: 10px;
+                  "
+                >
+                  <h4 id="unit-title" style="cursor: pointer">
+                    Đơn vị tính
+                    <i id="toggle-arrow" class="fas fa-chevron-down"></i>
+                  </h4>
+                  <div id="units-content" style="display: block">
+                    <div>
+                      <label for="base-unit">Đơn vị cơ bản:</label>
+                      <input
+                        type="text"
+                        id="base-unit"
+                        placeholder="Nhập tên đơn vị cơ bản"
+                        required
+                      />
+                    </div>
+                    <div id="additional-units"></div>
+                    <button id="add-unit">Thêm đơn vị khác</button>
                   </div>
                 </div>
 
@@ -119,16 +103,11 @@
             </section>
             <aside class="side-panel">
               <h3>Thông tin khác</h3>
-              <div class="info-item">
-                <p>Ảnh sản phẩm</p>
-                <button class="upload-button">Thêm ảnh</button>
-              </div>
             </aside>
           </div>
         </div>
       </main>
     </div>
     <script src="javascript/screens/product/products.js"></script>
-    <script src="javascript//screens/unit.js"></script>
   </body>
 </html>

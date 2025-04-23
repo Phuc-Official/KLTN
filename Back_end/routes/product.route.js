@@ -3,9 +3,10 @@ const sql = require("mssql"); // Import thư viện mssql
 
 const productRouter = new Router();
 
+// Lấy danh sách đơn vị tính
 productRouter.get("/api/donvitinh", async (req, res) => {
   try {
-    const sqlQuery = `SELECT * FROM DonViTinh`;
+    const sqlQuery = `SELECT * FROM DonViKhac`;
     const result = await sql.query(sqlQuery);
     res.json(result.recordset);
   } catch (err) {
@@ -14,6 +15,7 @@ productRouter.get("/api/donvitinh", async (req, res) => {
   }
 });
 
+// Lấy danh sách nhóm sản phẩm
 productRouter.get("/api/nhomsanpham", async (req, res) => {
   try {
     const sqlQuery = `SELECT * FROM NhomSanPham`;
@@ -30,7 +32,7 @@ productRouter.get("/api/sanpham/max-masanpham", async (req, res) => {
   try {
     const sqlQuery = `
       SELECT TOP 1 MaSanPham
-      FROM SanPham
+      FROM SanPham_Copy
       ORDER BY MaSanPham DESC
     `;
 
@@ -53,7 +55,7 @@ productRouter.get("/api/sanpham", async (req, res) => {
   try {
     const sqlQuery = `
       SELECT sp.*, nh.TenNhom
-      FROM SanPham sp
+      FROM SanPham_Copy sp
       LEFT JOIN NhomSanPham nh ON sp.MaNhom = nh.MaNhom;
     `;
 
@@ -65,26 +67,26 @@ productRouter.get("/api/sanpham", async (req, res) => {
   }
 });
 
-// Endpoint cho bảng sản phẩm
+// Lấy chi tiết sản phẩm
 productRouter.get("/api/sanpham/:maSanPham", async (req, res) => {
   const maSanPham = req.params.maSanPham;
 
   try {
     const sqlQuery = `
-          SELECT sp.*, nh.TenNhom, dv.TyleQuyDoi, dv.TenDonVi
-          FROM SanPham sp
+          SELECT sp.*, nh.TenNhom, dv.TyLeQuyDoi, dv.TenDonVi
+          FROM SanPham_Copy sp
           LEFT JOIN NhomSanPham nh ON sp.MaNhom = nh.MaNhom
-          LEFT JOIN DonViTinh dv ON sp.MaDonVi = dv.MaDonVi
+          LEFT JOIN DonViKhac dv ON sp.MaSanPham = dv.MaSanPham
           WHERE sp.MaSanPham = @maSanPham
       `;
 
     const request = new sql.Request();
-    request.input("maSanPham", sql.NVarChar, maSanPham); // Sử dụng loại dữ liệu phù hợp
+    request.input("maSanPham", sql.NVarChar, maSanPham);
 
     const result = await request.query(sqlQuery);
 
     if (result.recordset.length > 0) {
-      return res.json(result.recordset[0]); // Gửi sản phẩm đầu tiên
+      return res.json(result.recordset[0]);
     } else {
       return res.status(404).json({ message: "Sản phẩm không tìm thấy" });
     }
@@ -94,84 +96,69 @@ productRouter.get("/api/sanpham/:maSanPham", async (req, res) => {
   }
 });
 
-// Endpoint cho thêm sản phẩm
+// Thêm sản phẩm
 productRouter.post("/api/sanpham", async (req, res) => {
-  try {
-    console.log(req.body);
-    const {
-      MaSanPham,
-      TenSanPham,
-      MoTaSanPham,
-      TrongLuong,
-      DonViTinh,
-      MaDonVi,
-      MaNhom,
-      GiaSanPham,
-    } = req.body;
+  const product = req.body;
 
+  try {
     const sqlQuery = `
-      INSERT INTO SanPham (MaSanPham, TenSanPham, MoTaSanPham, TrongLuong, DonViTinh, MaDonVi, MaNhom, GiaSanPham)
-      VALUES (@MaSanPham, @TenSanPham, @MoTaSanPham, @TrongLuong, @DonViTinh, @MaDonVi, @MaNhom, @GiaSanPham)
+      INSERT INTO SanPham_Copy (MaSanPham, TenSanPham, TrongLuong, MoTaSanPham, MaNhom)
+      VALUES (@MaSanPham, @TenSanPham, @TrongLuong, @MoTaSanPham, @MaNhom);
     `;
 
     const request = new sql.Request();
-    request.input("MaSanPham", sql.NVarChar, MaSanPham);
-    request.input("TenSanPham", sql.NVarChar, TenSanPham);
-    request.input("MoTaSanPham", sql.NVarChar, MoTaSanPham);
-    request.input("TrongLuong", sql.Decimal, TrongLuong);
-    request.input("DonViTinh", sql.NVarChar, DonViTinh);
-    request.input("MaDonVi", sql.NVarChar, MaDonVi);
-    request.input("MaNhom", sql.Int, MaNhom);
-    request.input("GiaSanPham", sql.Decimal, GiaSanPham);
+    request.input("MaSanPham", sql.NVarChar, product.MaSanPham);
+    request.input("TenSanPham", sql.NVarChar, product.TenSanPham);
+    request.input("TrongLuong", sql.Float, product.TrongLuong);
+    request.input("MoTaSanPham", sql.NVarChar, product.MoTaSanPham);
+    request.input("MaNhom", sql.NVarChar, product.MaNhom);
+    // request.input("GiaSanPham", sql.Decimal, product.GiaSanPham);
+    // request.input("DonVi", sql.NVarChar, product.DonVi); // Lưu đơn vị cơ bản
 
     await request.query(sqlQuery);
-
     res.status(201).json({ message: "Sản phẩm đã được thêm thành công!" });
-  } catch (err) {
-    console.error("Lỗi khi thêm sản phẩm:", err);
+  } catch (error) {
+    console.error("Lỗi khi thêm sản phẩm:", error);
     res.status(500).send("Lỗi khi thêm sản phẩm");
   }
 });
 
-productRouter.put("/api/sanpham/:maSanPham", async (req, res) => {
+// Cập nhật sản phẩm
+productRouter.get("/api/sanpham/:maSanPham", async (req, res) => {
   const maSanPham = req.params.maSanPham;
-  const { TenSanPham, MoTaSanPham, TrongLuong, MaNhom, SoLuongTon } = req.body;
 
   try {
     const sqlQuery = `
-          UPDATE SanPham
-          SET TenSanPham = @TenSanPham,
-              MoTaSanPham = @MoTaSanPham,
-              TrongLuong = @TrongLuong,
-              MaNhom = @MaNhom
-              SoLuongTon = @SoLuongTon,
-          WHERE MaSanPham = @maSanPham
-      `;
+      SELECT sp.*, nh.TenNhom
+      FROM SanPham_Copy sp
+      LEFT JOIN NhomSanPham nh ON sp.MaNhom = nh.MaNhom
+      WHERE sp.MaSanPham = @maSanPham;
+    `;
 
     const request = new sql.Request();
     request.input("maSanPham", sql.NVarChar, maSanPham);
-    request.input("TenSanPham", sql.NVarChar, TenSanPham);
-    request.input("MoTaSanPham", sql.NVarChar, MoTaSanPham);
-    request.input("TrongLuong", sql.Decimal, TrongLuong);
-    request.input("MaNhom", sql.Int, MaNhom);
-    request.input("SoLuongTon", sql.Int, SoLuongTon);
 
     const result = await request.query(sqlQuery);
-    if (result.rowsAffected[0] === 0) {
-      return res.status(404).send("Sản phẩm không tìm thấy.");
-    }
 
-    res.json({ message: "Sản phẩm đã được cập nhật thành công!" });
-  } catch (err) {
-    console.error("Lỗi khi cập nhật sản phẩm:", err);
-    res.status(500).send("Lỗi khi cập nhật sản phẩm");
+    if (result.recordset.length > 0) {
+      const product = result.recordset[0];
+
+      // Gửi sản phẩm mà không có các đơn vị bổ sung
+      return res.json(product);
+    } else {
+      return res.status(404).json({ message: "Sản phẩm không tìm thấy" });
+    }
+  } catch (error) {
+    console.error("Lỗi khi lấy chi tiết sản phẩm:", error);
+    return res.status(500).json({ message: "Lỗi khi lấy chi tiết sản phẩm" });
   }
 });
 
+// Xóa sản phẩm
 productRouter.delete("/api/sanpham/:maSanPham", async (req, res) => {
   const maSanPham = req.params.maSanPham;
   try {
-    const sqlQuery = `DELETE FROM SanPham WHERE MaSanPham = @maSanPham`;
+    const sqlQuery = `DELETE FROM SanPham_Copy WHERE MaSanPham = @maSanPham`;
     const request = new sql.Request();
     request.input("maSanPham", sql.NVarChar, maSanPham);
 
@@ -187,13 +174,14 @@ productRouter.delete("/api/sanpham/:maSanPham", async (req, res) => {
   }
 });
 
+// Cập nhật số lượng tồn
 productRouter.put("/api/sanpham/:maSanPham/stock", async (req, res) => {
   const maSanPham = req.params.maSanPham;
-  const { SoLuong } = req.body; // Số lượng cần cập nhật
+  const { SoLuong } = req.body;
 
   try {
     const sqlQuery = `
-      UPDATE SanPham
+      UPDATE DonViKhac
       SET SoLuongTon = SoLuongTon + @SoLuong
       WHERE MaSanPham = @maSanPham
     `;

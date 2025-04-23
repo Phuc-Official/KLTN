@@ -20,6 +20,7 @@ async function fetchProductDetails() {
     const response = await fetch(
       `http://localhost:3000/api/sanpham/${maSanPham}`
     );
+
     if (!response.ok) {
       const errorText = await response.text();
       console.error("Lỗi từ server:", errorText);
@@ -27,6 +28,7 @@ async function fetchProductDetails() {
     }
 
     const product = await response.json(); // Phân tích cú pháp JSON
+    console.log("Chi tiết sản phẩm:", product); // Log chi tiết sản phẩm
 
     // Cập nhật các phần tử HTML
     document.getElementById("product-name").innerText = product.TenSanPham;
@@ -34,39 +36,99 @@ async function fetchProductDetails() {
     document.getElementById("type").value = product.TenNhom;
     document.getElementById("weight").value = product.TrongLuong;
     document.getElementById("description").value = product.MoTaSanPham;
-    document.getElementById("converted-stock-quantity").value =
-      product.SoLuongTon ? product.SoLuongTon : 0;
 
-    // Thêm các đơn vị tính vào dropdown
-    const unitSelect = document.getElementById("unit");
-    unitOfMeasurements.forEach((unit) => {
-      const option = document.createElement("option");
-      option.value = unit.MaDonVi;
-      option.textContent = unit.TenDonVi;
-      if (unit.MaDonVi === product.MaDonVi) {
-        option.selected = true;
-      }
-      unitSelect.appendChild(option);
-    });
-
-    // Cập nhật bảng đơn vị tính
-    // await updateConversionTable(product.SoLuongTon); // Gọi hàm để cập nhật bảng
+    // Gọi API để lấy các đơn vị bổ sung
+    await fetchAdditionalUnits(maSanPham);
   } catch (error) {
     console.error("Lỗi khi tải chi tiết sản phẩm:", error);
-    document.getElementById("product-details").innerHTML =
-      "<p>Không thể tải chi tiết sản phẩm.</p>";
+    const productDetailsElement = document.getElementById("product-details");
+    if (productDetailsElement) {
+      productDetailsElement.innerHTML =
+        "<p>Không thể tải chi tiết sản phẩm.</p>";
+    }
   }
 }
 
+async function fetchAdditionalUnits(maSanPham) {
+  try {
+    const response = await fetch(
+      `http://localhost:3000/api/donvitinhkhac/${maSanPham}`
+    );
+
+    if (!response.ok) {
+      throw new Error("Không thể tải đơn vị bổ sung");
+    }
+
+    const units = await response.json();
+    const unitsContainer = document.getElementById("additional-units");
+    unitsContainer.innerHTML = ""; // Xóa nội dung cũ
+
+    // Tạo bảng
+    const table = document.createElement("table");
+    table.innerHTML = `
+      <thead>
+        <tr>
+          <th>Tên đơn vị</th>
+          <th>Tỷ lệ quy đổi</th>
+          <th>Số lượng tồn</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    `;
+
+    const tbody = table.querySelector("tbody");
+
+    if (Array.isArray(units) && units.length > 0) {
+      units.forEach((unit) => {
+        console.log("Thông tin đơn vị bổ sung:", unit); // Log thông tin đơn vị bổ sung
+
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${unit.TenDonVi}</td>
+          <td>${unit.TyLeQuyDoi}</td>
+          <td>${unit.SoLuongTon}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    } else {
+      tbody.innerHTML =
+        "<tr><td colspan='3'>Không có đơn vị bổ sung nào.</td></tr>";
+    }
+
+    // Thêm bảng vào container
+    unitsContainer.appendChild(table);
+  } catch (error) {
+    console.error("Lỗi khi tải đơn vị bổ sung:", error);
+    const unitsContainer = document.getElementById("additional-units");
+    if (unitsContainer) {
+      unitsContainer.innerHTML = "<p>Không thể tải đơn vị bổ sung.</p>";
+    }
+  }
+}
+
+// Gọi hàm khi DOM đã hoàn tất tải
+document.addEventListener("DOMContentLoaded", fetchProductDetails);
+
+// Gọi hàm khi DOM đã hoàn tất tải
+document.addEventListener("DOMContentLoaded", fetchProductDetails);
+
+// Gọi hàm khi DOM đã hoàn tất tải
+document.addEventListener("DOMContentLoaded", fetchProductDetails);
+
 async function updateConversionTable(originalStock) {
   const conversionBody = document.getElementById("conversion-body");
+  if (!conversionBody) {
+    console.error("Không tìm thấy phần tử với ID 'conversion-body'");
+    return;
+  }
   conversionBody.innerHTML = ""; // Xóa nội dung cũ
 
   // Tạo một mảng chứa thông tin đơn vị và tỷ lệ quy đổi
   const conversionData = await Promise.all(
     unitOfMeasurements.map(async (unit) => {
       const conversionRate = await getConversionRate(unit.MaDonVi);
-      const convertedStock = Math.floor(originalStock / conversionRate); // Tính số lượng tồn quy đổi
+      const convertedStock = Math.floor(originalStock / conversionRate);
       return {
         unit: unit.TenDonVi,
         convertedStock: convertedStock,
@@ -93,9 +155,10 @@ async function updateConversionTable(originalStock) {
   });
 }
 
-// Gọi hàm để tải danh sách đơn vị tính trước khi tải chi tiết sản phẩm
-fetchUnitOfMeasurements().then(() => {
-  fetchProductDetails(); // Gọi hàm khi đã tải xong danh sách đơn vị tính
+// Khởi động khi DOM đã sẵn sàng
+document.addEventListener("DOMContentLoaded", async () => {
+  await fetchUnitOfMeasurements();
+  await fetchProductDetails();
 });
 
 function cancel() {
@@ -145,13 +208,13 @@ async function getConversionRate(unitId) {
     const data = await response.json();
 
     // Kiểm tra xem có tỷ lệ quy đổi không
-    if (data.conversionRate === undefined) {
+    if (data.TyLeQuyDoi === undefined) {
       throw new Error(
         `Tỷ lệ quy đổi không được xác định cho mã đơn vị: ${unitId}`
       );
     }
 
-    return data.conversionRate; // Trả về tỷ lệ quy đổi
+    return data.TyLeQuyDoi; // Trả về tỷ lệ quy đổi
   } catch (error) {
     console.error("Lỗi khi lấy tỷ lệ quy đổi:", error);
     return 1; // Trả về 1 nếu có lỗi

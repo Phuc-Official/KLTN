@@ -38,4 +38,56 @@ unitRouter.get("/api/donvitinh/:unitId", async (req, res) => {
 //   }
 // });
 
+// Endpoint để thêm đơn vị tính khác
+unitRouter.post("/api/donvitinhkhac", async (req, res) => {
+  const unit = req.body;
+
+  try {
+    const sqlQuery = `
+          INSERT INTO DonViKhac (MaSanPham, TenDonVi, TyLeQuyDoi, SoLuongTon)
+          VALUES (@MaSanPham, @TenDonVi, @TyLeQuyDoi, @SoLuongTon);
+      `;
+
+    const request = new sql.Request();
+    request.input("MaSanPham", sql.NVarChar, unit.MaSanPham);
+    request.input("TenDonVi", sql.NVarChar, unit.TenDonVi);
+    request.input("TyLeQuyDoi", sql.Decimal, unit.TyLeQuyDoi);
+    request.input("SoLuongTon", sql.Int, unit.SoLuongTon);
+
+    await request.query(sqlQuery);
+    res.status(201).json({ message: "Đơn vị tính đã được thêm thành công!" });
+  } catch (error) {
+    console.error("Lỗi khi thêm đơn vị tính:", error);
+    res.status(500).send("Lỗi khi thêm đơn vị tính");
+  }
+});
+
+unitRouter.get("/api/donvitinhkhac/:maSanPham", async (req, res) => {
+  const maSanPham = req.params.maSanPham;
+
+  try {
+    const query = `
+      SELECT *
+      FROM DonViKhac
+      WHERE MaSanPham = @maSanPham;
+    `;
+
+    const request = new sql.Request();
+    request.input("maSanPham", sql.NVarChar, maSanPham);
+
+    const result = await request.query(query);
+
+    if (result.recordset.length > 0) {
+      res.json(result.recordset);
+    } else {
+      res
+        .status(404)
+        .json({ message: "Không tìm thấy đơn vị tính cho mã sản phẩm này." });
+    }
+  } catch (error) {
+    console.error("Lỗi khi truy vấn:", error);
+    return res.status(500).json({ message: "Lỗi máy chủ." });
+  }
+});
+
 module.exports = unitRouter;

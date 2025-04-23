@@ -28,7 +28,7 @@
                 <h3 id="product-name"></h3>
                 <div class="input-row">
                   <div class="input-group">
-                    <label for="sku">Mã sản phẩm:</label>
+                    <label for="product-id">Mã sản phẩm:</label>
                     <input type="text" id="product-id" disabled />
                   </div>
                   <div class="input-group">
@@ -41,36 +41,9 @@
                     <label for="weight">Trọng lượng:</label>
                     <input type="text" id="weight" />
                   </div>
-                  <div class="input-group">
-                    <label for="converted-stock-quantity"
-                      >Số lượng tồn cơ bản:</label
-                    >
-                    <input
-                      type="number"
-                      id="converted-stock-quantity"
-                      min="0"
-                      required
-                    />
-                  </div>
-                </div>
-                <div class="input-row">
-                  <div class="input-group">
-                    <label for="unit">Đơn vị tính:</label>
-                    <select id="unit" onchange="updateConversionRate(this)">
-                      <option value="" disabled selected>Chọn đơn vị</option>
-                    </select>
-                    <label for="conversion-rate">Tỷ lệ quy đổi:</label>
-                    <input type="text" id="conversion-rate" value="" readonly />
-                  </div>
-                  <div class="input-group">
-                    <label for="converted-stock">Số lượng tồn:</label>
-                    <input type="text" id="converted-stock" value="" readonly />
-                  </div>
-                </div>
-                <div class="input-row">
-                  <div class="input-group"></div>
                   <div class="input-group"></div>
                 </div>
+                <div id="additional-units"></div>
                 <label for="description">Mô tả sản phẩm:</label>
                 <textarea id="description" rows="3"></textarea>
               </div>

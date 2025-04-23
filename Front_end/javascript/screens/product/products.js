@@ -26,85 +26,135 @@ async function suggestNextProductId() {
   }
 }
 
-async function addProduct() {
-  const priceInput = document.getElementById("price").value;
-  const rawPrice = priceInput.replace(/\./g, ""); // Loại bỏ dấu chấm
-  const formattedPrice = parseFloat(rawPrice); // Chuyển đổi thành số
+let additionalUnits = []; // Mảng để lưu trữ các đơn vị quy đổi
 
-  const product = {
-    MaSanPham: document.getElementById("product-id").value,
-    TenSanPham: document.getElementById("product-name").value,
-    TrongLuong: document.getElementById("weight").value,
-    MoTaSanPham: document.getElementById("description").value,
-    MaDonVi: document.getElementById("unit").value,
-    MaNhom: document.getElementById("product-group").value,
-    GiaSanPham: formattedPrice,
-  };
+// Xử lý sự kiện cho tiêu đề phần đơn vị
+document.getElementById("unit-title").addEventListener("click", () => {
+  const unitsContent = document.getElementById("units-content");
+  const toggleArrow = document.getElementById("toggle-arrow");
+
+  unitsContent.style.display =
+    unitsContent.style.display === "none" ? "block" : "none";
+  toggleArrow.classList.toggle("fa-chevron-down");
+  toggleArrow.classList.toggle("fa-chevron-up");
+});
+
+// Thêm đơn vị
+document.getElementById("add-unit").addEventListener("click", (event) => {
+  event.preventDefault(); // Ngăn chặn gửi form
+  addAdditionalUnit(); // Gọi hàm để thêm đơn vị
+});
+
+// Thêm sản phẩm
+async function addProduct() {
+  const productId = document.getElementById("product-id").value;
+  const productName = document.getElementById("product-name").value;
+  const weight = document.getElementById("weight").value;
+  const description = document.getElementById("description").value;
+  const groupId = document.getElementById("product-group").value; // Nhóm sản phẩm
+  const baseUnit = document.getElementById("base-unit").value; // Đơn vị cơ bản
+
+  // Lấy thông tin các đơn vị bổ sung
+  const additionalUnits = Array.from(
+    document.querySelectorAll("#additional-units > div")
+  ).map((unitRow) => {
+    const unitName = unitRow.querySelector("input[type='text']")?.value; // Tên đơn vị
+    const conversionRate =
+      parseFloat(unitRow.querySelector("input[type='number']")?.value) || 1; // Tỷ lệ quy đổi
+
+    console.log("đơn vị:", unitName);
+    console.log("Tỷ lệ quy đổi:", conversionRate);
+
+    if (!unitName) {
+      throw new Error("Tên đơn vị không hợp lệ");
+    }
+
+    return {
+      TenDonVi: unitName,
+      TyLeQuyDoi: conversionRate,
+    };
+  });
+
+  // Kiểm tra tất cả các trường cần thiết
+  if (!productId || !productName || !weight || !description || !groupId) {
+    alert("Vui lòng điền đầy đủ thông tin sản phẩm.");
+    return;
+  }
 
   try {
+    // Thêm sản phẩm vào cơ sở dữ liệu
     const response = await fetch("http://localhost:3000/api/sanpham", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(product),
+      body: JSON.stringify({
+        MaSanPham: productId,
+        TenSanPham: productName,
+        TrongLuong: weight,
+        MoTaSanPham: description,
+        MaNhom: groupId,
+      }),
     });
 
     if (!response.ok) {
       throw new Error("Không thể thêm sản phẩm");
     }
 
-    const result = await response.json();
-    alert(result.message); // Thông báo thêm sản phẩm thành công
+    // Lưu đơn vị cơ bản vào bảng DonViKhac
+    await fetch("http://localhost:3000/api/donvitinhkhac", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        MaSanPham: productId,
+        TenDonVi: baseUnit,
+        TyLeQuyDoi: 1, // Tỷ lệ quy đổi mặc định
+        SoLuongTon: 0,
+      }),
+    });
+
+    // Thêm các đơn vị bổ sung vào DonViKhac
+    for (const unit of additionalUnits) {
+      const unitData = {
+        MaSanPham: productId,
+        TenDonVi: unit.TenDonVi,
+        TyLeQuyDoi: unit.TyLeQuyDoi,
+        SoLuongTon: 0,
+      };
+
+      const additionalUnitResponse = await fetch(
+        "http://localhost:3000/api/donvitinhkhac",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(unitData),
+        }
+      );
+
+      if (!additionalUnitResponse.ok) {
+        console.error(
+          "Lỗi khi thêm đơn vị bổ sung:",
+          await additionalUnitResponse.text()
+        );
+      }
+    }
+
+    alert("Sản phẩm đã được thêm thành công!");
 
     // Reset form
     document.getElementById("product-form").reset();
+    document.getElementById("additional-units").innerHTML = ""; // Xóa các đơn vị quy đổi
   } catch (error) {
     console.error("Lỗi khi thêm sản phẩm:", error);
     alert("Lỗi khi thêm sản phẩm!");
   }
 }
 
-// async function getProducts(endpoint, containerId) {
-//   try {
-//     const response = await fetch(`http://localhost:3000/api/${endpoint}`);
-//     if (!response.ok) {
-//       throw new Error("Mạng lỗi, không thể lấy dữ liệu");
-//     }
-//     const data = await response.json();
-//     const container = document.getElementById(containerId);
-
-//     // Tạo tiêu đề cho bảng
-//     const headerRow = document.createElement("tr");
-//     headerSanPham.forEach((key) => {
-//       const th = document.createElement("th");
-//       th.textContent = key;
-//       headerRow.appendChild(th);
-//     });
-//     container.appendChild(headerRow);
-
-//     // Hiển thị dữ liệu
-//     const formatted = data.map((item) => ({
-//       tenSP: item.TenSanPham,
-//       trongLuong: item.TrongLuong,
-//       dvTinh: item.DonViTinh,
-//       soLuongTon: item.SoLuongTon,
-//     }));
-
-//     formatted.forEach((item) => {
-//       const row = document.createElement("tr");
-//       Object.values(item).forEach((value) => {
-//         const td = document.createElement("td");
-//         td.textContent = value; // Hiển thị giá trị
-//         row.appendChild(td);
-//       });
-//       container.appendChild(row);
-//     });
-//   } catch (error) {
-//     console.error("Lỗi khi lấy dữ liệu:", error);
-//   }
-// }
-
+// Tải nhóm sản phẩm
 async function loadGroups() {
   try {
     const response = await fetch("http://localhost:3000/api/nhomsanpham");
@@ -118,14 +168,51 @@ async function loadGroups() {
       groupSelect.appendChild(option);
     });
   } catch (error) {
-    console.error("Lỗi khi tải đơn vị tính:", error);
+    console.error("Lỗi khi tải nhóm sản phẩm:", error);
   }
 }
 
+function addAdditionalUnit() {
+  const additionalUnitContainer = document.createElement("div");
+  additionalUnitContainer.style.margin = "10px 0";
+
+  const unitRow = document.createElement("div");
+  unitRow.style.display = "flex";
+
+  const unitNameInput = document.createElement("input");
+  unitNameInput.type = "text";
+  unitNameInput.placeholder = "Nhập tên đơn vị";
+
+  const conversionRateInput = document.createElement("input");
+  conversionRateInput.type = "number";
+  conversionRateInput.placeholder = "Tỷ lệ quy đổi";
+
+  const removeButton = document.createElement("button");
+  removeButton.textContent = "Xóa";
+  removeButton.addEventListener("click", () => {
+    additionalUnitContainer.remove();
+  });
+
+  unitRow.appendChild(unitNameInput);
+  unitRow.appendChild(conversionRateInput);
+  unitRow.appendChild(removeButton);
+  additionalUnitContainer.appendChild(unitRow);
+
+  document
+    .getElementById("additional-units")
+    .appendChild(additionalUnitContainer);
+}
+
+function removeUnit(button) {
+  button.parentElement.remove();
+}
+
+// Định dạng giá
 function formatCurrency(value) {
-  // Chuyển đổi giá thành chuỗi, loại bỏ các ký tự không phải số, sau đó định dạng
   return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."); // Thêm dấu chấm
 }
+
+// Định dạng lại ô nhập giá
 function formatPriceInput() {
   const priceInput = document.getElementById("price");
   let value = priceInput.value.replace(/\./g, ""); // Xóa dấu chấm để xử lý
@@ -136,15 +223,11 @@ function formatPriceInput() {
   }
 }
 
-// fetchProducts();
-loadGroups();
 // Gọi hàm khi trang được tải
-document.addEventListener("DOMContentLoaded", () => {
-  // getProducts("donhang", "donhang-container");
-  // getProducts("sanpham", "sanpham-container");
-});
-// Gọi hàm khi trang được tải
-window.onload = suggestNextProductId;
+window.onload = () => {
+  suggestNextProductId();
+  loadGroups();
+};
 
-// Hàm thêm sản phẩm
+// Gọi hàm khi nhấn nút thêm sản phẩm
 document.getElementById("add-button").addEventListener("click", addProduct);
