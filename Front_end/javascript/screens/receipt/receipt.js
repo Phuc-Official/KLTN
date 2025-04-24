@@ -60,6 +60,59 @@ async function addReceipt() {
   }
 
   try {
+    // Kiểm tra thông tin vị trí kho và số lượng trước khi tạo phiếu nhập
+    const validationPromises = selectedProducts.map(async (productInfo) => {
+      const storageLocationId = document.getElementById(
+        `${productInfo.uniqueId}-storage-location`
+      ).value; // Lấy mã vị trí đã chọn
+
+      if (storageLocationId) {
+        const conversionRate = await fetchConversionRate(
+          productInfo.MaSanPham,
+          productInfo.MaDonVi
+        );
+
+        if (conversionRate === null) {
+          throw new Error("Không tìm thấy tỷ lệ quy đổi cho sản phẩm này.");
+        }
+
+        const quantityToUpdate = productInfo.quantity * conversionRate; // Tính số lượng cần cập nhật
+
+        // Lấy thông tin vị trí kho để kiểm tra sức chứa
+        const selectedLocation = productInfo.storageLocations.find(
+          (loc) => loc.MaViTri === storageLocationId
+        );
+
+        if (selectedLocation) {
+          // Lấy số lượng hiện có tại vị trí kho
+          const currentQuantityResponse = await fetch(
+            `http://localhost:3000/api/vitri/${selectedLocation.MaViTri}/currentQuantity`
+          );
+
+          if (!currentQuantityResponse.ok) {
+            throw new Error("Không thể lấy số lượng hiện có tại vị trí kho.");
+          }
+
+          const currentQuantityData = await currentQuantityResponse.json();
+          const currentQuantity = currentQuantityData.SoLuong || 0;
+
+          // Kiểm tra tổng số lượng
+          const totalQuantity = currentQuantity + quantityToUpdate;
+          if (totalQuantity > selectedLocation.SucChua) {
+            throw new Error(
+              `Tổng số lượng (${totalQuantity}) không được vượt quá sức chứa (${selectedLocation.SucChua}) của vị trí này.`
+            );
+          }
+        } else {
+          throw new Error("Không tìm thấy vị trí kho đã chọn.");
+        }
+      }
+    });
+
+    // Chờ tất cả các phép kiểm tra
+    await Promise.all(validationPromises);
+
+    // Nếu mọi thứ đều ổn, tiếp tục tạo phiếu nhập
     const response = await fetch("http://localhost:3000/api/phieunhap", {
       method: "POST",
       headers: {
@@ -83,13 +136,9 @@ async function addReceipt() {
       const productDetails = {
         MaPhieuNhap: receiptId,
         MaSanPham: productInfo.MaSanPham,
-        SoLuong: productInfo.quantity, // Đảm bảo bạn có trường này
-        // MaDonVi: productInfo.MaDonVi,
+        SoLuong: productInfo.quantity,
         MaDonViKhac: productInfo.MaDonVi,
       };
-
-      // Log chi tiết sản phẩm trước khi thêm
-      console.log("Thêm chi tiết phiếu nhập cho sản phẩm:", productDetails);
 
       // Gửi yêu cầu thêm chi tiết phiếu nhập
       const detailResponse = await fetch(
@@ -109,6 +158,16 @@ async function addReceipt() {
           `Không thể thêm chi tiết phiếu nhập: ${errorData.message}`
         );
       }
+
+      // Cập nhật số lượng trong ViTriKho
+      await updateProductQuantityInStorage(
+        productInfo.MaSanPham,
+        productInfo.quantity *
+          (await fetchConversionRate(
+            productInfo.MaSanPham,
+            productInfo.MaDonVi
+          ))
+      );
     });
 
     await Promise.all(productPromises);
@@ -285,12 +344,11 @@ async function selectProduct(product) {
     MaDonVi: null,
   };
 
-  // Lấy danh sách đơn vị từ bảng donvikhac
+  // Lấy danh sách đơn vị từ bảng DonViKhac
   productInfo.units = await fetchUnitsByProduct(product.MaSanPham);
 
-  // Log thông tin sản phẩm và các đơn vị
-  console.log("Sản phẩm được chọn:", product);
-  console.log("Danh sách đơn vị:", productInfo.units);
+  // Tải danh sách vị trí lưu trữ cho sản phẩm
+  productInfo.storageLocations = await fetchStorageLocations(product.MaSanPham);
 
   selectedProducts.push(productInfo);
   updateSelectedProducts();
@@ -312,6 +370,7 @@ function updateSelectedProducts() {
               <th>Tên sản phẩm</th>
               <th>Tên đơn vị</th>
               <th>Số lượng</th>
+              <th>Vị trí</th>
               <th>Hành động</th>
           </tr>
       </thead>
@@ -321,36 +380,56 @@ function updateSelectedProducts() {
   selectedProducts.forEach((productInfo, index) => {
     const row = document.createElement("tr");
     row.innerHTML = `
-      <td>${index + 1}</td>
-      <td>${productInfo.MaSanPham}</td>
-      <td>${productInfo.TenSanPham}</td>
-      <td>
-          <select id="${productInfo.uniqueId}-unit" onchange="updateUnit('${
+          <td>${index + 1}</td>
+          <td>${productInfo.MaSanPham}</td>
+          <td>${productInfo.TenSanPham}</td>
+          <td>
+              <select id="${productInfo.uniqueId}-unit" onchange="updateUnit('${
       productInfo.uniqueId
     }', this.value)">
-              <option value="" disabled ${
-                !productInfo.MaDonVi ? "selected" : ""
-              }>Chọn đơn vị</option>
-              ${productInfo.units
-                .map(
-                  (unit) => `
-                  <option value="${unit.ID}" ${
-                    unit.ID === productInfo.MaDonVi ? "selected" : ""
-                  }>${unit.TenDonVi}</option>
-              `
-                )
-                .join("")}
-          </select>
-      </td>
-      <td>
-          <input type="number" id="${productInfo.uniqueId}-quantity" value="${
+                  <option value="" disabled ${
+                    !productInfo.MaDonVi ? "selected" : ""
+                  }>Chọn đơn vị</option>
+                  ${productInfo.units
+                    .map(
+                      (unit) => `
+                      <option value="${unit.ID}" ${
+                        unit.ID === productInfo.MaDonVi ? "selected" : ""
+                      }>${unit.TenDonVi}</option>
+                  `
+                    )
+                    .join("")}
+              </select>
+          </td>
+          <td>
+              <input type="number" id="${
+                productInfo.uniqueId
+              }-quantity" value="${
       productInfo.quantity
     }" min="1" onchange="setQuantity('${productInfo.uniqueId}', this.value)" />
-      </td>
-      <td><button onclick="removeProduct('${
-        productInfo.uniqueId
-      }')">Xóa</button></td>
-    `;
+          </td>
+          <td>
+              <select id="${productInfo.uniqueId}-storage-location">
+                  <option value="" disabled selected>Chọn vị trí lưu trữ</option>
+                  ${productInfo.storageLocations
+                    .map(
+                      (location) => `
+                      <option value="${location.MaViTri}">
+                          ${location.MaViTri} (Tồn: ${
+                        location.SoLuong !== null ? location.SoLuong : 0
+                      }, Sức chứa: ${
+                        location.SucChua !== null ? location.SucChua : 0
+                      })
+                      </option>
+                  `
+                    )
+                    .join("")}
+              </select>
+          </td>
+          <td><button onclick="removeProduct('${
+            productInfo.uniqueId
+          }')">Xóa</button></td>
+      `;
     productTable.querySelector("tbody").appendChild(row);
   });
 
@@ -368,15 +447,96 @@ async function fetchUnitsByProduct(maSanPham) {
     }
     const units = await response.json(); // Giả sử dữ liệu có cấu trúc { ID, TenDonVi }
 
-    // Kiểm tra cấu trúc dữ liệu
-    units.forEach((unit) => {
-      console.log(`Mã đơn vị: ${unit.ID}, Tên đơn vị: ${unit.TenDonVi}`);
-    });
-
     return units;
   } catch (error) {
     console.error("Lỗi khi lấy đơn vị:", error);
     return [];
+  }
+}
+
+async function fetchStorageLocations(maSanPham) {
+  try {
+    const response = await fetch(
+      `http://localhost:3000/api/vitrikho/${maSanPham}`
+    );
+    if (!response.ok) {
+      throw new Error("Không thể lấy danh sách vị trí lưu trữ.");
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("Lỗi khi lấy vị trí lưu trữ:", error);
+    return [];
+  }
+}
+
+// Hàm lấy tỷ lệ quy đổi từ DonViKhac
+async function fetchConversionRate(maSanPham, donViKhacId) {
+  try {
+    const response = await fetch(
+      `http://localhost:3000/api/donvikhac/${maSanPham}/${donViKhacId}`
+    );
+    if (!response.ok) {
+      throw new Error("Không thể lấy tỷ lệ quy đổi.");
+    }
+    const data = await response.json();
+
+    // Kiểm tra nếu không tìm thấy tỷ lệ quy đổi
+    if (!data || !data.TyLeQuyDoi) {
+      throw new Error("Không tìm thấy tỷ lệ quy đổi cho sản phẩm này.");
+    }
+
+    return data.TyLeQuyDoi; // Trả về tỷ lệ quy đổi
+  } catch (error) {
+    console.error("Lỗi khi lấy tỷ lệ quy đổi:", error);
+    return null; // Trả về null nếu có lỗi
+  }
+}
+
+// Hàm cập nhật số lượng vào ViTriKho
+async function updateProductQuantityInStorage(maSanPham, quantity) {
+  try {
+    const response = await fetch("http://localhost:3000/api/capnhatsoluong", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        maSanPham: maSanPham,
+        soLuong: quantity,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Lỗi khi cập nhật số lượng.");
+    }
+
+    const result = await response.json();
+    console.log(`Cập nhật số lượng thành công: ${result.message}`); // Log thông báo thành công
+  } catch (error) {
+    console.error("Lỗi:", error);
+    alert(error.message);
+  }
+}
+
+async function updateStorageLocation(uniqueId, locationId) {
+  const productInfo = selectedProducts.find((p) => p.uniqueId === uniqueId);
+
+  if (productInfo) {
+    const selectedLocation = productInfo.storageLocations.find(
+      (loc) => loc.MaViTri === locationId
+    );
+
+    if (selectedLocation) {
+      // Tính số lượng tồn dựa trên tỷ lệ quy đổi
+      const availableQuantity =
+        selectedLocation.SoLuongTon * selectedLocation.TyLeQuyDoi;
+      productInfo.quantity = availableQuantity; // Cập nhật số lượng tồn vào sản phẩm
+      console.log(
+        `Số lượng tồn tại cho sản phẩm ${productInfo.MaSanPham} tại vị trí ${selectedLocation.TenViTri}: ${availableQuantity}`
+      );
+    }
+    updateSelectedProducts(); // Cập nhật lại bảng sản phẩm đã chọn
   }
 }
 
@@ -398,11 +558,9 @@ function updateQuantity(productId, change) {
 
 // Hàm thiết lập số lượng từ ô nhập
 function updateUnit(uniqueId, unitId) {
-  console.log(`Giá trị unitId nhận được: ${unitId}`); // Log giá trị unitId
-
   const productInfo = selectedProducts.find((p) => p.uniqueId === uniqueId);
   if (productInfo) {
-    productInfo.MaDonVi = unitId; // Cập nhật mã đơn vị
+    productInfo.MaDonVi = unitId; // Cập nhật mã đơn vị với ID
 
     // Tìm tên đơn vị tương ứng
     const selectedUnit = productInfo.units.find(
@@ -410,12 +568,7 @@ function updateUnit(uniqueId, unitId) {
     );
     const unitName = selectedUnit ? selectedUnit.TenDonVi : "Không xác định";
 
-    console.log(
-      `Mã sản phẩm: ${productInfo.MaSanPham}, Đơn vị đã chọn: ${unitId}`
-    );
-    console.log(
-      `Đơn vị đã chọn cho sản phẩm ${productInfo.MaSanPham}: ${unitName}`
-    );
+    console.log(`Đơn vị đã chọn ${productInfo.MaSanPham}: ${unitName}`);
 
     // Cập nhật lại thông tin sản phẩm đã chọn
     updateSelectedProducts(); // Cập nhật bảng

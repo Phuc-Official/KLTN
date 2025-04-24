@@ -1,3 +1,10 @@
+input {
+  width: 50%;
+  padding: 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+}
+
 .warehouse {
   display: flex;
   flex-wrap: wrap; /* Để các cột tự động xuống dòng nếu cần */
@@ -11,12 +18,12 @@
 
 .cell {
   border: 2px solid grey;
-  width: 50px; /* Tăng chiều rộng của ô */
-  height: 50px; /* Tăng chiều cao của ô */
+  width: 50px; /* Chiều rộng của ô */
+  height: 50px; /* Chiều cao của ô */
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 18px; /* Tăng kích thước chữ trong ô */
+  font-size: 18px; /* Kích thước chữ trong ô */
   color: black;
 }
 
@@ -27,4 +34,69 @@
 
 .spacer {
   width: 50px; /* Khoảng cách giữa các cặp dãy */
+}
+
+.drawer {
+  display: none; /* Ẩn drawer mặc định */
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 38%; /* Mở rộng chiều rộng drawer */
+  height: 100%; /* Chiều cao đầy đủ */
+  background-color: white;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  transition: transform 0.3s ease;
+  transform: translateX(100%); /* Ẩn ra bên phải */
+}
+
+.drawer-content {
+  margin: 20px;
+}
+
+.drawer.open {
+  display: block; /* Hiển thị drawer */
+  transform: translateX(0); /* Hiện nó ra */
+}
+
+.drawer-shelves {
+  display: flex; /* Hiển thị các cột kệ theo chiều ngang */
+  flex-direction: row; /* Xếp các kệ theo hàng ngang */
+  margin: 20px;
+}
+
+.shelf-row {
+  display: flex; /* Hiển thị các cột kệ theo hàng ngang */
+  justify-content: space-between; /* Căn giữa các kệ nếu cần */
+  margin-bottom: 10px; /* Khoảng cách giữa các hàng kệ */
+}
+
+.shelf-column {
+  display: flex;
+  flex-direction: column; /* Hiển thị các ô theo chiều dọc */
+  align-items: center; /* Căn giữa các ô */
+}
+
+.shelf-cell {
+  border: 2px solid grey;
+  width: 50px; /* Chiều rộng của ô */
+  height: 50px; /* Chiều cao của ô */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px; /* Kích thước chữ trong ô */
+  color: black;
+  margin-inline-start: 5px; /* Khoảng cách giữa các ô */
+}
+
+.shelf-label {
+  margin-top: 5px; /* Khoảng cách giữa ô và label */
+  font-weight: bold;
+  text-align: center; /* Căn giữa label */
+}
+
+.label-row {
+  display: flex; /* Hiển thị các label theo chiều ngang */
+  justify-content: space-around; /* Căn giữa các label */
+  margin-top: 10px; /* Khoảng cách giữa các label và ô */
 }

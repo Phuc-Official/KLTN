@@ -1,20 +1,18 @@
-#back-button {
-  background-color: #4caf50; /* Màu nền của nút */
+.back-button {
+  background-color: red; /* Màu nền của nút */
   color: white; /* Màu chữ */
   border: none; /* Không viền */
-  padding: 15px; /* Khoảng cách bên trong */
+  padding: 12px; /* Khoảng cách bên trong */
   text-align: center; /* Căn giữa nội dung */
   text-decoration: none; /* Không gạch chân */
   display: inline-block; /* Hiển thị inline-block */
   font-size: 16px; /* Kích thước chữ */
   margin: 4px 2px; /* Khoảng cách ngoài */
   cursor: pointer; /* Con trỏ chuột khi di chuột qua */
-  border-radius: 0; /* Hình vuông */
-  width: 50px; /* Chiều rộng */
-  height: 50px; /* Chiều cao */
+  border-radius: 8px; /* Hình vuông */
 }
 
-#back-button i {
+.back-button i {
   font-size: 20px; /* Kích thước biểu tượng */
 }
 
