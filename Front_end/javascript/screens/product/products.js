@@ -62,7 +62,7 @@ async function addProduct() {
     const conversionRate =
       parseFloat(unitRow.querySelector("input[type='number']")?.value) || 1; // Tỷ lệ quy đổi
 
-    console.log("đơn vị:", unitName);
+    console.log("Đơn vị:", unitName);
     console.log("Tỷ lệ quy đổi:", conversionRate);
 
     if (!unitName) {
@@ -76,7 +76,14 @@ async function addProduct() {
   });
 
   // Kiểm tra tất cả các trường cần thiết
-  if (!productId || !productName || !weight || !description || !groupId) {
+  if (
+    !productId ||
+    !productName ||
+    !weight ||
+    !description ||
+    !groupId ||
+    !baseUnit
+  ) {
     alert("Vui lòng điền đầy đủ thông tin sản phẩm.");
     return;
   }

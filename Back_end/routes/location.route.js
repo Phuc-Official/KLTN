@@ -51,51 +51,78 @@ locationRoute.get("/api/vitrikho/:maSanPham", async (req, res) => {
 
 // API lấy danh sách vị trí lưu trữ theo mã sản phẩm
 locationRoute.post("/api/capnhatsoluong", async (req, res) => {
-  const { maSanPham, soLuong } = req.body;
+  const { maSanPham, maViTri, soLuong } = req.body;
+  console.log("Nhận yêu cầu cập nhật:", { maSanPham, maViTri, soLuong });
 
-  if (!maSanPham || !soLuong) {
-    return res.status(400).json({ message: "Thiếu thông tin cần thiết." });
+  if (!maSanPham || !maViTri || soLuong === undefined) {
+    return res.status(400).json({
+      success: false,
+      message: "Thiếu thông tin cần thiết (maSanPham, maViTri hoặc soLuong).",
+    });
   }
 
   try {
-    // Kết nối đến cơ sở dữ liệu
     const pool = await sql.connect(req.app.get("dbConfig"));
 
-    // Lấy tỷ lệ quy đổi từ DonViKhac
-    const queryTyLeQuyDoi = `
-      SELECT TyLeQuyDoi 
-      FROM DonViKhac 
-      WHERE MaSanPham = @maSanPham`;
+    // 1. Kiểm tra xem bản ghi có tồn tại không
+    const checkQuery = `
+      SELECT COUNT(*) as count 
+      FROM ViTriKho 
+      WHERE MaSanPham = @maSanPham AND MaViTri = @maViTri`;
 
-    const requestTyLe = new sql.Request(pool);
-    requestTyLe.input("maSanPham", sql.NVarChar, maSanPham);
-    const resultTyLe = await requestTyLe.query(queryTyLeQuyDoi);
+    const checkResult = await pool
+      .request()
+      .input("maSanPham", sql.NVarChar, maSanPham)
+      .input("maViTri", sql.NVarChar, maViTri)
+      .query(checkQuery);
 
-    if (resultTyLe.recordset.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "Không tìm thấy tỷ lệ quy đổi cho sản phẩm này." });
+    if (checkResult.recordset[0].count === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Không tìm thấy vị trí kho cho sản phẩm này.",
+      });
     }
 
-    const tyLeQuyDoi = resultTyLe.recordset[0].TyLeQuyDoi;
-    const soLuongCapNhat = soLuong * tyLeQuyDoi; // Tính số lượng cần cập nhật
-
-    // Cập nhật số lượng trong ViTriKho
-    const queryUpdate = `
+    // 2. Thực hiện cập nhật
+    const updateQuery = `
       UPDATE ViTriKho 
-      SET SoLuong = SoLuong + @soLuongCapNhat
-      WHERE MaSanPham = @maSanPham`;
+      SET SoLuong = ISNULL(SoLuong, 0) + @soLuong
+      WHERE MaSanPham = @maSanPham AND MaViTri = @maViTri`;
 
-    const requestUpdate = new sql.Request(pool);
-    requestUpdate.input("maSanPham", sql.NVarChar, maSanPham);
-    requestUpdate.input("soLuongCapNhat", sql.Int, soLuongCapNhat);
+    const updateResult = await pool
+      .request()
+      .input("maSanPham", sql.NVarChar, maSanPham)
+      .input("maViTri", sql.NVarChar, maViTri)
+      .input("soLuong", sql.Int, soLuong)
+      .query(updateQuery);
 
-    await requestUpdate.query(queryUpdate);
+    console.log("Kết quả cập nhật chi tiết:", updateResult);
 
-    res.status(200).json({ message: "Cập nhật số lượng thành công." });
+    // 3. Lấy lại số lượng mới để kiểm tra
+    const verifyQuery = `
+      SELECT SoLuong 
+      FROM ViTriKho 
+      WHERE MaSanPham = @maSanPham AND MaViTri = @maViTri`;
+
+    const verifyResult = await pool
+      .request()
+      .input("maSanPham", sql.NVarChar, maSanPham)
+      .input("maViTri", sql.NVarChar, maViTri)
+      .query(verifyQuery);
+
+    res.status(200).json({
+      success: true,
+      message: "Cập nhật số lượng thành công",
+      updatedRows: updateResult.rowsAffected,
+      currentQuantity: verifyResult.recordset[0].SoLuong,
+    });
   } catch (error) {
     console.error("Lỗi khi cập nhật số lượng:", error);
-    res.status(500).json({ message: "Đã xảy ra lỗi khi cập nhật số lượng." });
+    res.status(500).json({
+      success: false,
+      message: "Lỗi server khi cập nhật số lượng",
+      error: error.message,
+    });
   }
 });
 
