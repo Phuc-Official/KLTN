@@ -5,57 +5,56 @@ const exportDetailRouter = new Router();
 
 // 1. Thêm chi tiết phiếu xuất
 exportDetailRouter.post("/api/chitietphieuxuat", async (req, res) => {
-  const { MaPhieuXuat, MaSanPham, SoLuong, MaDonVi } = req.body;
+  const { MaPhieuXuat, MaSanPham, SoLuong, MaDonViKhac } = req.body;
 
-  if (!MaPhieuXuat || !MaSanPham || !SoLuong || !MaDonVi) {
+  if (!MaPhieuXuat || !MaSanPham || !SoLuong || !MaDonViKhac) {
     return res.status(400).json({ message: "Thiếu thông tin cần thiết." });
   }
 
-  // if (SoLuong <= 0 || GiaSanPham < 0) {
-  //   return res
-  //     .status(400)
-  //     .json({ message: "Số lượng và giá sản phẩm phải lớn hơn 0." });
-  // }
+  if (SoLuong <= 0) {
+    return res.status(400).json({ message: "Số lượng phải lớn hơn 0." });
+  }
 
   try {
-    const pool = await sql.connect(req.app.get("dbConfig")); // Lấy config từ app
-    const request = new sql.Request(pool);
+    const pool = await sql.connect(req.app.get("dbConfig"));
 
+    // Kiểm tra số lượng tồn kho trước khi xuất
+    const checkStockRequest = new sql.Request(pool);
+    checkStockRequest.input("MaDonViKhac", sql.Int, MaDonViKhac);
+    const stockResult = await checkStockRequest.query(
+      "SELECT SoLuongTon FROM DonViKhac WHERE ID = @MaDonViKhac"
+    );
+
+    if (stockResult.recordset.length === 0) {
+      return res.status(400).json({ message: "Đơn vị tính không tồn tại." });
+    }
+
+    const currentStock = stockResult.recordset[0].SoLuongTon;
+    if (currentStock < SoLuong) {
+      return res.status(400).json({
+        message: `Số lượng tồn kho không đủ. Hiện có: ${currentStock}`,
+      });
+    }
+
+    // Thêm chi tiết phiếu xuất
+    const request = new sql.Request(pool);
     request.input("MaPhieuXuat", sql.NVarChar, MaPhieuXuat);
     request.input("MaSanPham", sql.NVarChar, MaSanPham);
     request.input("SoLuong", sql.Int, SoLuong);
-    // request.input("GiaSanPham", sql.Decimal, GiaSanPham);
-    request.input("MaDonVi", sql.NVarChar, MaDonVi);
+    request.input("MaDonViKhac", sql.Int, MaDonViKhac);
 
     await request.query(
-      "INSERT INTO ChiTietPhieuXuat (MaPhieuXuat, MaSanPham, SoLuong,  MaDonVi) VALUES (@MaPhieuXuat, @MaSanPham, @SoLuong,  @MaDonVi)"
+      "INSERT INTO ChiTietPhieuXuat (MaPhieuXuat, MaSanPham, SoLuong, MaDonViKhac) VALUES (@MaPhieuXuat, @MaSanPham, @SoLuong, @MaDonViKhac)"
     );
 
-    // const totalProductValue = SoLuong * GiaSanPham;
-
-    // const updateRequest = new sql.Request(pool);
-    // updateRequest.input("MaPhieuXuat", sql.NVarChar, MaPhieuXuat);
-    // updateRequest.input("TongGiaTri", sql.Decimal, totalProductValue);
-
-    // await updateRequest.query(
-    //   "UPDATE PhieuXuat SET TongGiaTri = ISNULL(TongGiaTri, 0) + @TongGiaTri WHERE MaPhieuXuat = @MaPhieuXuat"
-    // );
-
-    // Gọi API lấy tỷ lệ quy đổi
-    const conversionRateResponse = await fetch(
-      `http://localhost:3000/api/donvitinh/${MaDonVi}`
-    );
-    const conversionRateData = await conversionRateResponse.json();
-    const conversionRate = conversionRateData.conversionRate; // Lấy tỷ lệ quy đổi
-
-    const actualStockChange = SoLuong * conversionRate;
-
+    // Cập nhật số lượng tồn kho trong bảng DonViKhac
     const stockUpdateRequest = new sql.Request(pool);
     stockUpdateRequest.input("MaSanPham", sql.NVarChar, MaSanPham);
-    stockUpdateRequest.input("SoLuong", sql.Int, actualStockChange);
+    stockUpdateRequest.input("SoLuong", sql.Int, SoLuong);
+    stockUpdateRequest.input("MaDonViKhac", sql.Int, MaDonViKhac);
 
     await stockUpdateRequest.query(
-      "UPDATE SanPham SET SoLuongTon = ISNULL(SoLuongTon, 0) - @SoLuong WHERE MaSanPham = @MaSanPham"
+      "UPDATE DonViKhac SET SoLuongTon = ISNULL(SoLuongTon, 0) - @SoLuong WHERE ID = @MaDonViKhac"
     );
 
     res

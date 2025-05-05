@@ -54,6 +54,7 @@ locationRoute.post("/api/capnhatsoluong", async (req, res) => {
   const { maSanPham, maViTri, soLuong } = req.body;
   console.log("Nhận yêu cầu cập nhật:", { maSanPham, maViTri, soLuong });
 
+  // Kiểm tra đầu vào
   if (!maSanPham || !maViTri || soLuong === undefined) {
     return res.status(400).json({
       success: false,
@@ -64,57 +65,81 @@ locationRoute.post("/api/capnhatsoluong", async (req, res) => {
   try {
     const pool = await sql.connect(req.app.get("dbConfig"));
 
-    // 1. Kiểm tra xem bản ghi có tồn tại không
-    const checkQuery = `
-      SELECT COUNT(*) as count 
+    // 1. Lấy thông tin hiện tại
+    const getCurrentQuery = `
+      SELECT SoLuong, SucChua 
       FROM ViTriKho 
       WHERE MaSanPham = @maSanPham AND MaViTri = @maViTri`;
 
-    const checkResult = await pool
+    const currentResult = await pool
       .request()
       .input("maSanPham", sql.NVarChar, maSanPham)
       .input("maViTri", sql.NVarChar, maViTri)
-      .query(checkQuery);
+      .query(getCurrentQuery);
 
-    if (checkResult.recordset[0].count === 0) {
+    if (currentResult.recordset.length === 0) {
       return res.status(404).json({
         success: false,
         message: "Không tìm thấy vị trí kho cho sản phẩm này.",
       });
     }
 
-    // 2. Thực hiện cập nhật
+    const currentQuantity = currentResult.recordset[0].SoLuong || 0;
+    const capacity = currentResult.recordset[0].SucChua;
+
+    // 2. Kiểm tra nghiệp vụ
+    const newQuantity = currentQuantity + soLuong;
+
+    // Kiểm tra số lượng âm (khi xuất hàng)
+    if (newQuantity < 0) {
+      return res.status(400).json({
+        success: false,
+        message: `Số lượng không được âm. Hiện có: ${currentQuantity}, yêu cầu xuất: ${-soLuong}`,
+        currentQuantity,
+        requested: soLuong,
+      });
+    }
+
+    // Kiểm tra vượt sức chứa (khi nhập hàng)
+    if (newQuantity > capacity) {
+      return res.status(400).json({
+        success: false,
+        message: `Vượt quá sức chứa (${capacity}). Số lượng sau cập nhật: ${newQuantity}`,
+        currentQuantity,
+        capacity,
+        requested: soLuong,
+      });
+    }
+
+    // 3. Thực hiện cập nhật
     const updateQuery = `
       UPDATE ViTriKho 
-      SET SoLuong = ISNULL(SoLuong, 0) + @soLuong
+      SET SoLuong = @newQuantity
       WHERE MaSanPham = @maSanPham AND MaViTri = @maViTri`;
 
     const updateResult = await pool
       .request()
       .input("maSanPham", sql.NVarChar, maSanPham)
       .input("maViTri", sql.NVarChar, maViTri)
-      .input("soLuong", sql.Int, soLuong)
+      .input("newQuantity", sql.Int, newQuantity)
       .query(updateQuery);
 
-    console.log("Kết quả cập nhật chi tiết:", updateResult);
-
-    // 3. Lấy lại số lượng mới để kiểm tra
-    const verifyQuery = `
-      SELECT SoLuong 
-      FROM ViTriKho 
-      WHERE MaSanPham = @maSanPham AND MaViTri = @maViTri`;
-
+    // 4. Lấy thông tin cập nhật cuối cùng để xác nhận
     const verifyResult = await pool
       .request()
       .input("maSanPham", sql.NVarChar, maSanPham)
       .input("maViTri", sql.NVarChar, maViTri)
-      .query(verifyQuery);
+      .query(getCurrentQuery);
 
     res.status(200).json({
       success: true,
       message: "Cập nhật số lượng thành công",
-      updatedRows: updateResult.rowsAffected,
-      currentQuantity: verifyResult.recordset[0].SoLuong,
+      data: {
+        previousQuantity: currentQuantity,
+        newQuantity: verifyResult.recordset[0].SoLuong,
+        change: soLuong,
+        capacity: capacity,
+      },
     });
   } catch (error) {
     console.error("Lỗi khi cập nhật số lượng:", error);
@@ -122,6 +147,7 @@ locationRoute.post("/api/capnhatsoluong", async (req, res) => {
       success: false,
       message: "Lỗi server khi cập nhật số lượng",
       error: error.message,
+      stack: process.env.NODE_ENV === "development" ? error.stack : undefined,
     });
   }
 });
