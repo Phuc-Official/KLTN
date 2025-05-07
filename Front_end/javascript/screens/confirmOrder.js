@@ -8,18 +8,6 @@ function cancel() {
   window.history.back();
 }
 
-async function fetchUnitOfMeasurements() {
-  try {
-    const response = await fetch("http://localhost:3000/api/donvitinh");
-    if (!response.ok) {
-      throw new Error("Không thể tải danh sách đơn vị tính.");
-    }
-    unitOfMeasurements = await response.json(); // Lưu trữ đơn vị tính vào mảng
-  } catch (error) {
-    console.error("Lỗi khi tải đơn vị tính:", error);
-  }
-}
-
 // Hàm gợi ý mã phiếu nhập tiếp theo
 async function suggestNextReceiptId() {
   try {
@@ -118,7 +106,6 @@ async function addReceipt() {
 
 // Khởi tạo các hàm khi trang được tải
 document.addEventListener("DOMContentLoaded", () => {
-  fetchUnitOfMeasurements();
   suggestNextReceiptId(); // Gợi ý mã phiếu nhập khi trang tải
 
   // Gọi hàm khi thêm phiếu nhập

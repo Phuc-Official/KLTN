@@ -389,7 +389,7 @@ function redirectToConfirmationPageWithProducts() {
   localStorage.setItem("selectedProducts", JSON.stringify(selectedProducts));
 
   // Chuyển hướng đến trang xác nhận
-  window.location.href = "../../html/inventory/confirmStock.html"; // Đường dẫn đến trang xác nhận
+  window.location.href = "confirmStock.html"; // Đường dẫn đến trang xác nhận
 }
 
 function viewSheetDetails(sheetId) {

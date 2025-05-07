@@ -80,19 +80,12 @@ async function addOrder() {
 
     // Cập nhật chi tiết đơn hàng cho từng sản phẩm
     const productPromises = selectedProducts.map(async (productInfo) => {
-      // Lấy giá trị MaDonVi từ dropdown
-      const selectedUnit = document.getElementById(
-        `${productInfo.uniqueId}-unit`
-      ).value;
-
       const productDetails = {
         MaDonHang: orderId,
         MaSanPham: productInfo.MaSanPham,
         SoLuong: productInfo.quantity,
-        // GiaSanPham: productInfo.price,
-        MaDonVi: selectedUnit, // Gán giá trị từ dropdown
+        MaDonViKhac: productInfo.MaDonVi, // Sử dụng đơn vị đã chọn
       };
-
       console.log("Thông tin chi tiết đơn hàng:", productDetails); // Log thông tin chi tiết
 
       // Gửi yêu cầu thêm chi tiết đơn hàng
@@ -329,14 +322,18 @@ function displayFilteredProducts(filteredProducts) {
 // Hàm chọn sản phẩm
 let selectedProducts = []; // Mảng để lưu trữ thông tin sản phẩm đã chọn
 
-function selectProduct(product) {
+async function selectProduct(product) {
   const productInfo = {
     uniqueId: `${product.MaSanPham}-${selectedProducts.length + 1}`,
     MaSanPham: product.MaSanPham,
+    TenSanPham: product.TenSanPham,
     quantity: 1,
-    MaDonVi: product.MaDonVi,
-    // price: product.GiaSanPham,
+    selectedUnitName: "",
+    MaDonVi: null,
   };
+
+  // Lấy danh sách đơn vị từ bảng DonViKhac (giống phiếu nhập)
+  productInfo.units = await fetchUnitsByProduct(product.MaSanPham);
 
   selectedProducts.push(productInfo);
   updateSelectedProducts();
@@ -344,12 +341,26 @@ function selectProduct(product) {
   document.getElementById("product-list").style.display = "none";
 }
 
+async function fetchUnitsByProduct(maSanPham) {
+  try {
+    const response = await fetch(
+      `http://localhost:3000/api/donvitinhkhac/${maSanPham}`
+    );
+    if (!response.ok) {
+      throw new Error("Không thể lấy danh sách đơn vị tính.");
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("Lỗi khi lấy đơn vị:", error);
+    return [];
+  }
+}
+
 // Cập nhật thông tin sản phẩm đã chọn
 function updateSelectedProducts() {
   const selectedProductsDiv = document.getElementById("selected-products");
-  selectedProductsDiv.innerHTML = ""; // Xóa nội dung cũ
+  selectedProductsDiv.innerHTML = "";
 
-  let index = 1; // Khởi tạo chỉ số STT
   const productTable = document.createElement("table");
   productTable.innerHTML = `
       <thead>
@@ -357,76 +368,55 @@ function updateSelectedProducts() {
               <th>STT</th>
               <th>Mã sản phẩm</th>
               <th>Tên sản phẩm</th>
-              <th>Tên đơn vị</th>
+              <th>Đơn vị</th>
               <th>Số lượng</th>
-              
               <th>Hành động</th>
           </tr>
       </thead>
       <tbody>
   `;
 
-  // let totalValue = 0; // Biến lưu tổng giá trị
-
-  selectedProducts.forEach((productInfo) => {
-    const product = window.productsList.find(
-      (p) => p.MaSanPham === productInfo.MaSanPham
-    );
-    if (product) {
-      const quantity = productInfo.quantity; // Lấy số lượng từ thông tin sản phẩm
-      // const price = productInfo.price; // Lấy giá từ thông tin sản phẩm
-      // const totalPrice = price * quantity; // Tính thành tiền
-
-      // totalValue += totalPrice; // Cộng dồn vào tổng giá trị
-
-      const row = document.createElement("tr");
-      row.innerHTML = `
-              <td>${index++}</td>
-              <td>${product.MaSanPham}</td>
-              <td>${product.TenSanPham}</td>
-              <td>
-                  <select id="${
-                    productInfo.uniqueId
-                  }-unit" onchange="updateUnit('${
-        productInfo.uniqueId
-      }', this.value)">
-                    <option value="" disabled ${
-                      !productInfo.MaDonVi ? "selected" : ""
-                    }>Chọn đơn vị</option>
-                    ${unitOfMeasurements
-                      .map(
-                        (unit) => `
-                        <option value="${unit.MaDonVi}" ${
-                          unit.MaDonVi === productInfo.MaDonVi ? "selected" : ""
-                        }>${unit.TenDonVi}</option>
-                      `
-                      )
-                      .join("")}
-                  </select>
-              </td>
-              <td>
-                  <input type="number" id="${
-                    productInfo.uniqueId
-                  }-quantity" value="${quantity}" min="1" onchange="setQuantity('${
-        productInfo.uniqueId
-      }', this.value)" />
-              </td>
-              
-              <td><button onclick="removeProduct('${
-                productInfo.uniqueId
-              }')">Xóa</button></td>
-          `;
-      productTable.querySelector("tbody").appendChild(row);
-    }
+  selectedProducts.forEach((productInfo, index) => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${productInfo.MaSanPham}</td>
+          <td>${productInfo.TenSanPham}</td>
+          <td>
+            <select id="${productInfo.uniqueId}-unit" onchange="updateUnit('${
+      productInfo.uniqueId
+    }', this.value)">
+              <option value="" disabled ${
+                !productInfo.MaDonVi ? "selected" : ""
+              }>Chọn đơn vị</option>
+              ${productInfo.units
+                .map(
+                  (unit) => `
+                  <option 
+                    value="${unit.ID}" 
+                    ${productInfo.MaDonVi == unit.ID ? "selected" : ""}
+                  >
+                    ${unit.TenDonVi}
+                  </option>
+                `
+                )
+                .join("")}
+            </select>
+          </td>
+          <td>
+            <input type="number" id="${productInfo.uniqueId}-quantity" value="${
+      productInfo.quantity
+    }" min="1" onchange="setQuantity('${productInfo.uniqueId}', this.value)" />
+          </td>
+          <td><button onclick="removeProduct('${
+            productInfo.uniqueId
+          }')">Xóa</button></td>
+      `;
+    productTable.querySelector("tbody").appendChild(row);
   });
 
   productTable.innerHTML += `</tbody>`;
   selectedProductsDiv.appendChild(productTable);
-
-  // Cập nhật tổng giá trị vào đơn hàng
-  // document.getElementById(
-  //   "total-price"
-  // ).textContent = `Tổng giá trị: ${totalValue.toLocaleString()} đ`;
 }
 
 // Hàm thiết lập số lượng từ ô nhập

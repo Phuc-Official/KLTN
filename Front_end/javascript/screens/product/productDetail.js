@@ -1,17 +1,3 @@
-let unitOfMeasurements = []; // Khởi tạo biến toàn cục
-
-async function fetchUnitOfMeasurements() {
-  try {
-    const response = await fetch("http://localhost:3000/api/donvitinh");
-    if (!response.ok) {
-      throw new Error("Không thể tải danh sách đơn vị tính.");
-    }
-    unitOfMeasurements = await response.json(); // Lưu trữ đơn vị tính vào mảng
-  } catch (error) {
-    console.error("Lỗi khi tải đơn vị tính:", error);
-  }
-}
-
 async function fetchProductDetails() {
   const urlParams = new URLSearchParams(window.location.search);
   const maSanPham = urlParams.get("id");
@@ -70,7 +56,7 @@ async function fetchAdditionalUnits(maSanPham) {
         <tr>
           <th>Tên đơn vị</th>
           <th>Tỷ lệ quy đổi</th>
-          <th>Số lượng tồn</th>
+          <th>Số lượng</th>
         </tr>
       </thead>
       <tbody>
@@ -81,7 +67,7 @@ async function fetchAdditionalUnits(maSanPham) {
 
     if (Array.isArray(units) && units.length > 0) {
       units.forEach((unit) => {
-        console.log("Thông tin đơn vị bổ sung:", unit); // Log thông tin đơn vị bổ sung
+        console.log("Thông tin đơn vị:", unit); // Log thông tin đơn vị bổ sung
 
         const row = document.createElement("tr");
         row.innerHTML = `
@@ -92,29 +78,19 @@ async function fetchAdditionalUnits(maSanPham) {
         tbody.appendChild(row);
       });
     } else {
-      tbody.innerHTML =
-        "<tr><td colspan='3'>Không có đơn vị bổ sung nào.</td></tr>";
+      tbody.innerHTML = "<tr><td colspan='3'>Không có đơn vị nào.</td></tr>";
     }
 
     // Thêm bảng vào container
     unitsContainer.appendChild(table);
   } catch (error) {
-    console.error("Lỗi khi tải đơn vị bổ sung:", error);
+    console.error("Lỗi khi tải đơn vị:", error);
     const unitsContainer = document.getElementById("additional-units");
     if (unitsContainer) {
-      unitsContainer.innerHTML = "<p>Không thể tải đơn vị bổ sung.</p>";
+      unitsContainer.innerHTML = "<p>Không thể tải đơn vị.</p>";
     }
   }
 }
-
-// Gọi hàm khi DOM đã hoàn tất tải
-document.addEventListener("DOMContentLoaded", fetchProductDetails);
-
-// Gọi hàm khi DOM đã hoàn tất tải
-document.addEventListener("DOMContentLoaded", fetchProductDetails);
-
-// Gọi hàm khi DOM đã hoàn tất tải
-document.addEventListener("DOMContentLoaded", fetchProductDetails);
 
 async function updateConversionTable(originalStock) {
   const conversionBody = document.getElementById("conversion-body");
@@ -157,7 +133,6 @@ async function updateConversionTable(originalStock) {
 
 // Khởi động khi DOM đã sẵn sàng
 document.addEventListener("DOMContentLoaded", async () => {
-  await fetchUnitOfMeasurements();
   await fetchProductDetails();
 });
 
