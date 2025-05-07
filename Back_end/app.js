@@ -25,7 +25,7 @@ const config = {
   server: process.env.DB_SERVER,
   database: process.env.DB_NAME,
   options: {
-    port: 1433,
+    port: Number(process.env.DB_PORT), // Chuyển đổi sang số
     encrypt: true,
     trustServerCertificate: true,
   },
