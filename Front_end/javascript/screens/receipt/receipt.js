@@ -236,6 +236,7 @@ async function addReceipt() {
 
     // Gợi ý mã phiếu nhập mới
     suggestNextReceiptId();
+    window.location.href = "receiptList.html";
   } catch (error) {
     console.error("Lỗi khi thêm phiếu nhập:", error);
     alert(`Lỗi: ${error.message}`);
@@ -493,23 +494,26 @@ function updateSelectedProducts() {
     }" min="1" onchange="setQuantity('${productInfo.uniqueId}', this.value)" />
           </td>
           <td>
-              <select id="${productInfo.uniqueId}-storage-location">
-                  <option value="" disabled selected>Chọn vị trí lưu trữ</option>
-                  ${productInfo.storageLocations
-                    .map(
-                      (location) => `
-                      <option value="${location.MaViTri}">
-                          ${location.MaViTri} (Tồn: ${
-                        location.SoLuong !== null ? location.SoLuong : 0
-                      }, Sức chứa: ${
-                        location.SucChua !== null ? location.SucChua : 0
-                      })
-                      </option>
-                  `
-                    )
-                    .join("")}
-              </select>
+            <select id="${productInfo.uniqueId}-storage-location">
+                <option value="" disabled selected>Chọn vị trí lưu trữ</option>
+                ${productInfo.storageLocations
+                  .map((location) => {
+                    const soLuong =
+                      location.SoLuong !== null ? location.SoLuong : 0;
+                    const sucChua =
+                      location.SucChua !== null ? location.SucChua : 0;
+                    const conTrong = sucChua - soLuong;
+
+                    return `
+                    <option value="${location.MaViTri}">
+                        ${location.MaViTri}, Còn trống ${conTrong}
+                    </option>
+                    `;
+                  })
+                  .join("")}
+            </select>
           </td>
+
           <td><button onclick="removeProduct('${
             productInfo.uniqueId
           }')">Xóa</button></td>
@@ -557,7 +561,7 @@ async function fetchStorageLocations(maSanPham) {
 async function fetchConversionRate(maSanPham, donViKhacId) {
   try {
     const response = await fetch(
-      `http://localhost:3000/api/donvikhac/${maSanPham}/${donViKhacId}`
+      `http://localhost:3000/api/donvikhac/by-product/${maSanPham}/${donViKhacId}`
     );
     if (!response.ok) {
       throw new Error("Không thể lấy tỷ lệ quy đổi.");

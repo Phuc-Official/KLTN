@@ -104,18 +104,20 @@ sheetRouter.post("/api/phieukiemke", async (req, res) => {
 sheetRouter.post("/api/chitietphieukiemke", async (req, res) => {
   console.log("Dữ liệu nhận được cho chi tiết phiếu kiểm kê:", req.body); // Log dữ liệu
   try {
-    const { MaPhieuKiemKe, MaSanPham, SoLuongThucTe, MaDonVi } = req.body;
+    const { MaPhieuKiemKe, MaSanPham, SoLuongThucTe, MaDonViKhac, SoLuongTon } =
+      req.body;
 
     const sqlQuery = `
-            INSERT INTO ChiTietPhieuKiemKe (MaPhieuKiemKe, MaSanPham, SoLuongThucTe, MaDonVi)
-            VALUES (@MaPhieuKiemKe, @MaSanPham, @SoLuongThucTe, @MaDonVi)
-        `;
+      INSERT INTO ChiTietPhieuKiemKe (MaPhieuKiemKe, MaSanPham, SoLuongThucTe, MaDonViKhac, SoLuongTon)
+      VALUES (@MaPhieuKiemKe, @MaSanPham, @SoLuongThucTe, @MaDonViKhac, @SoLuongTon)
+    `;
 
     const request = new sql.Request();
     request.input("MaPhieuKiemKe", sql.NVarChar, MaPhieuKiemKe);
     request.input("MaSanPham", sql.NVarChar, MaSanPham);
     request.input("SoLuongThucTe", sql.Int, SoLuongThucTe);
-    request.input("MaDonVi", sql.NVarChar, MaDonVi);
+    request.input("MaDonViKhac", sql.NVarChar, MaDonViKhac);
+    request.input("SoLuongTon", sql.Int, SoLuongTon); // Lưu số lượng tồn
 
     await request.query(sqlQuery);
 

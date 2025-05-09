@@ -16,8 +16,7 @@ async function loadSuppliers() {
     if (!response.ok) {
       throw new Error("Không thể tải danh sách nhà cung cấp");
     }
-    const suppliers = await response.json();
-    return suppliers;
+    return await response.json();
   } catch (error) {
     console.error("Lỗi khi tải nhà cung cấp:", error);
     return [];
@@ -30,11 +29,34 @@ async function loadEmployees() {
     if (!response.ok) {
       throw new Error("Không thể tải danh sách nhân viên");
     }
-    const employees = await response.json();
-    return employees;
+    return await response.json();
   } catch (error) {
     console.error("Lỗi khi tải nhân viên:", error);
     return [];
+  }
+}
+
+// ==== Gợi ý mã phiếu nhập mới ====
+function generateNextReceiptId(maxId) {
+  const prefix = maxId.slice(0, 2);
+  const currentNumber = parseInt(maxId.slice(2), 10);
+  const nextNumber = (currentNumber + 1).toString().padStart(4, "0");
+  return prefix + nextNumber;
+}
+
+async function suggestNextReceiptId() {
+  try {
+    const response = await fetch(
+      "http://localhost:3000/api/phieunhap/max-maphieunhap"
+    );
+    const data = await response.json();
+    const nextReceiptId = data.maxMaPhieuNhap
+      ? generateNextReceiptId(data.maxMaPhieuNhap)
+      : "PN0001";
+
+    document.getElementById("receipt-id").value = nextReceiptId;
+  } catch (error) {
+    console.error("Lỗi khi gợi ý mã phiếu nhập:", error);
   }
 }
 
@@ -42,6 +64,9 @@ async function loadEmployees() {
 let productsFromUrl = [];
 
 document.addEventListener("DOMContentLoaded", async () => {
+  // Gợi ý mã phiếu nhập mới
+  await suggestNextReceiptId();
+
   const params = getQueryParams();
   console.log("Thông tin thu được từ URL:", params);
 
@@ -54,9 +79,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     loadSuppliers(),
     loadEmployees(),
   ]);
-
-  // Hiển thị thông tin phiếu nhập
-  document.getElementById("receipt-id").value = params.orderId || "";
 
   // Hiển thị tên nhà cung cấp
   const supplier = suppliers.find((s) => s.MaNhaCungCap === params.supplier);
@@ -72,7 +94,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   document.getElementById("description").value = params.description || "";
 
-  // Kiểm tra và hiển thị sản phẩm đã chọn
+  // Hiển thị sản phẩm đã chọn
   if (productsJson) {
     productsFromUrl = JSON.parse(decodeURIComponent(productsJson));
     displaySelectedProducts(productsFromUrl);
@@ -120,7 +142,6 @@ function displaySelectedProducts(products) {
 
 function updateProductQuantity(input, maSanPham) {
   const newQuantity = input.value;
-  // Cập nhật số lượng trong productsFromUrl
   const product = productsFromUrl.find((p) => p.MaSanPham === maSanPham);
   if (product) {
     product.SoLuong = newQuantity;
@@ -137,7 +158,6 @@ function cancel() {
 document
   .getElementById("save-receipt-button")
   .addEventListener("click", async () => {
-    // 1. Lấy mã phiếu nhập từ ô input
     const receiptId = document.getElementById("receipt-id").value.trim();
     const params = getQueryParams();
 
@@ -145,22 +165,19 @@ document
     const employeeId = params.employee;
     const description = document.getElementById("description").value.trim();
 
-    // Kiểm tra thông tin bắt buộc
     if (!receiptId || !supplierId || !employeeId) {
       alert("Vui lòng điền đầy đủ thông tin phiếu nhập!");
       return;
     }
 
-    // 2. Lấy số lượng từ các ô input trong bảng
     const productRows = document.querySelectorAll(
       "#selected-products tbody tr"
     );
-    const products = Array.from(productRows).map((row, index) => {
+    const products = Array.from(productRows).map((row) => {
       const maSanPham = row.cells[1].textContent.trim();
       const soLuongInput = row.cells[4].querySelector("input");
       const soLuong = parseInt(soLuongInput.value.trim(), 10);
 
-      // 3. Tìm sản phẩm trong productsFromUrl để lấy MaDonViKhac
       const originalProduct = productsFromUrl.find(
         (p) => p.MaSanPham === maSanPham
       );
@@ -173,7 +190,6 @@ document
       };
     });
 
-    // Tạo đối tượng phiếu nhập
     const receiptData = {
       MaPhieuNhap: receiptId,
       MaNhaCungCap: supplierId,
@@ -186,7 +202,6 @@ document
     console.log("Dữ liệu phiếu nhập sẽ được gửi:", receiptData);
 
     try {
-      // Kiểm tra trùng mã phiếu nhập
       const checkResponse = await fetch(
         `http://localhost:3000/api/phieunhap/${receiptId}`
       );
@@ -194,7 +209,6 @@ document
         throw new Error("Mã phiếu nhập đã tồn tại!");
       }
 
-      // Lưu phiếu nhập chính
       const response = await fetch("http://localhost:3000/api/phieunhap", {
         method: "POST",
         headers: {
@@ -208,7 +222,6 @@ document
         throw new Error(`Lỗi khi lưu phiếu nhập: ${errorData.message}`);
       }
 
-      // Lưu chi tiết phiếu nhập
       await Promise.all(
         products.map(async (product) => {
           const detailResponse = await fetch(

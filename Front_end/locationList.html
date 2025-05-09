@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="css/inventory.css" />
     <link rel="stylesheet" href="css/sidebar.css" />
     <link rel="stylesheet" href="css/button.css" />
+
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
@@ -101,44 +102,77 @@
         <div class="container_a">
           <div id="warehouse" class="warehouse"></div>
           <div class="drawer" id="drawer">
-            <h2 id="drawer-title">Tạo Ô Lưu Trữ</h2>
+            <h2 id="drawer-title" style="margin-bottom: 20px">Tạo ô lưu trữ</h2>
             <div id="drawer-content">
               <!-- Phần tạo ô lưu trữ -->
               <div id="create-storage">
-                <label for="day">Dãy:</label>
-                <input type="text" id="day" placeholder="Nhập dãy" />
+                <div class="input-row">
+                  <div class="input-group">
+                    <label for="day">Dãy:</label><br />
+                    <input
+                      type="text"
+                      id="day"
+                      placeholder="Nhập dãy"
+                      class="small"
+                    />
+                  </div>
+                  <div class="input-group">
+                    <label for="ke">Kệ:</label><br />
+                    <input
+                      type="text"
+                      id="ke"
+                      placeholder="Nhập kệ"
+                      class="small"
+                    />
+                  </div>
+                  <div class="input-group">
+                    <label for="o">Ô:</label><br />
+                    <input
+                      type="text"
+                      id="o"
+                      placeholder="Nhập số ô"
+                      class="small"
+                    />
+                  </div>
+                </div>
+                <br />
 
-                <label for="ke">Kệ:</label>
-                <input type="text" id="ke" placeholder="Nhập kệ" />
+                <div class="input-row">
+                  <div class="input-group">
+                    <label for="ma_san_pham">Mã Sản Phẩm:</label><br />
+                    <input
+                      type="text"
+                      id="ma_san_pham"
+                      placeholder="Nhập mã sản phẩm"
+                      class="small"
+                    />
+                  </div>
+                  <div class="input-group">
+                    <label for="suc_chua">Sức Chứa:</label><br />
+                    <input
+                      type="number"
+                      id="suc_chua"
+                      placeholder="Nhập sức chứa"
+                      style="margin-bottom: 10px"
+                      class="small"
+                    />
+                  </div>
+                </div>
 
-                <label for="o">Ô:</label>
-                <input type="text" id="o" placeholder="Nhập số ô" />
-
-                <label for="suc_chua">Sức Chứa:</label>
-                <input
-                  type="number"
-                  id="suc_chua"
-                  placeholder="Nhập sức chứa"
-                />
-                <label for="ma_san_pham">Mã Sản Phẩm:</label>
-                <input
-                  type="text"
-                  id="ma_san_pham"
-                  placeholder="Nhập mã sản phẩm"
-                />
-
-                <button onclick="createStorage()" class="create-button">
+                <button onclick="createStorage()" class="create-button-a">
                   Lưu
                 </button>
+                <button id="close-drawer" class="back-button">Đóng</button>
               </div>
 
               <!-- Phần hiển thị thông tin kệ -->
               <div id="shelf-info" style="display: none">
                 <div id="drawer-shelves"></div>
                 <div id="info-display"></div>
+                <button id="close-drawer-a" class="back-button">Đóng</button>
               </div>
             </div>
-            <button id="close-drawer" class="back-button">Đóng</button>
+            <br />
           </div>
         </div>
       </main>

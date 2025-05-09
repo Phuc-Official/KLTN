@@ -5,12 +5,14 @@ const receiptsPerPage = 10;
 const exportsPerPage = 10;
 const inventoriesPerPage = 10; // Số lượng phiếu kiểm kê mỗi trang
 const ordersPerPage = 10; // Số lượng đơn hàng mỗi trang
+const sheetPerPage = 10;
 
 let products = [];
 let receipts = [];
 let exports = [];
 let inventories = []; // Mảng chứa tất cả phiếu kiểm kê
 let orders = []; // Mảng chứa đơn hàng
+let sheets = [];
 
 async function fetchProducts() {
   try {
@@ -62,6 +64,16 @@ async function fetchOrders() {
   }
 }
 
+async function fetchInventories() {
+  try {
+    const response = await fetch("http://localhost:3000/api/phieukiemke");
+    inventories = await response.json();
+    displayItems("inventory");
+  } catch (error) {
+    // console.error("Lỗi khi tải phiếu kiểm kê:", error);
+  }
+}
+
 // Hàm để hiển thị sản phẩm, phiếu nhập, phiếu xuất, phiếu kiểm kê hoặc đơn hàng theo trang
 function displayItems(type) {
   const container = document.querySelector(`#${type}-container tbody`);
@@ -101,7 +113,6 @@ function displayItems(type) {
                 <td>${item.MaSanPham}</td>
                 <td>${item.TenSanPham}</td>
                 <td>${item.TenNhom || ""}</td>
-                <td>${item.SoLuongTon !== null ? item.SoLuongTon : 0}</td>
             `
         : type === "receipt"
         ? `
@@ -163,7 +174,7 @@ function updatePagination(type) {
       ? receipts
       : type === "export"
       ? exports
-      : type === "inventories"
+      : type === "inventory"
       ? inventories
       : orders; // Chọn mảng dựa trên loại
   const totalPages = Math.ceil(
@@ -174,7 +185,7 @@ function updatePagination(type) {
         ? receiptsPerPage
         : type === "export"
         ? exportsPerPage
-        : type === "inventories"
+        : type === "inventory"
         ? inventoriesPerPage
         : ordersPerPage)
   );

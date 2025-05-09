@@ -57,6 +57,7 @@ input {
 .drawer.open {
   display: block; /* Hiển thị drawer */
   transform: translateX(0); /* Hiện nó ra */
+  padding: 20px;
 }
 
 .drawer-shelves {
@@ -99,4 +100,24 @@ input {
   display: flex; /* Hiển thị các label theo chiều ngang */
   justify-content: space-around; /* Căn giữa các label */
   margin-top: 10px; /* Khoảng cách giữa các label và ô */
+}
+
+label {
+  margin-bottom: -10px;
+  display: flex; /* quan trọng: để margin-bottom có hiệu lực trên label */
+}
+
+.input-row {
+  display: flex; /* Sử dụng flexbox để căn chỉnh ngang */
+  gap: 15px; /* Khoảng cách giữa các ô nhập */
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column; /* Đặt nhãn và ô nhập theo cột */
+  flex: 1; /* Các ô nhập sẽ chiếm đều không gian */
+}
+
+.small {
+  width: 100%;
 }

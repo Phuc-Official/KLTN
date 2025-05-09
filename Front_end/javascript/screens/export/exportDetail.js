@@ -1,3 +1,18 @@
+async function fetchUnitName(donViKhacId) {
+  if (!donViKhacId) return "Không tìm thấy";
+  try {
+    const response = await fetch(
+      `http://localhost:3000/api/donvikhac/by-id/${donViKhacId}`
+    );
+    if (!response.ok) throw new Error("Không thể lấy tên đơn vị khác.");
+    const unit = await response.json();
+    return unit.TenDonVi || "Không tìm thấy";
+  } catch (error) {
+    console.error("Lỗi khi lấy tên đơn vị khác:", error);
+    return "Không tìm thấy";
+  }
+}
+
 async function loadCustomers() {
   try {
     const response = await fetch("http://localhost:3000/api/khachhang");
@@ -5,7 +20,7 @@ async function loadCustomers() {
       throw new Error("Không thể lấy danh sách khách hàng");
     }
     const customers = await response.json();
-    return customers; // Trả về danh sách khách hàng
+    return customers;
   } catch (error) {
     console.error("Lỗi khi tải khách hàng:", error);
     return [];
@@ -19,7 +34,7 @@ async function loadProducts() {
       throw new Error("Không thể lấy danh sách sản phẩm");
     }
     const products = await response.json();
-    return products; // Trả về danh sách sản phẩm
+    return products;
   } catch (error) {
     console.error("Lỗi khi tải sản phẩm:", error);
     return [];
@@ -36,20 +51,6 @@ async function loadEmployees() {
     return employees;
   } catch (error) {
     console.error("Lỗi khi tải nhân viên:", error);
-    return [];
-  }
-}
-
-async function loadUnitOfMeasurement() {
-  try {
-    const response = await fetch("http://localhost:3000/api/donvitinh");
-    if (!response.ok) {
-      throw new Error("Không thể lấy danh sách đơn vị tính");
-    }
-    const units = await response.json();
-    return units; // Trả về danh sách đơn vị tính
-  } catch (error) {
-    console.error("Lỗi khi tải đơn vị tính:", error);
     return [];
   }
 }
@@ -71,71 +72,61 @@ async function fetchExportDetails() {
       throw new Error("Không thể tải chi tiết phiếu xuất.");
     }
 
-    const textResponse = await response.text(); // Lấy phản hồi dưới dạng chuỗi
-    const exports = JSON.parse(textResponse); // Phân tích cú pháp nếu cần
+    const textResponse = await response.text();
+    const exports = JSON.parse(textResponse);
 
     const detailsContainer = document.getElementById("export-details");
-
     if (!detailsContainer) {
       throw new Error("Phần tử export-details không tồn tại.");
     }
 
-    // Tải danh sách sản phẩm, đơn vị tính, khách hàng, và nhân viên
-    const [products, units, customers, employees] = await Promise.all([
+    const [products, customers, employees] = await Promise.all([
       loadProducts(),
-      loadUnitOfMeasurement(),
       loadCustomers(),
       loadEmployees(),
     ]);
 
     document.getElementById("export-id").textContent = exports.MaPhieuXuat;
 
-    // Tìm tên khách hàng trong danh sách
     const customer = customers.find(
-      (c) => c.MaKhachHang === exports.MaKhachHang // Thay đổi từ MaNhaCungCap thành MaKhachHang
+      (c) => c.MaKhachHang === exports.MaKhachHang
     );
     const customerName = customer ? customer.TenKhachHang : "Không tìm thấy";
-    document.getElementById("customer").value = customerName; // Thay đổi từ supplier thành customer
+    document.getElementById("customer").value = customerName;
 
-    // Tìm tên nhân viên trong danh sách
     const employee = employees.find((e) => e.MaNhanVien === exports.MaNhanVien);
     const employeeName = employee ? employee.TenNhanVien : "Không tìm thấy";
     document.getElementById("employee").value = employeeName;
 
-    // Hiển thị danh sách sản phẩm
     let productList = document.getElementById("product-list");
     if (!productList) {
       console.error("Phần tử product-list không tồn tại.");
       return;
     }
 
-    exports.SanPhamList.forEach((product) => {
+    for (const product of exports.SanPhamList) {
       const foundProduct = products.find(
         (p) => p.MaSanPham === product.MaSanPham
       );
-      const unit = units.find((u) => u.MaDonVi === product.MaDonVi);
-
       const productName = foundProduct
         ? foundProduct.TenSanPham
         : "Không tìm thấy";
-      const unitName = unit ? unit.TenDonVi : "Không tìm thấy";
+
+      const unitName = await fetchUnitName(product.MaDonViKhac);
 
       const row = document.createElement("tr");
       row.innerHTML = `
-                <td>${product.MaSanPham}</td>
-                <td>${productName}</td>
-                 <td>${unitName}</td>
-                <td>${product.SoLuong}</td>              
-
-            `;
+        <td>${product.MaSanPham}</td>
+        <td>${productName}</td>
+        <td>${unitName}</td>
+        <td>${product.SoLuong}</td>
+      `;
       productList.appendChild(row);
-    });
+    }
 
-    // Cập nhật thông tin khác vào side-panel
     document.getElementById("date").value = new Date(
-      exports.NgayXuat // Thay đổi từ NgayNhap thành NgayXuat
+      exports.NgayXuat
     ).toLocaleDateString();
-    // document.getElementById("total-price").value = exports.TongGiaTri;
     document.getElementById("description").value = exports.MoTa;
   } catch (error) {
     console.error("Lỗi khi tải chi tiết phiếu xuất:", error);
@@ -149,6 +140,5 @@ async function fetchExportDetails() {
 document.addEventListener("DOMContentLoaded", fetchExportDetails);
 
 function cancel() {
-  // Quay về trang trước
   window.history.back();
 }

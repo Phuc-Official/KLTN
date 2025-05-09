@@ -9,19 +9,6 @@ function cancel() {
   window.history.back();
 }
 
-// Hàm tải đơn vị tính
-async function fetchUnitOfMeasurements() {
-  try {
-    const response = await fetch("http://localhost:3000/api/donvitinh");
-    if (!response.ok) {
-      throw new Error("Không thể tải danh sách đơn vị tính.");
-    }
-    unitOfMeasurements = await response.json(); // Lưu trữ đơn vị tính
-  } catch (error) {
-    console.error("Lỗi khi tải đơn vị tính:", error);
-  }
-}
-
 // Hàm gợi ý mã phiếu kiểm kê
 async function suggestNextSheetId() {
   try {
@@ -298,7 +285,7 @@ function updateSelectedProducts() {
               <th>Mã sản phẩm</th>
               <th>Tên sản phẩm</th>
 
-              <th>Số lượng tồn</th>
+
 
               <th>Hành động</th>
           </tr>
@@ -314,10 +301,7 @@ function updateSelectedProducts() {
       const row = document.createElement("tr");
       row.innerHTML = `
               <td>${product.MaSanPham}</td>
-              <td>${product.TenSanPham}</td>
-              
-              <td>${productInfo.SoLuongTon}</td> <!-- Hiển thị số lượng tồn -->
-              
+              <td>${product.TenSanPham}</td>                                     
               <td><button onclick="removeProduct('${productInfo.uniqueId}')">Xóa</button></td>
           `;
       productTable.querySelector("tbody").appendChild(row);
@@ -398,7 +382,6 @@ function viewSheetDetails(sheetId) {
 
 // Khởi tạo các hàm khi trang được tải
 document.addEventListener("DOMContentLoaded", () => {
-  fetchUnitOfMeasurements();
   suggestNextSheetId(); // Gợi ý mã phiếu kiểm kê khi trang tải
   loadProducts(); // Tải sản phẩm
   loadEmployees();

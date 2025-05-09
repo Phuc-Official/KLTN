@@ -2,36 +2,29 @@ async function fetchProductDetails(productId) {
   try {
     const response = await fetch(
       `http://localhost:3000/api/sanpham/${productId}`
-    ); // Thay đổi đường dẫn nếu cần
+    );
     if (!response.ok) {
       throw new Error("Không thể lấy thông tin sản phẩm");
     }
-    return await response.json(); // Giả sử API trả về một đối tượng sản phẩm
+    return await response.json();
   } catch (error) {
     console.error("Lỗi khi lấy thông tin sản phẩm:", error);
-    return null; // Trả về null nếu có lỗi
+    return null;
   }
 }
 
-async function fetchUnitDetails(unitId) {
+async function fetchProductUnits(maSanPham) {
   try {
-    const response = await fetch(
-      `http://localhost:3000/api/donvitinh/${unitId}`
-    );
-
+    const response = await fetch(`${BACKEND_URL}/donvitinhkhac/${maSanPham}`);
     if (!response.ok) {
-      throw new Error("Không thể lấy thông tin đơn vị");
+      throw new Error("Không thể lấy thông tin đơn vị sản phẩm");
     }
-
-    const unitData = await response.json();
-
-    return {
-      TenDonVi: unitData.TenDonVi,
-      TyleQuyDoi: unitData.TyleQuyDoi,
-    };
+    const units = await response.json();
+    console.log("Thông tin đơn vị tính:", units); // Log thông tin đơn vị tính
+    return units;
   } catch (error) {
-    console.error("Lỗi khi lấy thông tin đơn vị:", error);
-    return null; // Trả về null nếu có lỗi
+    console.error("Lỗi khi lấy đơn vị sản phẩm:", error);
+    return [];
   }
 }
 
@@ -41,59 +34,116 @@ document.addEventListener("DOMContentLoaded", async () => {
   const selectedProductsDiv = document.getElementById("selected-products");
   const confirmButton = document.getElementById("confirm-button");
 
-  // Log dữ liệu sản phẩm từ localStorage
-  console.log("Dữ liệu sản phẩm từ localStorage:", selectedProducts);
-
   if (selectedProducts.length === 0) {
     selectedProductsDiv.innerHTML = "<p>Không có sản phẩm nào được chọn.</p>";
   } else {
     const productTable = document.createElement("table");
+    productTable.className = "product-table";
     productTable.innerHTML = `
-            <thead>
-                <tr>
-                    <th>Mã sản phẩm</th>
-                    <th>Tên sản phẩm</th>
-                    <th>Đơn vị</th>
-                    <th>Số lượng tồn</th>
-                    <th>Số lượng thực tế</th>
-                </tr>
-            </thead>
-            <tbody>
-        `;
+      <thead>
+        <tr>
+          <th>Mã SP</th>
+          <th>Tên SP</th>
+          <th>Đơn vị tính</th>
+          <th>Số lượng tồn</th>
+          <th>Số lượng thực tế</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    `;
 
     for (const product of selectedProducts) {
       const productDetails = await fetchProductDetails(product.MaSanPham);
-      const unitDetails = await fetchUnitDetails(product.MaDonVi);
+      const productUnits = await fetchProductUnits(product.MaSanPham);
 
       if (productDetails) {
         const row = document.createElement("tr");
         row.innerHTML = `
-                    <td>${product.MaSanPham}</td>
-                    <td>${productDetails.TenSanPham || ""}</td>
-                    <td>${product ? product.MaDonVi : ""}</td>
-                    <td>${product.quantity || ""}</td>
-                    <td>
-                        <input type="number" id="${
-                          product.uniqueId
-                        }-quantity" value="${
-          product.quantity || 0
-        }" min="0" class="actual-quantity" />
-                    </td>
-                    
-                `;
+          <td>${product.MaSanPham}</td>
+          <td>${productDetails.TenSanPham || ""}</td>
+          <td class="unit-cells"></td>
+          <td class="stock-cells"></td>
+          <td class="actual-cells"></td>
+        `;
+
+        // Thêm các đơn vị tính
+        const unitCells = row.querySelector(".unit-cells");
+        const stockCells = row.querySelector(".stock-cells");
+        const actualCells = row.querySelector(".actual-cells");
+
+        // Sắp xếp đơn vị: đơn vị cơ bản (tỷ lệ 1) lên đầu
+        const sortedUnits = [...productUnits].sort(
+          (a, b) => a.TyLeQuyDoi - b.TyLeQuyDoi
+        );
+
+        sortedUnits.forEach((unit) => {
+          // Lấy số lượng tồn tương ứng với từng đơn vị từ bảng DonViKhac
+          const stockQuantity = unit.SoLuongTon || 0; // Giả định số lượng tồn được trả về từ API
+
+          // Log số lượng tồn
+          console.log(
+            `Sản phẩm: ${product.MaSanPham}, Đơn vị: ${unit.TenDonVi}, Số lượng tồn: ${stockQuantity}, Tỷ lệ quy đổi: ${unit.TyLeQuyDoi}`
+          );
+
+          // Ô đơn vị - hiển thị tên và tỷ lệ
+          const unitDiv = document.createElement("div");
+          unitDiv.className = "unit-row";
+          unitDiv.innerHTML = `
+            ${unit.TenDonVi} (${unit.TyLeQuyDoi})
+          `;
+          unitCells.appendChild(unitDiv);
+
+          // Ô số lượng tồn
+          const stockDiv = document.createElement("div");
+          stockDiv.className = "stock-row";
+          stockDiv.textContent = stockQuantity;
+          stockCells.appendChild(stockDiv);
+
+          // Ô nhập số lượng thực tế
+          const actualDiv = document.createElement("div");
+          actualDiv.className = "actual-row";
+          const input = document.createElement("input");
+          input.type = "number";
+          input.min = "0";
+          input.value = stockQuantity;
+          input.dataset.productId = product.MaSanPham;
+          input.dataset.unitId = unit.ID;
+          input.dataset.rate = unit.TyLeQuyDoi;
+          actualDiv.appendChild(input);
+          actualCells.appendChild(actualDiv);
+        });
+
         productTable.querySelector("tbody").appendChild(row);
       }
     }
 
-    productTable.innerHTML += `</tbody>`;
     selectedProductsDiv.appendChild(productTable);
   }
 
-  confirmButton.addEventListener("click", async () => {
-    // Log thông tin sẽ thêm vào cơ sở dữ liệu
-    const sheet = JSON.parse(localStorage.getItem("sheetDetails")); // Lấy thông tin phiếu
-    console.log("Thông tin phiếu để thêm:", sheet);
+  // CSS inline cho bảng
+  const style = document.createElement("style");
+  style.textContent = `
+    .product-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .product-table th, .product-table td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      vertical-align: top;
+    }
+    .unit-row, .stock-row, .actual-row {
+      padding: 6px 0;
+      border-bottom: 1px solid #eee;
+    }
+    .product-table input[type="number"] {
+      width: 80px;
+      padding: 4px;
+    }
+  `;
+  document.head.appendChild(style);
 
+  confirmButton.addEventListener("click", async () => {
     await createStock();
   });
 });
@@ -101,27 +151,26 @@ document.addEventListener("DOMContentLoaded", async () => {
 let isSubmitting = false; // Cờ để theo dõi trạng thái gửi
 
 async function createStock() {
-  if (isSubmitting) return; // Ngăn không cho gửi yêu cầu nếu đã đang gửi
-  isSubmitting = true; // Đặt cờ là đang gửi
+  if (isSubmitting) return;
+  isSubmitting = true;
 
   const sheet = JSON.parse(localStorage.getItem("sheetDetails"));
   const selectedProducts = JSON.parse(localStorage.getItem("selectedProducts"));
 
   if (!sheet || !selectedProducts || selectedProducts.length === 0) {
     alert("Thông tin phiếu hoặc sản phẩm không hợp lệ.");
-    isSubmitting = false; // Đặt lại cờ
+    isSubmitting = false;
     return;
   }
 
   try {
-    console.log("Thông tin phiếu kiểm kê:", sheet); // Kiểm tra thông tin phiếu
-
+    // Tạo phiếu kiểm kê
     const response = await fetch("http://localhost:3000/api/phieukiemke", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(sheet), // Đảm bảo gửi đúng dữ liệu
+      body: JSON.stringify(sheet),
     });
 
     if (!response.ok) {
@@ -131,57 +180,89 @@ async function createStock() {
 
     const result = await response.json();
     const sheetId = result.MaPhieuKiemKe;
+    console.log("Đã tạo phiếu kiểm kê với ID:", sheetId);
 
-    const productPromises = selectedProducts.map(async (productInfo) => {
-      const quantityInput = document.querySelector(
-        `#${productInfo.uniqueId}-quantity`
-      );
-      const actualQuantity = quantityInput ? parseInt(quantityInput.value) : 0;
+    // Tạo chi tiết phiếu kiểm kê cho từng sản phẩm
+    const rows = document.querySelectorAll("#selected-products table tbody tr");
 
-      if (isNaN(actualQuantity) || actualQuantity < 0) {
-        console.error(
-          "Số lượng không hợp lệ cho sản phẩm:",
-          productInfo.MaSanPham
-        );
-        return;
-      }
+    for (const row of rows) {
+      const productId = row.cells[0].textContent;
+      const inputs = row.querySelectorAll(".actual-cells input");
 
-      const productDetails = {
-        MaPhieuKiemKe: sheetId,
-        MaSanPham: productInfo.MaSanPham,
-        SoLuongThucTe: actualQuantity,
-        MaDonVi: productInfo.MaDonVi,
-      };
+      // Lấy tất cả các stock-row và unit-row tương ứng
+      const stockRows = row.querySelectorAll(".stock-row");
+      const unitRows = row.querySelectorAll(".unit-row");
 
-      const detailResponse = await fetch(
-        "http://localhost:3000/api/chitietphieukiemke",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(productDetails),
+      for (let i = 0; i < inputs.length; i++) {
+        const input = inputs[i];
+        const stockRow = stockRows[i];
+        const unitRow = unitRows[i];
+
+        if (!stockRow || !unitRow) {
+          console.error("Không tìm thấy thông tin tương ứng cho input:", input);
+          continue;
         }
-      );
 
-      if (!detailResponse.ok) {
-        const errorData = await detailResponse.json();
-        throw new Error(
-          `Không thể thêm chi tiết phiếu kiểm kê: ${errorData.message}`
+        // Lấy thông tin từ data attributes của input
+        const unitId = input.dataset.unitId;
+        const rate = parseFloat(input.dataset.rate);
+        const actualQuantity = parseInt(input.value) || 0;
+        const stockQuantity = parseInt(stockRow.textContent) || 0;
+
+        console.log("Chuẩn bị tạo chi tiết phiếu:", {
+          MaPhieuKiemKe: sheetId,
+          MaSanPham: productId,
+          MaDonViKhac: unitId,
+          SoLuongThucTe: actualQuantity,
+          SoLuongTon: stockQuantity,
+          TyLeQuyDoi: rate,
+        });
+
+        // Gửi yêu cầu tạo chi tiết phiếu
+        const detailResponse = await fetch(
+          "http://localhost:3000/api/chitietphieukiemke",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              MaPhieuKiemKe: sheetId,
+              MaSanPham: productId,
+              MaDonViKhac: unitId,
+              SoLuongThucTe: actualQuantity,
+              SoLuongTon: stockQuantity,
+              TyLeQuyDoi: rate,
+            }),
+          }
         );
+
+        if (!detailResponse.ok) {
+          const errorData = await detailResponse.json();
+          throw new Error(`Lỗi khi thêm chi tiết phiếu: ${errorData.message}`);
+        }
+
+        console.log("Đã tạo chi tiết phiếu thành công:", {
+          MaSanPham: productId,
+          MaDonViKhac: unitId,
+          SoLuongThucTe: actualQuantity,
+        });
       }
-    });
+    }
 
-    await Promise.all(productPromises);
+    alert("Phiếu kiểm kê và chi tiết đã được tạo thành công!");
 
-    alert("Phiếu kiểm kê đã được tạo thành công.");
+    // Xóa dữ liệu tạm
     localStorage.removeItem("selectedProducts");
     localStorage.removeItem("sheetDetails");
+
+    // Chuyển hướng về trang danh sách
+    window.location.href = "sheetList.html";
   } catch (error) {
     console.error("Lỗi khi thêm phiếu kiểm kê:", error);
-    alert(error.message);
+    alert(`Có lỗi xảy ra: ${error.message}`);
   } finally {
-    isSubmitting = false; // Đặt lại cờ sau khi hoàn thành
+    isSubmitting = false;
   }
 }
 

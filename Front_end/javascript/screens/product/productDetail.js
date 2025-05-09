@@ -55,7 +55,7 @@ async function fetchAdditionalUnits(maSanPham) {
       <thead>
         <tr>
           <th>Tên đơn vị</th>
-          <th>Tỷ lệ quy đổi</th>
+          <th>Quy đổi</th>
           <th>Số lượng</th>
         </tr>
       </thead>

@@ -88,7 +88,7 @@ function showShelfPositions(positions, shelfRowNumber) {
   const createStorageDiv = document.getElementById("create-storage");
   const shelfInfoDiv = document.getElementById("shelf-info");
 
-  createStorageDiv.style.display = "none"; // Ẩn phần tạo ô
+  createStorageDiv.style.display = "none"; // Ẩn phần
   shelfInfoDiv.style.display = "block"; // Hiển thị phần thông tin kệ
   isShelfInfoVisible = true; // Đặt trạng thái thành true
 
@@ -121,7 +121,7 @@ function showShelfPositions(positions, shelfRowNumber) {
       cellDiv.addEventListener("click", () => {
         const displayQuantity = quantity || 0;
         if (position) {
-          infoDisplay.innerHTML = `Mã vị trí: ${position.MaViTri}, Đang chứa: ${displayQuantity}`;
+          infoDisplay.innerHTML = `Mã vị trí: ${position.MaViTri}, Mã sản phẩm: ${position.MaSanPham} <br> Sức chứa: ${position.SucChua},  Đang chứa: ${displayQuantity}`;
         } else {
           infoDisplay.innerHTML = `Mã: Không có thông tin, Số lượng: 0`;
         }
@@ -194,6 +194,10 @@ function createStorage() {
 // Đóng drawer khi nhấn vào nút đóng
 document
   .getElementById("close-drawer")
+  .addEventListener("click", closeAllDrawers);
+
+document
+  .getElementById("close-drawer-a")
   .addEventListener("click", closeAllDrawers);
 
 // Gọi loadWarehousePositions khi DOM đã tải xong

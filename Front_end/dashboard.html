@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Dashboard Theo Tháng</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+      }
+      .dashboard-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+      }
+      .card {
+        background-color: #f0f0f0;
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+      .card h2 {
+        margin: 0;
+        font-size: 2em;
+        color: #333;
+      }
+      .card p {
+        margin: 5px 0 0;
+        color: #666;
+      }
+      .filter {
+        margin-bottom: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Dashboard Theo Tháng</h1>
+
+    <div class="filter">
+      <label for="month-select">Chọn tháng:</label>
+      <select id="month-select">
+        <option value="all">Tất cả</option>
+        <option value="1">Tháng 1</option>
+        <option value="2">Tháng 2</option>
+        <option value="3">Tháng 3</option>
+        <option value="4">Tháng 4</option>
+        <option value="5">Tháng 5</option>
+        <option value="6">Tháng 6</option>
+        <option value="7">Tháng 7</option>
+        <option value="8">Tháng 8</option>
+        <option value="9">Tháng 9</option>
+        <option value="10">Tháng 10</option>
+        <option value="11">Tháng 11</option>
+        <option value="12">Tháng 12</option>
+      </select>
+      <button onclick="loadDashboardData()">Lọc</button>
+    </div>
+
+    <div class="dashboard-container">
+      <div class="card">
+        <h2 id="total-receipts">0</h2>
+        <p>Phiếu nhập</p>
+      </div>
+      <div class="card">
+        <h2 id="total-exports">0</h2>
+        <p>Phiếu xuất</p>
+      </div>
+    </div>
+
+    <script>
+      async function loadDashboardData() {
+        const selectedMonth = document.getElementById("month-select").value;
+
+        try {
+          const [receiptsRes, exportsRes] = await Promise.all([
+            fetch("http://localhost:3000/api/phieunhap"),
+            fetch("http://localhost:3000/api/phieuxuat"),
+          ]);
+
+          const receipts = await receiptsRes.json();
+          const exportsData = await exportsRes.json();
+
+          let filteredReceipts = receipts;
+          let filteredExports = exportsData;
+
+          if (selectedMonth !== "all") {
+            const month = parseInt(selectedMonth, 10);
+
+            filteredReceipts = receipts.filter((r) => {
+              const date = new Date(r.NgayNhap);
+              return date.getMonth() + 1 === month;
+            });
+
+            filteredExports = exportsData.filter((e) => {
+              const date = new Date(e.NgayXuat);
+              return date.getMonth() + 1 === month;
+            });
+          }
+
+          document.getElementById("total-receipts").textContent =
+            filteredReceipts.length;
+          document.getElementById("total-exports").textContent =
+            filteredExports.length;
+        } catch (error) {
+          console.error("Lỗi khi tải dashboard:", error);
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", loadDashboardData);
+    </script>
+  </body>
+</html>

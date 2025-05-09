@@ -26,18 +26,6 @@ unitRouter.get("/api/donvitinh/:unitId", async (req, res) => {
   }
 });
 
-// // API lấy danh sách tất cả đơn vị tính
-// unitRouter.get("/api/donvitinh", async (req, res) => {
-//   try {
-//     const sqlQuery = `SELECT * FROM DonViTinh`;
-//     const result = await sql.query(sqlQuery);
-//     res.json(result.recordset);
-//   } catch (err) {
-//     console.error("Lỗi khi lấy danh sách đơn vị tính:", err);
-//     res.status(500).send("Lỗi khi truy vấn cơ sở dữ liệu");
-//   }
-// });
-
 // Endpoint để thêm đơn vị tính khác
 unitRouter.post("/api/donvitinhkhac", async (req, res) => {
   const unit = req.body;
@@ -90,7 +78,7 @@ unitRouter.get("/api/donvitinhkhac/:maSanPham", async (req, res) => {
   }
 });
 
-unitRouter.get("/api/donvikhac/:maSanPham/:iD", async (req, res) => {
+unitRouter.get("/api/donvikhac/by-product/:maSanPham/:iD", async (req, res) => {
   const { maSanPham, iD } = req.params;
 
   try {
@@ -120,6 +108,32 @@ unitRouter.get("/api/donvikhac/:maSanPham/:iD", async (req, res) => {
   } catch (error) {
     console.error("Lỗi khi lấy tỷ lệ quy đổi:", error);
     res.status(500).json({ message: "Đã xảy ra lỗi khi lấy dữ liệu." });
+  }
+});
+
+unitRouter.get("/api/donvikhac/by-id/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const pool = await sql.connect(req.app.get("dbConfig"));
+    const query = `
+      SELECT TenDonVi 
+      FROM DonViKhac 
+      WHERE ID = @id
+    `;
+    const request = new sql.Request(pool);
+    request.input("id", sql.Int, id);
+
+    const result = await request.query(query);
+
+    if (result.recordset.length > 0) {
+      res.json({ TenDonVi: result.recordset[0].TenDonVi });
+    } else {
+      res.status(404).json({ message: "Không tìm thấy tên đơn vị." });
+    }
+  } catch (error) {
+    console.error("Lỗi khi lấy tên đơn vị:", error);
+    res.status(500).json({ message: "Lỗi máy chủ." });
   }
 });
 
