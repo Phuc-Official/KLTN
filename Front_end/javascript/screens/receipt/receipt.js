@@ -10,7 +10,7 @@ function cancel() {
 
 // async function fetchUnitOfMeasurements() {
 //   try {
-//     const response = await fetch("http://localhost:3000/api/donvitinh");
+//     const response = await fetch("${BACKEND_URL}/donvitinh");
 //     if (!response.ok) {
 //       throw new Error("Không thể tải danh sách đơn vị tính.");
 //     }
@@ -28,9 +28,7 @@ function viewReceiptDetails(receiptId) {
 // Hàm gợi ý mã phiếu nhập tiếp theo
 async function suggestNextReceiptId() {
   try {
-    const response = await fetch(
-      "http://localhost:3000/api/phieunhap/max-maphieunhap"
-    );
+    const response = await fetch(`${BACKEND_URL}/phieunhap/max-maphieunhap`);
     const data = await response.json();
     const nextReceiptId = data.maxMaPhieuNhap
       ? generateNextReceiptId(data.maxMaPhieuNhap)
@@ -94,7 +92,7 @@ async function addReceipt() {
 
       // Lấy số lượng hiện có tại vị trí kho
       const currentQuantityResponse = await fetch(
-        `http://localhost:3000/api/vitri/${storageLocationId}/currentQuantity`
+        `${BACKEND_URL}/vitri/${storageLocationId}/currentQuantity`
       );
 
       if (!currentQuantityResponse.ok) {
@@ -133,7 +131,7 @@ async function addReceipt() {
     // );
 
     // Tạo phiếu nhập chính
-    const response = await fetch("http://localhost:3000/api/phieunhap", {
+    const response = await fetch(`${BACKEND_URL}/phieunhap`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -164,16 +162,13 @@ async function addReceipt() {
         ).value,
       };
 
-      const detailResponse = await fetch(
-        "http://localhost:3000/api/chitietphieunhap",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(productDetails),
-        }
-      );
+      const detailResponse = await fetch(`${BACKEND_URL}/chitietphieunhap`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(productDetails),
+      });
 
       if (!detailResponse.ok) {
         const errorData = await detailResponse.json();
@@ -246,7 +241,7 @@ async function addReceipt() {
 // Hàm cập nhật số lượng trong kho (cần sửa lại)
 async function updateProductQuantityInStorage(maSanPham, maViTri, soLuong) {
   try {
-    const response = await fetch("http://localhost:3000/api/capnhatsoluong", {
+    const response = await fetch(`${BACKEND_URL}/capnhatsoluong`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ maSanPham, maViTri, soLuong }),
@@ -302,7 +297,7 @@ function getReceiptDetailsFromForm() {
 // Hàm tải nhà cung cấp
 async function loadSuppliers() {
   try {
-    const response = await fetch("http://localhost:3000/api/nhacungcap");
+    const response = await fetch(`${BACKEND_URL}/nhacungcap`);
     const suppliers = await response.json();
     populateSupplierSelect(suppliers);
   } catch (error) {
@@ -324,7 +319,7 @@ function populateSupplierSelect(suppliers) {
 // Hàm tải nhân viên
 async function loadEmployees() {
   try {
-    const response = await fetch("http://localhost:3000/api/nhanvien");
+    const response = await fetch(`${BACKEND_URL}/nhanvien`);
 
     // Kiểm tra nếu phản hồi không thành công
     if (!response.ok) {
@@ -352,7 +347,7 @@ function populateEmployeeSelect(employees) {
 // Hàm tải sản phẩm
 async function loadProducts() {
   try {
-    const response = await fetch("http://localhost:3000/api/sanpham");
+    const response = await fetch("${BACKEND_URL}/sanpham");
     if (!response.ok) {
       throw new Error("Không thể lấy danh sách sản phẩm");
     }
@@ -527,9 +522,7 @@ function updateSelectedProducts() {
 
 async function fetchUnitsByProduct(maSanPham) {
   try {
-    const response = await fetch(
-      `http://localhost:3000/api/donvitinhkhac/${maSanPham}`
-    );
+    const response = await fetch(`${BACKEND_URL}/donvitinhkhac/${maSanPham}`);
     if (!response.ok) {
       throw new Error("Không thể lấy danh sách đơn vị tính.");
     }
@@ -544,9 +537,7 @@ async function fetchUnitsByProduct(maSanPham) {
 
 async function fetchStorageLocations(maSanPham) {
   try {
-    const response = await fetch(
-      `http://localhost:3000/api/vitrikho/${maSanPham}`
-    );
+    const response = await fetch(`${BACKEND_URL}/vitrikho/${maSanPham}`);
     if (!response.ok) {
       throw new Error("Không thể lấy danh sách vị trí lưu trữ.");
     }
@@ -561,7 +552,7 @@ async function fetchStorageLocations(maSanPham) {
 async function fetchConversionRate(maSanPham, donViKhacId) {
   try {
     const response = await fetch(
-      `http://localhost:3000/api/donvikhac/by-product/${maSanPham}/${donViKhacId}`
+      `${BACKEND_URL}/donvikhac/by-product/${maSanPham}/${donViKhacId}`
     );
     if (!response.ok) {
       throw new Error("Không thể lấy tỷ lệ quy đổi.");
@@ -583,7 +574,7 @@ async function fetchConversionRate(maSanPham, donViKhacId) {
 // Hàm cập nhật số lượng vào ViTriKho
 async function updateProductQuantityInStorage(maSanPham, maViTri, soLuong) {
   try {
-    const response = await fetch("http://localhost:3000/api/capnhatsoluong", {
+    const response = await fetch(`${BACKEND_URL}/capnhatsoluong`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

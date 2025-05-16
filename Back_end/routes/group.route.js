@@ -1,65 +1,45 @@
 const { Router } = require("express");
-const sql = require("mssql"); // Import thư viện mssql
+const pool = require("../db");
 
 const groupRouter = new Router();
 
-// Endpoint để lấy danh sách nhóm sản phẩm
+// Lấy danh sách nhóm sản phẩm
 groupRouter.get("/api/nhomsanpham", async (req, res) => {
   try {
-    const sqlQuery = `SELECT * FROM NhomSanPham`;
-    const result = await sql.query(sqlQuery);
-    res.json(result.recordset);
+    const [rows] = await pool.query("SELECT * FROM NhomSanPham");
+    res.json(rows);
   } catch (err) {
     console.error("Lỗi khi lấy danh sách nhóm sản phẩm:", err);
     res.status(500).send("Lỗi khi truy vấn cơ sở dữ liệu");
   }
 });
 
-// Endpoint cho nhóm sản phẩm theo mã nhóm
+// Lấy nhóm sản phẩm theo mã nhóm
 groupRouter.get("/api/nhomsanpham/:maNhom", async (req, res) => {
-  const maNhom = req.params.maNhom;
-
+  const { maNhom } = req.params;
   try {
-    const sqlQuery = `
-          SELECT * FROM NhomSanPham
-          WHERE MaNhom = @maNhom
-      `;
+    const [rows] = await pool.query(
+      "SELECT * FROM NhomSanPham WHERE MaNhom = ?",
+      [maNhom]
+    );
 
-    const request = new sql.Request();
-    request.input("maNhom", sql.NVarChar, maNhom); // Sử dụng loại dữ liệu phù hợp
-
-    const result = await request.query(sqlQuery);
-
-    if (result.recordset.length > 0) {
-      return res.json(result.recordset[0]); // Gửi nhóm sản phẩm đầu tiên
+    if (rows.length > 0) {
+      res.json(rows[0]);
     } else {
-      return res.status(404).json({ message: "Nhóm sản phẩm không tìm thấy" });
+      res.status(404).json({ message: "Nhóm sản phẩm không tìm thấy" });
     }
-  } catch (error) {
-    console.error("Lỗi khi lấy chi tiết nhóm sản phẩm:", error);
-    return res
-      .status(500)
-      .json({ message: "Lỗi khi lấy chi tiết nhóm sản phẩm" });
+  } catch (err) {
+    console.error("Lỗi khi lấy chi tiết nhóm sản phẩm:", err);
+    res.status(500).json({ message: "Lỗi khi truy vấn cơ sở dữ liệu" });
   }
 });
 
-// Endpoint thêm nhóm sản phẩm
+// Thêm nhóm sản phẩm
 groupRouter.post("/api/nhomsanpham", async (req, res) => {
+  const { TenNhom, MoTa } = req.body;
   try {
-    const { TenNhom, MoTa } = req.body;
-
-    const sqlQuery = `
-              INSERT INTO NhomSanPham (TenNhom, MoTa)
-              VALUES (@TenNhom, @MoTa)
-          `;
-
-    const request = new sql.Request();
-
-    request.input("TenNhom", sql.NVarChar, TenNhom);
-    request.input("MoTa", sql.NVarChar, MoTa);
-
-    await request.query(sqlQuery);
-
+    const sql = "INSERT INTO NhomSanPham (TenNhom, MoTa) VALUES (?, ?)";
+    await pool.query(sql, [TenNhom, MoTa]);
     res.status(201).json({ message: "Nhóm sản phẩm đã được thêm thành công!" });
   } catch (err) {
     console.error("Lỗi khi thêm nhóm sản phẩm:", err);
@@ -67,26 +47,15 @@ groupRouter.post("/api/nhomsanpham", async (req, res) => {
   }
 });
 
-// Endpoint cập nhật nhóm sản phẩm
+// Cập nhật nhóm sản phẩm
 groupRouter.put("/api/nhomsanpham/:maNhom", async (req, res) => {
-  const maNhom = req.params.maNhom;
+  const { maNhom } = req.params;
   const { TenNhom, MoTa } = req.body;
-
   try {
-    const sqlQuery = `
-          UPDATE NhomSanPham
-          SET TenNhom = @TenNhom,
-              MoTa = @MoTa
-          WHERE MaNhom = @maNhom
-      `;
+    const sql = "UPDATE NhomSanPham SET TenNhom = ?, MoTa = ? WHERE MaNhom = ?";
+    const [result] = await pool.query(sql, [TenNhom, MoTa, maNhom]);
 
-    const request = new sql.Request();
-    request.input("maNhom", sql.NVarChar, maNhom);
-    request.input("TenNhom", sql.NVarChar, TenNhom);
-    request.input("MoTa", sql.NVarChar, MoTa);
-
-    const result = await request.query(sqlQuery);
-    if (result.rowsAffected[0] === 0) {
+    if (result.affectedRows === 0) {
       return res.status(404).send("Nhóm sản phẩm không tìm thấy.");
     }
 
@@ -97,16 +66,14 @@ groupRouter.put("/api/nhomsanpham/:maNhom", async (req, res) => {
   }
 });
 
-// Endpoint xóa nhóm sản phẩm
+// Xóa nhóm sản phẩm
 groupRouter.delete("/api/nhomsanpham/:maNhom", async (req, res) => {
-  const maNhom = req.params.maNhom;
+  const { maNhom } = req.params;
   try {
-    const sqlQuery = `DELETE FROM NhomSanPham WHERE MaNhom = @maNhom`;
-    const request = new sql.Request();
-    request.input("maNhom", sql.NVarChar, maNhom);
+    const sql = "DELETE FROM NhomSanPham WHERE MaNhom = ?";
+    const [result] = await pool.query(sql, [maNhom]);
 
-    const result = await request.query(sqlQuery);
-    if (result.rowsAffected[0] === 0) {
+    if (result.affectedRows === 0) {
       return res.status(404).send("Nhóm sản phẩm không tìm thấy.");
     }
 

@@ -5,9 +5,7 @@ function cancel() {
 
 async function suggestNextProductId() {
   try {
-    const response = await fetch(
-      "http://localhost:3000/api/sanpham/max-masanpham"
-    );
+    const response = await fetch(`${BACKEND_URL}/sanpham/max-masanpham`);
     const data = await response.json();
 
     if (data.maxMaSanPham) {
@@ -90,7 +88,7 @@ async function addProduct() {
 
   try {
     // Thêm sản phẩm vào cơ sở dữ liệu
-    const response = await fetch("http://localhost:3000/api/sanpham", {
+    const response = await fetch(`${BACKEND_URL}/sanpham`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -109,7 +107,7 @@ async function addProduct() {
     }
 
     // Lưu đơn vị cơ bản vào bảng DonViKhac
-    await fetch("http://localhost:3000/api/donvitinhkhac", {
+    await fetch(`${BACKEND_URL}/donvitinhkhac`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -132,7 +130,7 @@ async function addProduct() {
       };
 
       const additionalUnitResponse = await fetch(
-        "http://localhost:3000/api/donvitinhkhac",
+        `${BACKEND_URL}/donvitinhkhac`,
         {
           method: "POST",
           headers: {
@@ -164,7 +162,7 @@ async function addProduct() {
 // Tải nhóm sản phẩm
 async function loadGroups() {
   try {
-    const response = await fetch("http://localhost:3000/api/nhomsanpham");
+    const response = await fetch(`${BACKEND_URL}/nhomsanpham`);
     const groups = await response.json();
     const groupSelect = document.getElementById("product-group");
 

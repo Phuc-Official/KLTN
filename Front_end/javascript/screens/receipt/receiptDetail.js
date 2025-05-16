@@ -2,7 +2,7 @@ async function fetchUnitName(donViKhacId) {
   if (!donViKhacId) return "Không tìm thấy";
   try {
     const response = await fetch(
-      `http://localhost:3000/api/donvikhac/by-id/${donViKhacId}`
+      `${BACKEND_URL}/donvikhac/by-id/${donViKhacId}`
     );
     if (!response.ok) throw new Error("Không thể lấy tên đơn vị khác.");
     const unit = await response.json();
@@ -15,7 +15,7 @@ async function fetchUnitName(donViKhacId) {
 
 async function loadProducts() {
   try {
-    const response = await fetch("http://localhost:3000/api/sanpham");
+    const response = await fetch(`${BACKEND_URL}/sanpham`);
     if (!response.ok) {
       throw new Error("Không thể lấy danh sách sản phẩm");
     }
@@ -29,7 +29,7 @@ async function loadProducts() {
 
 async function loadEmployees() {
   try {
-    const response = await fetch("http://localhost:3000/api/nhanvien");
+    const response = await fetch(`${BACKEND_URL}/nhanvien`);
     if (!response.ok) {
       throw new Error("Không thể lấy danh sách nhân viên");
     }
@@ -43,7 +43,7 @@ async function loadEmployees() {
 
 async function loadSuppliers() {
   try {
-    const response = await fetch("http://localhost:3000/api/nhacungcap");
+    const response = await fetch(`${BACKEND_URL}/nhacungcap`);
     if (!response.ok) {
       throw new Error("Không thể lấy danh sách nhà cung cấp");
     }
@@ -62,9 +62,7 @@ async function fetchReceiptDetails() {
   console.log("Mã phiếu nhập:", maPhieuNhap);
 
   try {
-    const response = await fetch(
-      `http://localhost:3000/api/phieunhap/${maPhieuNhap}`
-    );
+    const response = await fetch(`${BACKEND_URL}/phieunhap/${maPhieuNhap}`);
 
     if (!response.ok) {
       const errorText = await response.text();

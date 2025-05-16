@@ -14,7 +14,7 @@ async function addGroup() {
   };
 
   try {
-    const response = await fetch("http://localhost:3000/api/nhomsanpham", {
+    const response = await fetch(`${BACKEND_URL}/nhomsanpham`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -39,7 +39,7 @@ async function addGroup() {
 
 async function fetchGroups() {
   try {
-    const response = await fetch("http://localhost:3000/api/nhomsanpham");
+    const response = await fetch(`${BACKEND_URL}/nhomsanpham`);
     const groups = await response.json();
 
     const container = document.querySelector("#group-container tbody");

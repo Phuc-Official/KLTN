@@ -1,6 +1,6 @@
 async function loadProducts() {
   try {
-    const response = await fetch("http://localhost:3000/api/sanpham");
+    const response = await fetch(`${BACKEND_URL}/sanpham`);
     if (!response.ok) throw new Error("Không thể lấy danh sách sản phẩm");
     return await response.json();
   } catch (error) {
@@ -11,7 +11,7 @@ async function loadProducts() {
 
 async function loadEmployees() {
   try {
-    const response = await fetch("http://localhost:3000/api/nhanvien");
+    const response = await fetch(`${BACKEND_URL}/nhanvien`);
     if (!response.ok) throw new Error("Không thể lấy danh sách nhân viên");
     return await response.json();
   } catch (error) {
@@ -24,7 +24,7 @@ async function fetchUnitName(donViKhacId) {
   if (!donViKhacId) return "Không tìm thấy";
   try {
     const response = await fetch(
-      `http://localhost:3000/api/donvikhac/by-id/${donViKhacId}`
+      `${BACKEND_URL}/donvikhac/by-id/${donViKhacId}`
     );
     if (!response.ok) throw new Error("Không thể lấy tên đơn vị khác.");
     const unit = await response.json();
@@ -41,9 +41,7 @@ async function fetchInventoryCheckDetails() {
   console.log("Mã phiếu kiểm kê:", maPhieuKiemKe);
 
   try {
-    const response = await fetch(
-      `http://localhost:3000/api/phieukiemke/${maPhieuKiemKe}`
-    );
+    const response = await fetch(`${BACKEND_URL}/phieukiemke/${maPhieuKiemKe}`);
     if (!response.ok) throw new Error("Không thể tải chi tiết phiếu kiểm kê.");
     const inventoryCheck = await response.json();
     console.log("Chi tiết phiếu kiểm kê:", inventoryCheck);

@@ -35,7 +35,7 @@
 
         try {
           const response = await fetch(
-            `http://localhost:3000/api/nha-cung-cap/${maNhaCungCap}`
+            `${BACKEND_URL}/nha-cung-cap/${maNhaCungCap}`
           );
 
           // Kiểm tra nếu phản hồi không thành công
@@ -101,5 +101,6 @@
         window.history.back();
       }
     </script>
+    <script src="javascript/constants.js"></script>
   </body>
 </html>

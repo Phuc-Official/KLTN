@@ -2,7 +2,7 @@ let isShelfInfoVisible = false; // Biến để theo dõi trạng thái hiện t
 
 async function loadWarehousePositions() {
   try {
-    const response = await fetch("http://localhost:3000/api/vitri");
+    const response = await fetch(`${BACKEND_URL}/vitri`);
     if (!response.ok) throw new Error("Không thể lấy dữ liệu");
 
     const positions = await response.json();
@@ -162,7 +162,7 @@ function createStorage() {
   const sucChua = document.getElementById("suc_chua").value;
   const maSanPham = document.getElementById("ma_san_pham").value;
 
-  fetch("http://localhost:3000/api/themvitri", {
+  fetch(`${BACKEND_URL}/themvitri`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

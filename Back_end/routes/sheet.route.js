@@ -1,20 +1,23 @@
 const { Router } = require("express");
-const sql = require("mssql");
+const pool = require("../db");
 
 const sheetRouter = new Router();
 
-// Endpoint để lấy mã phiếu kiểm kê lớn nhất
+// 1. Lấy mã phiếu kiểm kê lớn nhất
 sheetRouter.get("/api/phieukiemke/max-maphieu", async (req, res) => {
   try {
+    // MySQL không có TOP, dùng LIMIT 1
     const sqlQuery = `
-        SELECT TOP 1 MaPhieuKiemKe
-        FROM PhieuKiemKe
-        ORDER BY MaPhieuKiemKe DESC
-      `;
-    const result = await sql.query(sqlQuery);
+      SELECT MaPhieuKiemKe
+      FROM PhieuKiemKe
+      ORDER BY MaPhieuKiemKe DESC
+      LIMIT 1
+    `;
 
-    if (result.recordset.length > 0) {
-      const maxMaPhieuKiemKe = result.recordset[0].MaPhieuKiemKe;
+    const [rows] = await pool.execute(sqlQuery);
+
+    if (rows.length > 0) {
+      const maxMaPhieuKiemKe = rows[0].MaPhieuKiemKe;
       return res.json({ maxMaPhieuKiemKe });
     } else {
       return res.json({ maxMaPhieuKiemKe: null });
@@ -25,46 +28,46 @@ sheetRouter.get("/api/phieukiemke/max-maphieu", async (req, res) => {
   }
 });
 
-// Endpoint cho bảng phiếu kiểm kê
+// 2. Lấy danh sách phiếu kiểm kê
 sheetRouter.get("/api/phieukiemke", async (req, res) => {
   try {
     const sqlQuery = `
       SELECT pk.*, nv.TenNhanVien
       FROM PhieuKiemKe pk
-      LEFT JOIN NhanVien nv ON pk.MaNhanVien = nv.MaNhanVien;      
+      LEFT JOIN NhanVien nv ON pk.MaNhanVien = nv.MaNhanVien
     `;
-    const result = await sql.query(sqlQuery);
-    res.json(result.recordset);
+    const [rows] = await pool.execute(sqlQuery);
+    res.json(rows);
   } catch (err) {
     console.error("Lỗi truy vấn: ", err);
     res.status(500).send("Lỗi truy vấn cơ sở dữ liệu");
   }
 });
 
-// Endpoint cho chi tiết phiếu kiểm kê
+// 3. Lấy chi tiết phiếu kiểm kê và danh sách sản phẩm liên quan
 sheetRouter.get("/api/phieukiemke/:maPhieuKiemKe", async (req, res) => {
   const { maPhieuKiemKe } = req.params;
 
   try {
-    const request = new sql.Request();
-    request.input("MaPhieuKiemKe", sql.NVarChar, maPhieuKiemKe);
-
-    const result = await request.query(
-      "SELECT * FROM PhieuKiemKe WHERE MaPhieuKiemKe = @MaPhieuKiemKe"
+    // Lấy phiếu kiểm kê
+    const [phieuRows] = await pool.execute(
+      `SELECT * FROM PhieuKiemKe WHERE MaPhieuKiemKe = ?`,
+      [maPhieuKiemKe]
     );
 
-    if (result.recordset.length === 0) {
+    if (phieuRows.length === 0) {
       return res.status(404).json({ message: "Không tìm thấy phiếu kiểm kê." });
     }
 
     // Lấy danh sách sản phẩm liên quan
-    const productsResult = await request.query(
-      "SELECT * FROM ChiTietPhieuKiemKe WHERE MaPhieuKiemKe = @MaPhieuKiemKe"
+    const [productsRows] = await pool.execute(
+      `SELECT * FROM ChiTietPhieuKiemKe WHERE MaPhieuKiemKe = ?`,
+      [maPhieuKiemKe]
     );
 
     const responseData = {
-      ...result.recordset[0],
-      SanPhamList: productsResult.recordset, // Thêm danh sách sản phẩm vào phản hồi
+      ...phieuRows[0],
+      SanPhamList: productsRows,
     };
 
     res.status(200).json(responseData);
@@ -74,25 +77,24 @@ sheetRouter.get("/api/phieukiemke/:maPhieuKiemKe", async (req, res) => {
   }
 });
 
-// Endpoint cho thêm phiếu kiểm kê
+// 4. Thêm phiếu kiểm kê
 sheetRouter.post("/api/phieukiemke", async (req, res) => {
-  console.log("Dữ liệu nhận được cho phiếu kiểm kê:", req.body); // Log dữ liệu
+  console.log("Dữ liệu nhận được cho phiếu kiểm kê:", req.body);
   try {
     const { MaPhieuKiemKe, MaNhanVien, NgayTao, MoTa, TenPhieu } = req.body;
 
     const sqlQuery = `
-            INSERT INTO PhieuKiemKe (MaPhieuKiemKe, MaNhanVien, NgayTao, MoTa, TenPhieu)
-            VALUES (@MaPhieuKiemKe, @MaNhanVien, @NgayTao, @MoTa, @TenPhieu)
-        `;
+      INSERT INTO PhieuKiemKe (MaPhieuKiemKe, MaNhanVien, NgayTao, MoTa, TenPhieu)
+      VALUES (?, ?, ?, ?, ?)
+    `;
 
-    const request = new sql.Request();
-    request.input("MaPhieuKiemKe", sql.NVarChar, MaPhieuKiemKe);
-    request.input("MaNhanVien", sql.NVarChar, MaNhanVien);
-    request.input("NgayTao", sql.DateTime, NgayTao);
-    request.input("MoTa", sql.NVarChar, MoTa);
-    request.input("TenPhieu", sql.NVarChar, TenPhieu);
-
-    await request.query(sqlQuery);
+    await pool.execute(sqlQuery, [
+      MaPhieuKiemKe,
+      MaNhanVien,
+      NgayTao,
+      MoTa,
+      TenPhieu,
+    ]);
 
     res.status(201).json({ MaPhieuKiemKe });
   } catch (err) {
@@ -101,25 +103,25 @@ sheetRouter.post("/api/phieukiemke", async (req, res) => {
   }
 });
 
+// 5. Thêm chi tiết phiếu kiểm kê
 sheetRouter.post("/api/chitietphieukiemke", async (req, res) => {
-  console.log("Dữ liệu nhận được cho chi tiết phiếu kiểm kê:", req.body); // Log dữ liệu
+  console.log("Dữ liệu nhận được cho chi tiết phiếu kiểm kê:", req.body);
   try {
     const { MaPhieuKiemKe, MaSanPham, SoLuongThucTe, MaDonViKhac, SoLuongTon } =
       req.body;
 
     const sqlQuery = `
       INSERT INTO ChiTietPhieuKiemKe (MaPhieuKiemKe, MaSanPham, SoLuongThucTe, MaDonViKhac, SoLuongTon)
-      VALUES (@MaPhieuKiemKe, @MaSanPham, @SoLuongThucTe, @MaDonViKhac, @SoLuongTon)
+      VALUES (?, ?, ?, ?, ?)
     `;
 
-    const request = new sql.Request();
-    request.input("MaPhieuKiemKe", sql.NVarChar, MaPhieuKiemKe);
-    request.input("MaSanPham", sql.NVarChar, MaSanPham);
-    request.input("SoLuongThucTe", sql.Int, SoLuongThucTe);
-    request.input("MaDonViKhac", sql.NVarChar, MaDonViKhac);
-    request.input("SoLuongTon", sql.Int, SoLuongTon); // Lưu số lượng tồn
-
-    await request.query(sqlQuery);
+    await pool.execute(sqlQuery, [
+      MaPhieuKiemKe,
+      MaSanPham,
+      SoLuongThucTe,
+      MaDonViKhac,
+      SoLuongTon,
+    ]);
 
     res.status(201).json({ MaPhieuKiemKe });
   } catch (err) {
@@ -128,16 +130,17 @@ sheetRouter.post("/api/chitietphieukiemke", async (req, res) => {
   }
 });
 
-// Endpoint xóa phiếu kiểm kê
+// 6. Xóa phiếu kiểm kê
 sheetRouter.delete("/api/phieukiemke/:maPhieuKiemKe", async (req, res) => {
-  const maPhieuKiemKe = req.params.maPhieuKiemKe;
-  try {
-    const sqlQuery = `DELETE FROM PhieuKiemKe WHERE MaPhieuKiemKe = @maPhieuKiemKe`;
-    const request = new sql.Request();
-    request.input("maPhieuKiemKe", sql.NVarChar, maPhieuKiemKe);
+  const { maPhieuKiemKe } = req.params;
 
-    const result = await request.query(sqlQuery);
-    if (result.rowsAffected[0] === 0) {
+  try {
+    const [result] = await pool.execute(
+      `DELETE FROM PhieuKiemKe WHERE MaPhieuKiemKe = ?`,
+      [maPhieuKiemKe]
+    );
+
+    if (result.affectedRows === 0) {
       return res.status(404).send("Phiếu kiểm kê không tìm thấy.");
     }
 

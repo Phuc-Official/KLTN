@@ -1,5 +1,5 @@
 const { Router } = require("express");
-const sql = require("mssql"); // Import thư viện mssql
+const pool = require("../db"); // pool mysql2/promise
 
 const productRouter = new Router();
 
@@ -7,40 +7,40 @@ const productRouter = new Router();
 productRouter.get("/api/donvitinh", async (req, res) => {
   try {
     const sqlQuery = `SELECT * FROM DonViKhac`;
-    const result = await sql.query(sqlQuery);
-    res.json(result.recordset);
+    const [rows] = await pool.execute(sqlQuery);
+    res.json(rows);
   } catch (err) {
     console.error("Lỗi khi lấy danh sách đơn vị tính:", err);
     res.status(500).send("Lỗi khi truy vấn cơ sở dữ liệu");
   }
 });
 
-// Lấy danh sách nhóm sản phẩm
-productRouter.get("/api/nhomsanpham", async (req, res) => {
-  try {
-    const sqlQuery = `SELECT * FROM NhomSanPham`;
-    const result = await sql.query(sqlQuery);
-    res.json(result.recordset);
-  } catch (err) {
-    console.error("Lỗi khi lấy danh sách nhóm:", err);
-    res.status(500).send("Lỗi khi truy vấn cơ sở dữ liệu");
-  }
-});
+// Lấy danh sách nhóm sản phẩm (nếu cần thì bỏ comment và dùng tương tự)
+// productRouter.get("/api/nhomsanpham", async (req, res) => {
+//   try {
+//     const sqlQuery = `SELECT * FROM NhomSanPham`;
+//     const [rows] = await pool.execute(sqlQuery);
+//     res.json(rows);
+//   } catch (err) {
+//     console.error("Lỗi khi lấy danh sách nhóm:", err);
+//     res.status(500).send("Lỗi khi truy vấn cơ sở dữ liệu");
+//   }
+// });
 
-// Endpoint để lấy mã sản phẩm lớn nhất
+// Lấy mã sản phẩm lớn nhất
 productRouter.get("/api/sanpham/max-masanpham", async (req, res) => {
   try {
+    // MySQL không có TOP 1 mà dùng LIMIT 1
     const sqlQuery = `
-      SELECT TOP 1 MaSanPham
+      SELECT MaSanPham
       FROM SanPham_Copy
       ORDER BY MaSanPham DESC
+      LIMIT 1
     `;
+    const [rows] = await pool.execute(sqlQuery);
 
-    const result = await sql.query(sqlQuery);
-
-    if (result.recordset.length > 0) {
-      const maxMaSanPham = result.recordset[0].MaSanPham;
-      return res.json({ maxMaSanPham });
+    if (rows.length > 0) {
+      return res.json({ maxMaSanPham: rows[0].MaSanPham });
     } else {
       return res.json({ maxMaSanPham: null });
     }
@@ -50,17 +50,16 @@ productRouter.get("/api/sanpham/max-masanpham", async (req, res) => {
   }
 });
 
-// Endpoint cho bảng sản phẩm
+// Lấy danh sách sản phẩm
 productRouter.get("/api/sanpham", async (req, res) => {
   try {
     const sqlQuery = `
       SELECT sp.*, nh.TenNhom
       FROM SanPham_Copy sp
-      LEFT JOIN NhomSanPham nh ON sp.MaNhom = nh.MaNhom;
+      LEFT JOIN NhomSanPham nh ON sp.MaNhom = nh.MaNhom
     `;
-
-    const result = await sql.query(sqlQuery);
-    res.json(result.recordset);
+    const [rows] = await pool.execute(sqlQuery);
+    res.json(rows);
   } catch (err) {
     console.error("Lỗi truy vấn: ", err);
     res.status(500).send("Lỗi truy vấn cơ sở dữ liệu");
@@ -73,20 +72,17 @@ productRouter.get("/api/sanpham/:maSanPham", async (req, res) => {
 
   try {
     const sqlQuery = `
-          SELECT sp.*, nh.TenNhom, dv.TyLeQuyDoi, dv.TenDonVi
-          FROM SanPham_Copy sp
-          LEFT JOIN NhomSanPham nh ON sp.MaNhom = nh.MaNhom
-          LEFT JOIN DonViKhac dv ON sp.MaSanPham = dv.MaSanPham
-          WHERE sp.MaSanPham = @maSanPham
-      `;
+      SELECT sp.*, nh.TenNhom, dv.TyLeQuyDoi, dv.TenDonVi
+      FROM SanPham_Copy sp
+      LEFT JOIN NhomSanPham nh ON sp.MaNhom = nh.MaNhom
+      LEFT JOIN DonViKhac dv ON sp.MaSanPham = dv.MaSanPham
+      WHERE sp.MaSanPham = ?
+    `;
 
-    const request = new sql.Request();
-    request.input("maSanPham", sql.NVarChar, maSanPham);
+    const [rows] = await pool.execute(sqlQuery, [maSanPham]);
 
-    const result = await request.query(sqlQuery);
-
-    if (result.recordset.length > 0) {
-      return res.json(result.recordset[0]);
+    if (rows.length > 0) {
+      return res.json(rows[0]);
     } else {
       return res.status(404).json({ message: "Sản phẩm không tìm thấy" });
     }
@@ -103,19 +99,17 @@ productRouter.post("/api/sanpham", async (req, res) => {
   try {
     const sqlQuery = `
       INSERT INTO SanPham_Copy (MaSanPham, TenSanPham, TrongLuong, MoTaSanPham, MaNhom)
-      VALUES (@MaSanPham, @TenSanPham, @TrongLuong, @MoTaSanPham, @MaNhom);
+      VALUES (?, ?, ?, ?, ?)
     `;
 
-    const request = new sql.Request();
-    request.input("MaSanPham", sql.NVarChar, product.MaSanPham);
-    request.input("TenSanPham", sql.NVarChar, product.TenSanPham);
-    request.input("TrongLuong", sql.Float, product.TrongLuong);
-    request.input("MoTaSanPham", sql.NVarChar, product.MoTaSanPham);
-    request.input("MaNhom", sql.NVarChar, product.MaNhom);
-    // request.input("GiaSanPham", sql.Decimal, product.GiaSanPham);
-    // request.input("DonVi", sql.NVarChar, product.DonVi); // Lưu đơn vị cơ bản
+    await pool.execute(sqlQuery, [
+      product.MaSanPham,
+      product.TenSanPham,
+      product.TrongLuong,
+      product.MoTaSanPham,
+      product.MaNhom,
+    ]);
 
-    await request.query(sqlQuery);
     res.status(201).json({ message: "Sản phẩm đã được thêm thành công!" });
   } catch (error) {
     console.error("Lỗi khi thêm sản phẩm:", error);
@@ -123,34 +117,34 @@ productRouter.post("/api/sanpham", async (req, res) => {
   }
 });
 
-// Cập nhật sản phẩm
-productRouter.get("/api/sanpham/:maSanPham", async (req, res) => {
+// Cập nhật sản phẩm - sửa lại thành PUT và sửa endpoint nếu muốn
+productRouter.put("/api/sanpham/:maSanPham", async (req, res) => {
   const maSanPham = req.params.maSanPham;
+  const product = req.body;
 
   try {
     const sqlQuery = `
-      SELECT sp.*, nh.TenNhom
-      FROM SanPham_Copy sp
-      LEFT JOIN NhomSanPham nh ON sp.MaNhom = nh.MaNhom
-      WHERE sp.MaSanPham = @maSanPham;
+      UPDATE SanPham_Copy
+      SET TenSanPham = ?, TrongLuong = ?, MoTaSanPham = ?, MaNhom = ?
+      WHERE MaSanPham = ?
     `;
 
-    const request = new sql.Request();
-    request.input("maSanPham", sql.NVarChar, maSanPham);
+    const [result] = await pool.execute(sqlQuery, [
+      product.TenSanPham,
+      product.TrongLuong,
+      product.MoTaSanPham,
+      product.MaNhom,
+      maSanPham,
+    ]);
 
-    const result = await request.query(sqlQuery);
-
-    if (result.recordset.length > 0) {
-      const product = result.recordset[0];
-
-      // Gửi sản phẩm mà không có các đơn vị bổ sung
-      return res.json(product);
-    } else {
+    if (result.affectedRows === 0) {
       return res.status(404).json({ message: "Sản phẩm không tìm thấy" });
     }
+
+    res.json({ message: "Sản phẩm đã được cập nhật thành công!" });
   } catch (error) {
-    console.error("Lỗi khi lấy chi tiết sản phẩm:", error);
-    return res.status(500).json({ message: "Lỗi khi lấy chi tiết sản phẩm" });
+    console.error("Lỗi khi cập nhật sản phẩm:", error);
+    res.status(500).send("Lỗi khi cập nhật sản phẩm");
   }
 });
 
@@ -158,12 +152,10 @@ productRouter.get("/api/sanpham/:maSanPham", async (req, res) => {
 productRouter.delete("/api/sanpham/:maSanPham", async (req, res) => {
   const maSanPham = req.params.maSanPham;
   try {
-    const sqlQuery = `DELETE FROM SanPham_Copy WHERE MaSanPham = @maSanPham`;
-    const request = new sql.Request();
-    request.input("maSanPham", sql.NVarChar, maSanPham);
+    const sqlQuery = `DELETE FROM SanPham_Copy WHERE MaSanPham = ?`;
+    const [result] = await pool.execute(sqlQuery, [maSanPham]);
 
-    const result = await request.query(sqlQuery);
-    if (result.rowsAffected[0] === 0) {
+    if (result.affectedRows === 0) {
       return res.status(404).send("Sản phẩm không tìm thấy.");
     }
 
@@ -182,16 +174,13 @@ productRouter.put("/api/sanpham/:maSanPham/stock", async (req, res) => {
   try {
     const sqlQuery = `
       UPDATE DonViKhac
-      SET SoLuongTon = SoLuongTon + @SoLuong
-      WHERE MaSanPham = @maSanPham
+      SET SoLuongTon = SoLuongTon + ?
+      WHERE MaSanPham = ?
     `;
 
-    const request = new sql.Request();
-    request.input("maSanPham", sql.NVarChar, maSanPham);
-    request.input("SoLuong", sql.Int, SoLuong);
+    const [result] = await pool.execute(sqlQuery, [SoLuong, maSanPham]);
 
-    const result = await request.query(sqlQuery);
-    if (result.rowsAffected[0] === 0) {
+    if (result.affectedRows === 0) {
       return res.status(404).send("Sản phẩm không tìm thấy.");
     }
 

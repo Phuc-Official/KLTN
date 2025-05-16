@@ -2,7 +2,7 @@ let conversionRate = 1.0; // Giá trị mặc định cho TyleQuyDoi
 
 async function loadUnits() {
   try {
-    const response = await fetch("http://localhost:3000/api/donvitinh");
+    const response = await fetch(`${BACKEND_URL}/donvitinh`);
     const units = await response.json();
     const unitSelect = document.getElementById("unit");
 

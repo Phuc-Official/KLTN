@@ -12,7 +12,7 @@ function getQueryParams() {
 
 async function loadSuppliers() {
   try {
-    const response = await fetch("http://localhost:3000/api/nhacungcap");
+    const response = await fetch(`${BACKEND_URL}/nhacungcap`);
     if (!response.ok) {
       throw new Error("Không thể tải danh sách nhà cung cấp");
     }
@@ -25,7 +25,7 @@ async function loadSuppliers() {
 
 async function loadEmployees() {
   try {
-    const response = await fetch("http://localhost:3000/api/nhanvien");
+    const response = await fetch(`${BACKEND_URL}/nhanvien`);
     if (!response.ok) {
       throw new Error("Không thể tải danh sách nhân viên");
     }
@@ -46,9 +46,7 @@ function generateNextReceiptId(maxId) {
 
 async function suggestNextReceiptId() {
   try {
-    const response = await fetch(
-      "http://localhost:3000/api/phieunhap/max-maphieunhap"
-    );
+    const response = await fetch(`${BACKEND_URL}/phieunhap/max-maphieunhap`);
     const data = await response.json();
     const nextReceiptId = data.maxMaPhieuNhap
       ? generateNextReceiptId(data.maxMaPhieuNhap)
@@ -203,13 +201,13 @@ document
 
     try {
       const checkResponse = await fetch(
-        `http://localhost:3000/api/phieunhap/${receiptId}`
+        `${BACKEND_URL}/phieunhap/${receiptId}`
       );
       if (checkResponse.ok) {
         throw new Error("Mã phiếu nhập đã tồn tại!");
       }
 
-      const response = await fetch("http://localhost:3000/api/phieunhap", {
+      const response = await fetch(`${BACKEND_URL}/phieunhap`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -225,7 +223,7 @@ document
       await Promise.all(
         products.map(async (product) => {
           const detailResponse = await fetch(
-            "http://localhost:3000/api/chitietphieunhap",
+            `${BACKEND_URL}/chitietphieunhap`,
             {
               method: "POST",
               headers: {

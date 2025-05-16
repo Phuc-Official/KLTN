@@ -16,7 +16,7 @@ let sheets = [];
 
 async function fetchProducts() {
   try {
-    const response = await fetch("http://localhost:3000/api/sanpham");
+    const response = await fetch(`${BACKEND_URL}/sanpham`);
     products = await response.json();
     displayItems("product");
   } catch (error) {
@@ -26,7 +26,7 @@ async function fetchProducts() {
 
 async function fetchReceipts() {
   try {
-    const response = await fetch("http://localhost:3000/api/phieunhap");
+    const response = await fetch(`${BACKEND_URL}/phieunhap`);
     receipts = await response.json();
     displayItems("receipt");
   } catch (error) {
@@ -36,7 +36,7 @@ async function fetchReceipts() {
 
 async function fetchExports() {
   try {
-    const response = await fetch("http://localhost:3000/api/phieuxuat");
+    const response = await fetch(`${BACKEND_URL}/phieuxuat`);
     exports = await response.json();
     displayItems("export");
   } catch (error) {
@@ -46,7 +46,7 @@ async function fetchExports() {
 
 async function fetchInventories() {
   try {
-    const response = await fetch("http://localhost:3000/api/phieukiemke");
+    const response = await fetch(`${BACKEND_URL}/phieukiemke`);
     inventories = await response.json();
     displayItems("inventory");
   } catch (error) {
@@ -56,7 +56,7 @@ async function fetchInventories() {
 
 async function fetchOrders() {
   try {
-    const response = await fetch("http://localhost:3000/api/donhang");
+    const response = await fetch(`${BACKEND_URL}/donhang`);
     orders = await response.json();
     displayItems("order"); // Hiển thị đơn hàng
   } catch (error) {
@@ -66,7 +66,7 @@ async function fetchOrders() {
 
 async function fetchInventories() {
   try {
-    const response = await fetch("http://localhost:3000/api/phieukiemke");
+    const response = await fetch(`${BACKEND_URL}/phieukiemke`);
     inventories = await response.json();
     displayItems("inventory");
   } catch (error) {

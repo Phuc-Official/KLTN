@@ -3,9 +3,7 @@ async function fetchProductDetails() {
   const maSanPham = urlParams.get("id");
 
   try {
-    const response = await fetch(
-      `http://localhost:3000/api/sanpham/${maSanPham}`
-    );
+    const response = await fetch(`${BACKEND_URL}/sanpham/${maSanPham}`);
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -37,9 +35,7 @@ async function fetchProductDetails() {
 
 async function fetchAdditionalUnits(maSanPham) {
   try {
-    const response = await fetch(
-      `http://localhost:3000/api/donvitinhkhac/${maSanPham}`
-    );
+    const response = await fetch(`${BACKEND_URL}/donvitinhkhac/${maSanPham}`);
 
     if (!response.ok) {
       throw new Error("Không thể tải đơn vị bổ sung");
@@ -174,9 +170,7 @@ function updateConversionRate(selectElement) {
 
 async function getConversionRate(unitId) {
   try {
-    const response = await fetch(
-      `http://localhost:3000/api/donvitinh/${unitId}`
-    );
+    const response = await fetch(`${BACKEND_URL}/donvitinh/${unitId}`);
     if (!response.ok) {
       throw new Error(`Không thể lấy tỷ lệ quy đổi cho mã đơn vị: ${unitId}`);
     }

@@ -1,6 +1,6 @@
 async function loadSuppliers() {
   try {
-    const response = await fetch("http://localhost:3000/api/nhacungcap");
+    const response = await fetch(`${BACKEND_URL}/nhacungcap`);
     if (!response.ok) {
       throw new Error("Không thể lấy danh sách nhà cung cấp");
     }
@@ -14,7 +14,7 @@ async function loadSuppliers() {
 
 async function loadProducts() {
   try {
-    const response = await fetch("http://localhost:3000/api/sanpham");
+    const response = await fetch(`${BACKEND_URL}/sanpham`);
     if (!response.ok) {
       throw new Error("Không thể lấy danh sách sản phẩm");
     }
@@ -28,7 +28,7 @@ async function loadProducts() {
 
 async function loadEmployees() {
   try {
-    const response = await fetch("http://localhost:3000/api/nhanvien");
+    const response = await fetch(`${BACKEND_URL}/nhanvien`);
     if (!response.ok) {
       throw new Error("Không thể lấy danh sách nhân viên");
     }
@@ -42,9 +42,7 @@ async function loadEmployees() {
 
 async function fetchProductUnits(maSanPham) {
   try {
-    const response = await fetch(
-      `http://localhost:3000/api/donvitinhkhac/${maSanPham}`
-    );
+    const response = await fetch(`${BACKEND_URL}/donvitinhkhac/${maSanPham}`);
     if (!response.ok) {
       throw new Error("Không thể lấy danh sách đơn vị cho sản phẩm");
     }
@@ -67,9 +65,7 @@ async function fetchOrderDetails() {
   const maDonHang = urlParams.get("id");
 
   try {
-    const response = await fetch(
-      `http://localhost:3000/api/donhang/${maDonHang}`
-    );
+    const response = await fetch(`${BACKEND_URL}/donhang/${maDonHang}`);
     if (!response.ok) {
       throw new Error("Không thể tải chi tiết đơn hàng.");
     }

@@ -1,44 +1,42 @@
 const { Router } = require("express");
-const sql = require("mssql");
+const pool = require("../db"); // pool mysql2 đã được tạo
 
 const receiptRouter = new Router();
 
-// Endpoint để lấy danh sách nhà cung cấp
+// Lấy danh sách nhà cung cấp
 receiptRouter.get("/api/nhacungcap", async (req, res) => {
   try {
-    const sqlQuery = `SELECT * FROM NhaCungCap`;
-    const result = await sql.query(sqlQuery);
-    res.json(result.recordset);
+    const [rows] = await pool.query("SELECT * FROM NhaCungCap");
+    res.json(rows);
   } catch (err) {
     console.error("Lỗi khi lấy danh sách nhà cung cấp:", err);
     res.status(500).send("Lỗi khi truy vấn cơ sở dữ liệu");
   }
 });
 
+// Lấy danh sách nhân viên
 receiptRouter.get("/api/nhanvien", async (req, res) => {
   try {
-    const sqlQuery = `SELECT * FROM NhanVien`;
-    const result = await sql.query(sqlQuery);
-    res.json(result.recordset);
+    const [rows] = await pool.query("SELECT * FROM NhanVien");
+    res.json(rows);
   } catch (err) {
     console.error("Lỗi khi lấy danh sách nhân viên:", err);
     res.status(500).send("Lỗi khi truy vấn cơ sở dữ liệu");
   }
 });
 
-// Endpoint để lấy mã phiếu nhập lớn nhất
+// Lấy mã phiếu nhập lớn nhất
 receiptRouter.get("/api/phieunhap/max-maphieunhap", async (req, res) => {
   try {
-    const sqlQuery = `
-      SELECT TOP 1 MaPhieuNhap
+    const [rows] = await pool.query(`
+      SELECT MaPhieuNhap
       FROM PhieuNhap_Copy
       ORDER BY MaPhieuNhap DESC
-    `;
+      LIMIT 1
+    `);
 
-    const result = await sql.query(sqlQuery);
-
-    if (result.recordset.length > 0) {
-      const maxMaPhieuNhap = result.recordset[0].MaPhieuNhap;
+    if (rows.length > 0) {
+      const maxMaPhieuNhap = rows[0].MaPhieuNhap;
       return res.json({ maxMaPhieuNhap });
     } else {
       return res.json({ maxMaPhieuNhap: null });
@@ -49,79 +47,46 @@ receiptRouter.get("/api/phieunhap/max-maphieunhap", async (req, res) => {
   }
 });
 
-// Endpoint cho bảng phiếu nhập
+// Lấy danh sách phiếu nhập
 receiptRouter.get("/api/phieunhap", async (req, res) => {
   try {
-    const sqlQuery = `
+    const [rows] = await pool.query(`
       SELECT pn.*, nc.TenNhaCungCap, nv.TenNhanVien
       FROM PhieuNhap_Copy pn
       LEFT JOIN NhaCungCap nc ON pn.MaNhaCungCap = nc.MaNhaCungCap
-      LEFT JOIN NhanVien nv ON pn.MaNhanVien = nv.MaNhanVien;      
-    `;
-    const result = await sql.query(sqlQuery);
-    res.json(result.recordset);
+      LEFT JOIN NhanVien nv ON pn.MaNhanVien = nv.MaNhanVien
+    `);
+    res.json(rows);
   } catch (err) {
     console.error("Lỗi truy vấn: ", err);
     res.status(500).send("Lỗi truy vấn cơ sở dữ liệu");
   }
 });
 
-// Endpoint cho chi tiết phiếu nhập
-// receiptRouter.get("/api/phieunhap/:maPhieuNhap", async (req, res) => {
-//   const maPhieuNhap = req.params.maPhieuNhap;
-
-//   try {
-//     const sqlQuery = `
-//       SELECT pn.*, nc.TenNhaCungCap
-//       FROM PhieuNhap_Copy pn
-//       LEFT JOIN NhaCungCap nc ON pn.MaNhaCungCap = nc.MaNhaCungCap
-
-//       WHERE pn.MaPhieuNhap = @maPhieuNhap
-//     `;
-
-//     // , nv.TenNhanVien
-//     // LEFT JOIN NhanVien nv ON pn.MaNhanVien = nv.MaNhanVien
-
-//     const request = new sql.Request();
-//     request.input("maPhieuNhap", sql.NVarChar, maPhieuNhap);
-
-//     const result = await request.query(sqlQuery);
-
-//     if (result.recordset.length > 0) {
-//       return res.json(result.recordset[0]);
-//     } else {
-//       return res.status(404).json({ message: "Phiếu nhập không tìm thấy" });
-//     }
-//   } catch (error) {
-//     console.error("Lỗi khi lấy chi tiết phiếu nhập:", error);
-//     return res.status(500).json({ message: "Lỗi khi lấy chi tiết phiếu nhập" });
-//   }
-// });
-
-// Endpoint cho chi tiết phiếu nhập
+// Lấy chi tiết phiếu nhập cùng danh sách sản phẩm
 receiptRouter.get("/api/phieunhap/:maPhieuNhap", async (req, res) => {
   const { maPhieuNhap } = req.params;
 
   try {
-    const request = new sql.Request();
-    request.input("MaPhieuNhap", sql.NVarChar, maPhieuNhap);
-
-    const result = await request.query(
-      "SELECT * FROM PhieuNhap_Copy WHERE MaPhieuNhap = @MaPhieuNhap"
+    // Lấy thông tin phiếu nhập
+    const [phieuNhapRows] = await pool.execute(
+      "SELECT * FROM PhieuNhap_Copy WHERE MaPhieuNhap = ?",
+      [maPhieuNhap]
     );
 
-    if (result.recordset.length === 0) {
+    if (phieuNhapRows.length === 0) {
       return res.status(404).json({ message: "Không tìm thấy phiếu nhập." });
     }
 
     // Lấy danh sách sản phẩm liên quan
-    const productsResult = await request.query(
-      "SELECT * FROM ChiTietPhieuNhap WHERE MaPhieuNhap = @MaPhieuNhap"
+    const [productsRows] = await pool.execute(
+      "SELECT * FROM ChiTietPhieuNhap WHERE MaPhieuNhap = ?",
+      [maPhieuNhap]
     );
 
     const responseData = {
-      ...result.recordset[0],
-      SanPhamList: productsResult.recordset, // Thêm danh sách sản phẩm vào phản hồi
+      ...phieuNhapRows[0],
+      SanPhamList: productsRows,
     };
 
     res.status(200).json(responseData);
@@ -131,35 +96,25 @@ receiptRouter.get("/api/phieunhap/:maPhieuNhap", async (req, res) => {
   }
 });
 
-// Endpoint cho thêm phiếu nhập
-
+// Thêm phiếu nhập
 receiptRouter.post("/api/phieunhap", async (req, res) => {
   try {
-    const {
+    const { MaPhieuNhap, MaNhaCungCap, MaNhanVien, NgayNhap, MoTa } = req.body;
+
+    const sqlQuery = `
+      INSERT INTO PhieuNhap_Copy (MaPhieuNhap, MaNhaCungCap, MaNhanVien, NgayNhap, MoTa)
+      VALUES (?, ?, ?, ?, ?)
+    `;
+
+    await pool.execute(sqlQuery, [
       MaPhieuNhap,
       MaNhaCungCap,
       MaNhanVien,
       NgayNhap,
       MoTa,
-      // TongGiaTri,
-    } = req.body;
+    ]);
 
-    const sqlQuery = `
-      INSERT INTO PhieuNhap_Copy (MaPhieuNhap, MaNhaCungCap, MaNhanVien, NgayNhap, MoTa)
-      VALUES (@MaPhieuNhap, @MaNhaCungCap, @MaNhanVien, @NgayNhap, @MoTa)
-    `;
-
-    const request = new sql.Request();
-    request.input("MaPhieuNhap", sql.NVarChar, MaPhieuNhap);
-    request.input("MaNhaCungCap", sql.NVarChar, MaNhaCungCap);
-    request.input("MaNhanVien", sql.NVarChar, MaNhanVien);
-    request.input("NgayNhap", sql.DateTime, NgayNhap);
-    request.input("MoTa", sql.NVarChar, MoTa);
-    // request.input("TongGiaTri", sql.Decimal, TongGiaTri);
-
-    await request.query(sqlQuery);
-
-    res.status(201).json({ MaPhieuNhap }); // Trả về mã phiếu nhập
+    res.status(201).json({ MaPhieuNhap });
   } catch (err) {
     console.error("Lỗi khi thêm phiếu nhập:", err);
     res.status(500).send("Lỗi khi thêm phiếu nhập");
@@ -172,12 +127,9 @@ receiptRouter.put("/api/phieunhap/:maPhieuNhap", async (req, res) => {
   const { TongGiaTri } = req.body;
 
   try {
-    const request = new sql.Request();
-    request.input("TongGiaTri", sql.Decimal, TongGiaTri);
-    request.input("MaPhieuNhap", sql.NVarChar, maPhieuNhap);
-
-    await request.query(
-      "UPDATE PhieuNhap SET TongGiaTri = @TongGiaTri WHERE MaPhieuNhap = @MaPhieuNhap"
+    await pool.execute(
+      "UPDATE PhieuNhap_Copy SET TongGiaTri = ? WHERE MaPhieuNhap = ?",
+      [TongGiaTri, maPhieuNhap]
     );
 
     res
@@ -189,16 +141,16 @@ receiptRouter.put("/api/phieunhap/:maPhieuNhap", async (req, res) => {
   }
 });
 
-// Endpoint xóa phiếu nhập
+// Xóa phiếu nhập
 receiptRouter.delete("/api/phieunhap/:maPhieuNhap", async (req, res) => {
   const maPhieuNhap = req.params.maPhieuNhap;
   try {
-    const sqlQuery = `DELETE FROM PhieuNhap WHERE MaPhieuNhap = @maPhieuNhap`;
-    const request = new sql.Request();
-    request.input("maPhieuNhap", sql.NVarChar, maPhieuNhap);
+    const [result] = await pool.execute(
+      "DELETE FROM PhieuNhap_Copy WHERE MaPhieuNhap = ?",
+      [maPhieuNhap]
+    );
 
-    const result = await request.query(sqlQuery);
-    if (result.rowsAffected[0] === 0) {
+    if (result.affectedRows === 0) {
       return res.status(404).send("Phiếu nhập không tìm thấy.");
     }
 

@@ -17,7 +17,7 @@ async function addSupplier() {
   };
 
   try {
-    const response = await fetch("http://localhost:3000/api/nha-cung-cap", {
+    const response = await fetch(`${BACKEND_URL}/nha-cung-cap`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -43,7 +43,7 @@ async function addSupplier() {
 
 async function fetchSuppliers() {
   try {
-    const response = await fetch("http://localhost:3000/api/nha-cung-cap");
+    const response = await fetch(`${BACKEND_URL}/nha-cung-cap`);
     const suppliers = await response.json();
 
     const container = document.querySelector("#supplier-container tbody");

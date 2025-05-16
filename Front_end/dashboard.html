@@ -75,8 +75,8 @@
 
         try {
           const [receiptsRes, exportsRes] = await Promise.all([
-            fetch("http://localhost:3000/api/phieunhap"),
-            fetch("http://localhost:3000/api/phieuxuat"),
+            fetch(`${BACKEND_URL}/phieunhap`),
+            fetch(`${BACKEND_URL}/phieuxuat`),
           ]);
 
           const receipts = await receiptsRes.json();
@@ -110,5 +110,6 @@
 
       document.addEventListener("DOMContentLoaded", loadDashboardData);
     </script>
+    <script src="javascript/constants.js"></script>
   </body>
 </html>

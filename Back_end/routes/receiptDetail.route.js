@@ -1,5 +1,5 @@
 const { Router } = require("express");
-const sql = require("mssql");
+const pool = require("../db"); // pool mysql2 đã được tạo
 
 const receiptDetailRouter = new Router();
 
@@ -16,28 +16,19 @@ receiptDetailRouter.post("/api/chitietphieunhap", async (req, res) => {
   }
 
   try {
-    const pool = await sql.connect(req.app.get("dbConfig"));
-
     // Thêm chi tiết phiếu nhập
-    const request = new sql.Request(pool);
-    request.input("MaPhieuNhap", sql.NVarChar, MaPhieuNhap);
-    request.input("MaSanPham", sql.NVarChar, MaSanPham);
-    request.input("SoLuong", sql.Int, SoLuong);
-    request.input("MaDonViKhac", sql.Int, MaDonViKhac); // Giả sử MaDonViKhac là ID
-
-    await request.query(
-      "INSERT INTO ChiTietPhieuNhap (MaPhieuNhap, MaSanPham, SoLuong, MaDonViKhac) VALUES (@MaPhieuNhap, @MaSanPham, @SoLuong, @MaDonViKhac)"
+    await pool.execute(
+      `INSERT INTO ChiTietPhieuNhap (MaPhieuNhap, MaSanPham, SoLuong, MaDonViKhac)
+       VALUES (?, ?, ?, ?)`,
+      [MaPhieuNhap, MaSanPham, SoLuong, MaDonViKhac]
     );
 
     // Cập nhật số lượng tồn kho trong bảng DonViKhac
-    const stockUpdateRequest = new sql.Request(pool);
-    stockUpdateRequest.input("MaSanPham", sql.NVarChar, MaSanPham);
-    stockUpdateRequest.input("SoLuong", sql.Int, SoLuong);
-    stockUpdateRequest.input("MaDonViKhac", sql.Int, MaDonViKhac); // ID tương ứng
-
-    // Cập nhật số lượng tồn
-    await stockUpdateRequest.query(
-      "UPDATE DonViKhac SET SoLuongTon = ISNULL(SoLuongTon, 0) + @SoLuong WHERE ID = @MaDonViKhac"
+    await pool.execute(
+      `UPDATE DonViKhac 
+       SET SoLuongTon = IFNULL(SoLuongTon, 0) + ? 
+       WHERE ID = ?`,
+      [SoLuong, MaDonViKhac]
     );
 
     res
@@ -56,19 +47,13 @@ receiptDetailRouter.get(
     const { maPhieuNhap } = req.params;
 
     try {
-      const pool = await sql.connect(/* cấu hình của bạn */);
-      const ps = new sql.PreparedStatement(pool);
-      ps.input("maPhieuNhap", sql.NVarChar); // Khai báo tham số
-
-      await ps.prepare(
-        "SELECT * FROM ChiTietPhieuNhap WHERE MaPhieuNhap = @maPhieuNhap"
+      const [rows] = await pool.execute(
+        `SELECT * FROM ChiTietPhieuNhap WHERE MaPhieuNhap = ?`,
+        [maPhieuNhap]
       );
-      const result = await ps.execute({ maPhieuNhap });
-      await ps.unprepare();
-
-      res.status(200).json(result.recordset);
+      res.status(200).json(rows);
     } catch (error) {
-      console.error(error);
+      console.error("Lỗi khi lấy chi tiết phiếu nhập:", error);
       res.status(500).json({ message: "Lỗi khi lấy chi tiết phiếu nhập." });
     }
   }
@@ -80,17 +65,14 @@ receiptDetailRouter.put("/api/chitietphieunhap/:id", async (req, res) => {
   const { SoLuong, GiaSanPham } = req.body;
 
   try {
-    const request = new sql.Request();
-    request.input("SoLuong", sql.Int, SoLuong);
-    request.input("GiaSanPham", sql.Decimal, GiaSanPham);
-
-    await request.query(
-      "UPDATE ChiTietPhieuNhap SET SoLuong = @SoLuong, GiaSanPham = @GiaSanPham WHERE Id = @Id"
+    await pool.execute(
+      `UPDATE ChiTietPhieuNhap SET SoLuong = ?, GiaSanPham = ? WHERE Id = ?`,
+      [SoLuong, GiaSanPham, id]
     );
 
     res.status(200).json({ message: "Chi tiết phiếu nhập đã được cập nhật." });
   } catch (error) {
-    console.error(error);
+    console.error("Lỗi khi cập nhật chi tiết phiếu nhập:", error);
     res.status(500).json({ message: "Lỗi khi cập nhật chi tiết phiếu nhập." });
   }
 });
@@ -100,14 +82,20 @@ receiptDetailRouter.delete("/api/chitietphieunhap/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
-    const request = new sql.Request();
-    request.input("Id", sql.Int, id); // Giả sử Id là kiểu Int
+    const [result] = await pool.execute(
+      `DELETE FROM ChiTietPhieuNhap WHERE Id = ?`,
+      [id]
+    );
 
-    await request.query("DELETE FROM ChiTietPhieuNhap WHERE Id = @Id");
+    if (result.affectedRows === 0) {
+      return res
+        .status(404)
+        .json({ message: "Chi tiết phiếu nhập không tìm thấy." });
+    }
 
     res.status(200).json({ message: "Chi tiết phiếu nhập đã được xóa." });
   } catch (error) {
-    console.error(error);
+    console.error("Lỗi khi xóa chi tiết phiếu nhập:", error);
     res.status(500).json({ message: "Lỗi khi xóa chi tiết phiếu nhập." });
   }
 });

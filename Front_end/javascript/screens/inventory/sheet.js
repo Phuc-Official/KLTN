@@ -12,9 +12,7 @@ function cancel() {
 // Hàm gợi ý mã phiếu kiểm kê
 async function suggestNextSheetId() {
   try {
-    const response = await fetch(
-      "http://localhost:3000/api/phieukiemke/max-maphieu"
-    );
+    const response = await fetch(`${BACKEND_URL}/phieukiemke/max-maphieu`);
     const data = await response.json();
 
     // Kiểm tra dữ liệu trả về
@@ -51,9 +49,7 @@ function generateNextSheetId(maxId) {
 
 async function checkIfSheetIdExists(sheetId) {
   try {
-    const response = await fetch(
-      `http://localhost:3000/api/phieukiemke/${sheetId}`
-    );
+    const response = await fetch(`${BACKEND_URL}/phieukiemke/${sheetId}`);
     return response.ok; // Trả về true nếu mã đã tồn tại
   } catch (error) {
     console.error("Lỗi khi kiểm tra mã phiếu kiểm kê:", error);
@@ -80,7 +76,7 @@ function generateNextSheetId(maxId) {
 //   }
 
 //   try {
-//     const response = await fetch("http://localhost:3000/api/phieukiemke", {
+//     const response = await fetch("${BACKEND_URL}/phieukiemke", {
 //       method: "POST",
 //       headers: {
 //         "Content-Type": "application/json",
@@ -111,7 +107,7 @@ function generateNextSheetId(maxId) {
 
 //       // Gửi yêu cầu thêm chi tiết phiếu kiểm kê
 //       const detailResponse = await fetch(
-//         "http://localhost:3000/api/chitietphieukiemke",
+//         "${BACKEND_URL}/chitietphieukiemke",
 //         {
 //           method: "POST",
 //           headers: {
@@ -167,7 +163,7 @@ function getSheetDetailsFromForm() {
 // Hàm tải nhân viên
 async function loadEmployees() {
   try {
-    const response = await fetch("http://localhost:3000/api/nhanvien");
+    const response = await fetch(`${BACKEND_URL}/nhanvien`);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -193,7 +189,7 @@ function populateEmployeeSelect(employees) {
 // Hàm tải sản phẩm
 async function loadProducts() {
   try {
-    const response = await fetch("http://localhost:3000/api/sanpham");
+    const response = await fetch(`${BACKEND_URL}/sanpham`);
     if (!response.ok) {
       throw new Error("Không thể lấy danh sách sản phẩm");
     }

@@ -22,9 +22,7 @@ function viewExportDetails(exportId) {
 // Hàm gợi ý mã phiếu xuất tiếp theo
 async function suggestNextExportId() {
   try {
-    const response = await fetch(
-      "http://localhost:3000/api/phieuxuat/max-maphieuxuat"
-    );
+    const response = await fetch(`${BACKEND_URL}/phieuxuat/max-maphieuxuat`);
     const data = await response.json();
     const nextExportId = data.maxMaPhieuXuat
       ? generateNextExportId(data.maxMaPhieuXuat)
@@ -101,7 +99,7 @@ async function addExport() {
     await Promise.all(validationPromises);
 
     // Tạo phiếu xuất chính
-    const response = await fetch("http://localhost:3000/api/phieuxuat", {
+    const response = await fetch(`${BACKEND_URL}/phieuxuat`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -132,16 +130,13 @@ async function addExport() {
       };
 
       // Thêm chi tiết phiếu xuất
-      const detailResponse = await fetch(
-        "http://localhost:3000/api/chitietphieuxuat",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(productDetails),
-        }
-      );
+      const detailResponse = await fetch(`${BACKEND_URL}/chitietphieuxuat`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(productDetails),
+      });
 
       if (!detailResponse.ok) {
         const errorData = await detailResponse.json();
@@ -203,7 +198,7 @@ async function addExport() {
 
 async function updateProductQuantityInStorage(maSanPham, maViTri, soLuong) {
   try {
-    const response = await fetch("http://localhost:3000/api/capnhatsoluong", {
+    const response = await fetch(`${BACKEND_URL}/capnhatsoluong`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -276,7 +271,7 @@ function getProductsFromForm() {
 // Hàm tải khách hàng
 async function loadCustomers() {
   try {
-    const response = await fetch("http://localhost:3000/api/khachhang");
+    const response = await fetch(`${BACKEND_URL}/khachhang`);
     const customers = await response.json();
     populateCustomerSelect(customers);
   } catch (error) {
@@ -298,7 +293,7 @@ function populateCustomerSelect(customers) {
 // Hàm tải nhân viên
 async function loadEmployees() {
   try {
-    const response = await fetch("http://localhost:3000/api/nhanvien");
+    const response = await fetch(`${BACKEND_URL}/nhanvien`);
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -325,7 +320,7 @@ function populateEmployeeSelect(employees) {
 // Hàm tải sản phẩm
 async function loadProducts() {
   try {
-    const response = await fetch("http://localhost:3000/api/sanpham");
+    const response = await fetch(`${BACKEND_URL}/sanpham`);
     if (!response.ok) {
       throw new Error("Không thể lấy danh sách sản phẩm");
     }
@@ -413,9 +408,7 @@ async function selectProduct(product) {
 
 async function fetchUnitsByProduct(maSanPham) {
   try {
-    const response = await fetch(
-      `http://localhost:3000/api/donvitinhkhac/${maSanPham}`
-    );
+    const response = await fetch(`${BACKEND_URL}/donvitinhkhac/${maSanPham}`);
     if (!response.ok) {
       throw new Error("Không thể lấy danh sách đơn vị tính.");
     }
@@ -430,9 +423,7 @@ async function fetchUnitsByProduct(maSanPham) {
 
 async function fetchStorageLocations(maSanPham) {
   try {
-    const response = await fetch(
-      `http://localhost:3000/api/vitrikho/${maSanPham}`
-    );
+    const response = await fetch(`${BACKEND_URL}/vitrikho/${maSanPham}`);
     if (!response.ok) {
       throw new Error("Không thể lấy danh sách vị trí lưu trữ.");
     }
@@ -446,7 +437,7 @@ async function fetchStorageLocations(maSanPham) {
 async function fetchConversionRate(maSanPham, donViKhacId) {
   try {
     const response = await fetch(
-      `http://localhost:3000/api/donvikhac/by-product/${maSanPham}/${donViKhacId}`
+      `${BACKEND_URL}/donvikhac/by-product/${maSanPham}/${donViKhacId}`
     );
     if (!response.ok) {
       throw new Error("Không thể lấy tỷ lệ quy đổi.");

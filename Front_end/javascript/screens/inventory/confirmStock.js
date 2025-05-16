@@ -1,8 +1,6 @@
 async function fetchProductDetails(productId) {
   try {
-    const response = await fetch(
-      `http://localhost:3000/api/sanpham/${productId}`
-    );
+    const response = await fetch(`${BACKEND_URL}/sanpham/${productId}`);
     if (!response.ok) {
       throw new Error("Không thể lấy thông tin sản phẩm");
     }
@@ -165,7 +163,7 @@ async function createStock() {
 
   try {
     // Tạo phiếu kiểm kê
-    const response = await fetch("http://localhost:3000/api/phieukiemke", {
+    const response = await fetch(`${BACKEND_URL}/phieukiemke`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -220,7 +218,7 @@ async function createStock() {
 
         // Gửi yêu cầu tạo chi tiết phiếu
         const detailResponse = await fetch(
-          "http://localhost:3000/api/chitietphieukiemke",
+          `${BACKEND_URL}/chitietphieukiemke`,
           {
             method: "POST",
             headers: {

@@ -10,7 +10,7 @@ function cancel() {
 
 async function fetchUnitOfMeasurements() {
   try {
-    const response = await fetch("http://localhost:3000/api/donvitinh");
+    const response = await fetch(`${BACKEND_URL}/donvitinh`);
     if (!response.ok) {
       throw new Error("Không thể tải danh sách đơn vị tính.");
     }
@@ -28,9 +28,7 @@ function viewOrderDetails(orderId) {
 // Hàm gợi ý mã đơn hàng tiếp theo
 async function suggestNextOrderId() {
   try {
-    const response = await fetch(
-      "http://localhost:3000/api/donhang/max-madonhang"
-    );
+    const response = await fetch(`${BACKEND_URL}/donhang/max-madonhang`);
     const data = await response.json();
     const nextOrderId = data.maxMaDonHang
       ? generateNextOrderId(data.maxMaDonHang)
@@ -60,7 +58,7 @@ async function addOrder() {
   }
 
   try {
-    const response = await fetch("http://localhost:3000/api/donhang", {
+    const response = await fetch(`${BACKEND_URL}/donhang`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -89,16 +87,13 @@ async function addOrder() {
       console.log("Thông tin chi tiết đơn hàng:", productDetails); // Log thông tin chi tiết
 
       // Gửi yêu cầu thêm chi tiết đơn hàng
-      const detailResponse = await fetch(
-        "http://localhost:3000/api/chitietdonhang",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(productDetails),
-        }
-      );
+      const detailResponse = await fetch(`${BACKEND_URL}/chitietdonhang`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(productDetails),
+      });
 
       if (!detailResponse.ok) {
         const errorData = await detailResponse.json();
@@ -168,13 +163,13 @@ function getProductsFromForm() {
 // Hàm lấy danh sách đơn hàng và hiển thị
 async function fetchOrders() {
   try {
-    const response = await fetch("http://localhost:3000/api/donhang");
+    const response = await fetch(`${BACKEND_URL}/donhang`);
     const orders = await response.json();
 
     // Lấy chi tiết đơn hàng cho từng đơn
     const detailPromises = orders.map(async (order) => {
       const detailsResponse = await fetch(
-        `http://localhost:3000/api/chitietdonhang/${order.MaDonHang}`
+        `${BACKEND_URL}/chitietdonhang/${order.MaDonHang}`
       );
       const details = await detailsResponse.json();
       return { ...order, details };
@@ -208,7 +203,7 @@ function displayOrders(orders) {
 // Hàm tải nhà cung cấp
 async function loadSuppliers() {
   try {
-    const response = await fetch("http://localhost:3000/api/nhacungcap");
+    const response = await fetch(`${BACKEND_URL}/nhacungcap`);
     const suppliers = await response.json();
     populateSupplierSelect(suppliers);
   } catch (error) {
@@ -230,7 +225,7 @@ function populateSupplierSelect(suppliers) {
 // Hàm tải nhân viên
 async function loadEmployees() {
   try {
-    const response = await fetch("http://localhost:3000/api/nhanvien");
+    const response = await fetch(`${BACKEND_URL}/nhanvien`);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -256,7 +251,7 @@ function populateEmployeeSelect(employees) {
 // Hàm tải sản phẩm
 async function loadProducts() {
   try {
-    const response = await fetch("http://localhost:3000/api/sanpham");
+    const response = await fetch(`${BACKEND_URL}/sanpham`);
     if (!response.ok) {
       throw new Error("Không thể lấy danh sách sản phẩm");
     }
@@ -343,9 +338,7 @@ async function selectProduct(product) {
 
 async function fetchUnitsByProduct(maSanPham) {
   try {
-    const response = await fetch(
-      `http://localhost:3000/api/donvitinhkhac/${maSanPham}`
-    );
+    const response = await fetch(`${BACKEND_URL}/donvitinhkhac/${maSanPham}`);
     if (!response.ok) {
       throw new Error("Không thể lấy danh sách đơn vị tính.");
     }

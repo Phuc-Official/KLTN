@@ -1,5 +1,5 @@
 const { Router } = require("express");
-const sql = require("mssql");
+const pool = require("../db"); // pool mysql2/promise
 
 const orderDetailRouter = new Router();
 
@@ -16,18 +16,12 @@ orderDetailRouter.post("/api/chitietdonhang", async (req, res) => {
   }
 
   try {
-    const pool = await sql.connect(req.app.get("dbConfig")); // Lấy config từ app
+    const sqlQuery = `
+      INSERT INTO ChiTietDonHang (MaDonHang, MaSanPham, SoLuong, MaDonViKhac)
+      VALUES (?, ?, ?, ?)
+    `;
 
-    // Thêm chi tiết đơn hàng
-    const request = new sql.Request(pool);
-    request.input("MaDonHang", sql.NVarChar, MaDonHang);
-    request.input("MaSanPham", sql.NVarChar, MaSanPham);
-    request.input("SoLuong", sql.Int, SoLuong);
-    request.input("MaDonViKhac", sql.NVarChar, MaDonViKhac);
-
-    await request.query(
-      "INSERT INTO ChiTietDonHang (MaDonHang, MaSanPham, SoLuong, MaDonViKhac) VALUES (@MaDonHang, @MaSanPham, @SoLuong, @MaDonViKhac)"
-    );
+    await pool.execute(sqlQuery, [MaDonHang, MaSanPham, SoLuong, MaDonViKhac]);
 
     res
       .status(201)
@@ -43,19 +37,12 @@ orderDetailRouter.get("/api/chitietdonhang/:maDonHang", async (req, res) => {
   const { maDonHang } = req.params;
 
   try {
-    const pool = await sql.connect(req.app.get("dbConfig"));
-    const ps = new sql.PreparedStatement(pool);
-    ps.input("maDonHang", sql.NVarChar); // Khai báo tham số
+    const sqlQuery = `SELECT * FROM ChiTietDonHang WHERE MaDonHang = ?`;
+    const [rows] = await pool.execute(sqlQuery, [maDonHang]);
 
-    await ps.prepare(
-      "SELECT * FROM ChiTietDonHang WHERE MaDonHang = @maDonHang"
-    );
-    const result = await ps.execute({ maDonHang });
-    await ps.unprepare();
-
-    res.status(200).json(result.recordset);
+    res.status(200).json(rows);
   } catch (error) {
-    console.error(error);
+    console.error("Lỗi khi lấy chi tiết đơn hàng:", error);
     res.status(500).json({ message: "Lỗi khi lấy chi tiết đơn hàng." });
   }
 });
@@ -66,18 +53,17 @@ orderDetailRouter.put("/api/chitietdonhang/:id", async (req, res) => {
   const { SoLuong, GiaSanPham } = req.body;
 
   try {
-    const request = new sql.Request();
-    request.input("SoLuong", sql.Int, SoLuong);
-    request.input("GiaSanPham", sql.Decimal, GiaSanPham);
-    request.input("Id", sql.Int, id); // Đảm bảo có ID
+    const sqlQuery = `
+      UPDATE ChiTietDonHang
+      SET SoLuong = ?, GiaSanPham = ?
+      WHERE Id = ?
+    `;
 
-    await request.query(
-      "UPDATE ChiTietDonHang SET SoLuong = @SoLuong, GiaSanPham = @GiaSanPham WHERE Id = @Id"
-    );
+    await pool.execute(sqlQuery, [SoLuong, GiaSanPham, id]);
 
     res.status(200).json({ message: "Chi tiết đơn hàng đã được cập nhật." });
   } catch (error) {
-    console.error(error);
+    console.error("Lỗi khi cập nhật chi tiết đơn hàng:", error);
     res.status(500).json({ message: "Lỗi khi cập nhật chi tiết đơn hàng." });
   }
 });
@@ -87,14 +73,18 @@ orderDetailRouter.delete("/api/chitietdonhang/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
-    const request = new sql.Request();
-    request.input("Id", sql.Int, id); // Giả sử Id là kiểu Int
+    const sqlQuery = `DELETE FROM ChiTietDonHang WHERE Id = ?`;
+    const [result] = await pool.execute(sqlQuery, [id]);
 
-    await request.query("DELETE FROM ChiTietDonHang WHERE Id = @Id");
+    if (result.affectedRows === 0) {
+      return res
+        .status(404)
+        .json({ message: "Chi tiết đơn hàng không tìm thấy." });
+    }
 
     res.status(200).json({ message: "Chi tiết đơn hàng đã được xóa." });
   } catch (error) {
-    console.error(error);
+    console.error("Lỗi khi xóa chi tiết đơn hàng:", error);
     res.status(500).json({ message: "Lỗi khi xóa chi tiết đơn hàng." });
   }
 });

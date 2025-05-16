@@ -1,19 +1,15 @@
 const orderRouter = require("express").Router();
-const sql = require("mssql");
+const pool = require("../db"); // pool MySQL đã được tạo với mysql2/promise
 
 // Endpoint gợi ý mã đơn hàng lớn nhất
 orderRouter.get("/api/donhang/max-madonhang", async (req, res) => {
   try {
-    const sqlQuery = `
-      SELECT TOP 1 MaDonHang
-      FROM DonHang
-      ORDER BY MaDonHang DESC
-    `;
+    const [rows] = await pool.execute(
+      `SELECT MaDonHang FROM DonHang ORDER BY MaDonHang DESC LIMIT 1`
+    );
 
-    const result = await sql.query(sqlQuery);
-
-    if (result.recordset.length > 0) {
-      const maxMaDonHang = result.recordset[0].MaDonHang;
+    if (rows.length > 0) {
+      const maxMaDonHang = rows[0].MaDonHang;
       return res.json({ maxMaDonHang });
     } else {
       return res.json({ maxMaDonHang: null });
@@ -27,14 +23,13 @@ orderRouter.get("/api/donhang/max-madonhang", async (req, res) => {
 // Endpoint cho bảng đơn hàng
 orderRouter.get("/api/donhang", async (req, res) => {
   try {
-    const sqlQuery = `
-      SELECT dh.*, nc.TenNhaCungCap, nv.TenNhanVien
-      FROM DonHang dh
-      LEFT JOIN NhaCungCap nc ON dh.MaNhaCungCap = nc.MaNhaCungCap
-      LEFT JOIN NhanVien nv ON dh.MaNhanVien = nv.MaNhanVien;      
-    `;
-    const result = await sql.query(sqlQuery);
-    res.json(result.recordset);
+    const [rows] = await pool.execute(
+      `SELECT dh.*, nc.TenNhaCungCap, nv.TenNhanVien
+       FROM DonHang dh
+       LEFT JOIN NhaCungCap nc ON dh.MaNhaCungCap = nc.MaNhaCungCap
+       LEFT JOIN NhanVien nv ON dh.MaNhanVien = nv.MaNhanVien`
+    );
+    res.json(rows);
   } catch (err) {
     console.error("Lỗi truy vấn: ", err);
     res.status(500).send("Lỗi truy vấn cơ sở dữ liệu");
@@ -46,25 +41,25 @@ orderRouter.get("/api/donhang/:maDonHang", async (req, res) => {
   const { maDonHang } = req.params;
 
   try {
-    const request = new sql.Request();
-    request.input("MaDonHang", sql.NVarChar, maDonHang);
-
-    const result = await request.query(
-      "SELECT * FROM DonHang WHERE MaDonHang = @MaDonHang"
+    // Lấy đơn hàng
+    const [donHangRows] = await pool.execute(
+      "SELECT * FROM DonHang WHERE MaDonHang = ?",
+      [maDonHang]
     );
 
-    if (result.recordset.length === 0) {
+    if (donHangRows.length === 0) {
       return res.status(404).json({ message: "Không tìm thấy đơn hàng." });
     }
 
     // Lấy danh sách sản phẩm liên quan
-    const productsResult = await request.query(
-      "SELECT * FROM ChiTietDonHang WHERE MaDonHang = @MaDonHang"
+    const [sanPhamRows] = await pool.execute(
+      "SELECT * FROM ChiTietDonHang WHERE MaDonHang = ?",
+      [maDonHang]
     );
 
     const responseData = {
-      ...result.recordset[0],
-      SanPhamList: productsResult.recordset, // Thêm danh sách sản phẩm vào phản hồi
+      ...donHangRows[0],
+      SanPhamList: sanPhamRows,
     };
 
     res.status(200).json(responseData);
@@ -79,24 +74,22 @@ orderRouter.post("/api/donhang", async (req, res) => {
   try {
     const { MaDonHang, MaNhaCungCap, MaNhanVien, NgayNhap, MoTa } = req.body;
 
-    console.log("Dữ liệu nhận được:", req.body); // Log dữ liệu nhận được
+    console.log("Dữ liệu nhận được:", req.body);
 
     const sqlQuery = `
-        INSERT INTO DonHang (MaDonHang, MaNhaCungCap, MaNhanVien, NgayNhap, MoTa)
-        VALUES (@MaDonHang, @MaNhaCungCap, @MaNhanVien, @NgayNhap, @MoTa)
-      `;
+      INSERT INTO DonHang (MaDonHang, MaNhaCungCap, MaNhanVien, NgayNhap, MoTa)
+      VALUES (?, ?, ?, ?, ?)
+    `;
 
-    const request = new sql.Request();
-    request.input("MaDonHang", sql.NVarChar, MaDonHang);
-    request.input("MaNhaCungCap", sql.NVarChar, MaNhaCungCap);
-    request.input("MaNhanVien", sql.NVarChar, MaNhanVien);
-    request.input("NgayNhap", sql.DateTime, NgayNhap);
-    request.input("MoTa", sql.NVarChar, MoTa);
-    // request.input("TongGiaTri", sql.Decimal, TongGiaTri);
+    await pool.execute(sqlQuery, [
+      MaDonHang,
+      MaNhaCungCap,
+      MaNhanVien,
+      NgayNhap,
+      MoTa,
+    ]);
 
-    await request.query(sqlQuery);
-
-    res.status(201).json({ MaDonHang }); // Trả về mã đơn hàng
+    res.status(201).json({ MaDonHang });
   } catch (err) {
     console.error("Lỗi khi thêm đơn hàng:", err);
     res.status(500).send("Lỗi khi thêm đơn hàng");
@@ -109,12 +102,9 @@ orderRouter.put("/api/donhang/:maDonHang", async (req, res) => {
   const { TongGiaTri } = req.body;
 
   try {
-    const request = new sql.Request();
-    request.input("TongGiaTri", sql.Decimal, TongGiaTri);
-    request.input("MaDonHang", sql.NVarChar, maDonHang);
-
-    await request.query(
-      "UPDATE DonHang SET TongGiaTri = @TongGiaTri WHERE MaDonHang = @MaDonHang"
+    await pool.execute(
+      "UPDATE DonHang SET TongGiaTri = ? WHERE MaDonHang = ?",
+      [TongGiaTri, maDonHang]
     );
 
     res
@@ -130,12 +120,12 @@ orderRouter.put("/api/donhang/:maDonHang", async (req, res) => {
 orderRouter.delete("/api/donhang/:maDonHang", async (req, res) => {
   const maDonHang = req.params.maDonHang;
   try {
-    const sqlQuery = `DELETE FROM DonHang WHERE MaDonHang = @maDonHang`;
-    const request = new sql.Request();
-    request.input("maDonHang", sql.NVarChar, maDonHang);
+    const [result] = await pool.execute(
+      "DELETE FROM DonHang WHERE MaDonHang = ?",
+      [maDonHang]
+    );
 
-    const result = await request.query(sqlQuery);
-    if (result.rowsAffected[0] === 0) {
+    if (result.affectedRows === 0) {
       return res.status(404).send("Đơn hàng không tìm thấy.");
     }
 

@@ -11,9 +11,7 @@ function cancel() {
 // Hàm gợi ý mã phiếu nhập tiếp theo
 async function suggestNextReceiptId() {
   try {
-    const response = await fetch(
-      "http://localhost:3000/api/phieunhap/max-maphieunhap"
-    );
+    const response = await fetch(`${BACKEND_URL}/phieunhap/max-maphieunhap`);
     const data = await response.json();
     const nextReceiptId = data.maxMaPhieuNhap
       ? generateNextReceiptId(data.maxMaPhieuNhap)
@@ -42,7 +40,7 @@ async function addReceipt() {
   }
 
   try {
-    const response = await fetch("http://localhost:3000/api/phieunhap", {
+    const response = await fetch(`${BACKEND_URL}/phieunhap`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -74,16 +72,13 @@ async function addReceipt() {
       console.log("Thêm chi tiết phiếu nhập cho sản phẩm:", productDetails);
 
       // Gửi yêu cầu thêm chi tiết phiếu nhập
-      const detailResponse = await fetch(
-        "http://localhost:3000/api/chitietphieunhap",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(productDetails),
-        }
-      );
+      const detailResponse = await fetch(`${BACKEND_URL}/chitietphieunhap`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(productDetails),
+      });
 
       if (!detailResponse.ok) {
         const errorData = await detailResponse.json();
