@@ -151,16 +151,34 @@ productRouter.put("/api/sanpham/:maSanPham", async (req, res) => {
 // Xóa sản phẩm
 productRouter.delete("/api/sanpham/:maSanPham", async (req, res) => {
   const maSanPham = req.params.maSanPham;
+  const connection = await pool.getConnection();
+
   try {
-    const sqlQuery = `DELETE FROM SanPham_Copy WHERE MaSanPham = ?`;
-    const [result] = await pool.execute(sqlQuery, [maSanPham]);
+    await connection.beginTransaction();
+
+    // Xóa dữ liệu liên quan ở bảng DonViKhac
+    await connection.execute("DELETE FROM DonViKhac WHERE MaSanPham = ?", [
+      maSanPham,
+    ]);
+
+    // Tiếp tục xóa sản phẩm ở SanPham_Copy
+    const [result] = await connection.execute(
+      "DELETE FROM SanPham_Copy WHERE MaSanPham = ?",
+      [maSanPham]
+    );
 
     if (result.affectedRows === 0) {
+      await connection.rollback();
+      connection.release();
       return res.status(404).send("Sản phẩm không tìm thấy.");
     }
 
+    await connection.commit();
+    connection.release();
     res.json({ message: "Sản phẩm đã được xóa thành công!" });
   } catch (err) {
+    await connection.rollback();
+    connection.release();
     console.error("Lỗi khi xóa sản phẩm:", err);
     res.status(500).send("Lỗi khi xóa sản phẩm");
   }
@@ -188,6 +206,22 @@ productRouter.put("/api/sanpham/:maSanPham/stock", async (req, res) => {
   } catch (err) {
     console.error("Lỗi khi cập nhật số lượng tồn:", err);
     res.status(500).send("Lỗi khi cập nhật số lượng tồn");
+  }
+});
+
+// POST /sanpham/capnhat-ton
+productRouter.post("/api/sanpham/capnhat-ton", async (req, res) => {
+  const { maSanPham, soLuong } = req.body;
+  try {
+    await pool.execute(
+      `UPDATE SanPham_Copy SET SoLuongTon = IFNULL(SoLuongTon, 0) + ? WHERE MaSanPham = ?`,
+      [soLuong, maSanPham]
+    );
+
+    res.status(200).json({ message: "Cập nhật SoLuongTon thành công" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Lỗi khi cập nhật SoLuongTon" });
   }
 });
 

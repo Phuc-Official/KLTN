@@ -20,7 +20,9 @@
       <h2>WHM</h2>
       <ul>
         <li>
-          <a href=""><i class="fa-solid fa-house"></i>Tổng quan</a>
+          <a href="dashboard.html"
+            ><i class="fa-solid fa-house"></i>Tổng quan</a
+          >
         </li>
         <!-- <li>
           <a href="#"><i class="fa-solid fa-file-invoice"></i>Đơn hàng</a>
@@ -47,7 +49,7 @@
               <a href="productList.html">Danh sách sản phẩm</a>
             </li>
             <li>
-              <a href="groupList.html">Nhóm sản phẩm</a>
+              <a href="groupList.html">Loại sản phẩm</a>
             </li>
           </ul>
         </li>
@@ -76,7 +78,7 @@
         <li>
           <a href="#"><i class="fa-solid fa-user"></i>Đối tác</a>
           <ul class="submenu">
-            <li><a href="#">Khách hàng</a></li>
+            <li><a href="customer.html">Khách hàng</a></li>
             <li><a href="supplierList.html">Nhà cung cấp</a></li>
           </ul>
         </li>
@@ -106,11 +108,24 @@
           </button>
         </div>
         <div class="container_a">
-          <!-- <input
-            class="search"
-            type="text"
-            placeholder=" 🔍︎  Tìm kiếm theo Mã sản phẩm, Tên sản phẩm, ..."
-          /> -->
+          <div class="search">
+            <div class="left-group">
+              <input
+                class="search"
+                type="text"
+                placeholder="🔍︎ Tìm kiếm theo Mã SP, Tên SP"
+                id="searchInput"
+              />
+            </div>
+            <div class="right-group">
+              <input
+                class="search"
+                type="number"
+                placeholder="Nhập định mức tồn"
+                id="limitInput"
+              />
+            </div>
+          </div>
 
           <div class="table">
             <table id="product-container">
@@ -119,6 +134,7 @@
                   <th>Mã sản phẩm</th>
                   <th>Tên sản phẩm</th>
                   <th>Loại</th>
+                  <th>Tổng tồn</th>
                 </tr>
               </thead>
               <tbody>
@@ -173,6 +189,38 @@
       function create() {
         // Chuyển hướng đến trang tạo sản phẩm
         window.location.href = "createProduct.html"; // Thay đổi thành URL của trang bạn muốn chuyển đến
+      }
+    </script>
+
+    <script>
+      function filterProducts() {
+        const searchValue = document
+          .getElementById("searchInput")
+          .value.toLowerCase();
+        const limitValue = parseInt(
+          document.getElementById("limitInput").value
+        );
+
+        const rows = document.querySelectorAll("#product-container tbody tr");
+
+        rows.forEach((row) => {
+          const maSP =
+            row.querySelector(".ma-sp")?.textContent.toLowerCase() || "";
+          const tenSP =
+            row.querySelector(".ten-sp")?.textContent.toLowerCase() || "";
+          const soLuongTon =
+            parseInt(row.querySelector(".so-luong-ton")?.textContent) || 0;
+
+          const matchSearch =
+            maSP.includes(searchValue) || tenSP.includes(searchValue);
+          const matchLimit = isNaN(limitValue) || soLuongTon <= limitValue;
+
+          if (matchSearch && matchLimit) {
+            row.style.display = "";
+          } else {
+            row.style.display = "none";
+          }
+        });
       }
     </script>
 

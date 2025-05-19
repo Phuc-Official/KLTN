@@ -155,42 +155,125 @@ function toggleDrawer() {
   }
 }
 
-function createStorage() {
+async function createStorage() {
   const day = document.getElementById("day").value;
   const ke = document.getElementById("ke").value;
-  const o = document.getElementById("o").value;
-  const sucChua = document.getElementById("suc_chua").value;
+  const o = parseInt(document.getElementById("o").value);
+  const sucChua = parseInt(document.getElementById("suc_chua").value);
   const maSanPham = document.getElementById("ma_san_pham").value;
 
-  fetch(`${BACKEND_URL}/themvitri`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      Day: day,
-      Ke: ke,
-      O: parseInt(o),
-      SucChua: parseInt(sucChua),
-      MaSanPham: maSanPham,
-    }),
-  })
-    .then((response) => {
-      if (!response.ok) {
-        return response.text().then((errorText) => {
-          throw new Error(`Không thể cập nhật vị trí: ${errorText}`);
-        });
-      }
-      return response.json();
-    })
-    .then((data) => {
-      alert(data.message);
-      closeAllDrawers(); // Đóng drawer sau khi lưu
-    })
-    .catch((error) => {
-      console.error("Lỗi:", error);
+  const maViTri = `${day}-${ke}-${o}`;
+
+  try {
+    // Gửi request tạo hoặc cập nhật vị trí
+    const response = await fetch(`${BACKEND_URL}/themvitri`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        Day: day,
+        Ke: ke,
+        O: o,
+        SucChua: sucChua,
+        MaSanPham: maSanPham,
+      }),
     });
+
+    // Nếu có lỗi từ backend
+    if (!response.ok) {
+      let errorData;
+      try {
+        errorData = await response.json();
+      } catch {
+        const errorText = await response.text();
+        throw new Error(`Không thể cập nhật vị trí: ${errorText}`);
+      }
+
+      // Nếu vị trí đã có sản phẩm khác
+      if (errorData.exists) {
+        const confirmUpdate = await showConfirmModal(
+          `Vị trí ${maViTri} đã có sản phẩm khác (${errorData.currentProduct}). Bạn có muốn cập nhật không?`
+        );
+        if (!confirmUpdate) return;
+
+        // Gửi lại yêu cầu với cờ update = true
+        const updateResponse = await fetch(`${BACKEND_URL}/themvitri`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            Day: day,
+            Ke: ke,
+            O: o,
+            SucChua: sucChua,
+            MaSanPham: maSanPham,
+            update: true,
+          }),
+        });
+
+        if (!updateResponse.ok) {
+          const errText = await updateResponse.text();
+          throw new Error(`Cập nhật thất bại: ${errText}`);
+        }
+
+        const updateData = await updateResponse.json();
+        alert(updateData.message);
+        closeAllDrawers();
+        loadWarehousePositions();
+        return;
+      } else {
+        throw new Error(
+          `Không thể cập nhật vị trí: ${
+            errorData.message || "Lỗi không xác định"
+          }`
+        );
+      }
+    }
+
+    // Nếu không có lỗi => cập nhật thành công
+    const data = await response.json();
+    alert(data.message);
+    closeAllDrawers();
+    loadWarehousePositions();
+  } catch (error) {
+    console.error("Lỗi:", error);
+    alert(error.message);
+  }
 }
+
+function showConfirmModal(message) {
+  return new Promise((resolve) => {
+    const modal = document.getElementById("confirmModal");
+    const msg = document.getElementById("confirmMessage");
+    const btnYes = document.getElementById("btnYes");
+    const btnNo = document.getElementById("btnNo");
+
+    msg.textContent = message;
+    modal.style.display = "flex";
+
+    function cleanUp() {
+      btnYes.removeEventListener("click", onYes);
+      btnNo.removeEventListener("click", onNo);
+      modal.style.display = "none";
+    }
+
+    function onYes() {
+      cleanUp();
+      resolve(true);
+    }
+
+    function onNo() {
+      cleanUp();
+      resolve(false);
+    }
+
+    btnYes.addEventListener("click", onYes);
+    btnNo.addEventListener("click", onNo);
+  });
+}
+
 // Đóng drawer khi nhấn vào nút đóng
 document
   .getElementById("close-drawer")

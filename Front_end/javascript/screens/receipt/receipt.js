@@ -8,18 +8,6 @@ function cancel() {
   window.history.back();
 }
 
-// async function fetchUnitOfMeasurements() {
-//   try {
-//     const response = await fetch("${BACKEND_URL}/donvitinh");
-//     if (!response.ok) {
-//       throw new Error("Không thể tải danh sách đơn vị tính.");
-//     }
-//     unitOfMeasurements = await response.json(); // Lưu trữ đơn vị tính vào mảng
-//   } catch (error) {
-//     console.error("Lỗi khi tải đơn vị tính:", error);
-//   }
-// }
-
 // Hàm chuyển hướng đến trang chi tiết phiếu nhập
 function viewReceiptDetails(receiptId) {
   window.location.href = `../receipt/receiptDetail.html?id=${receiptId}`;
@@ -118,18 +106,6 @@ async function addReceipt() {
     console.log("Dữ liệu phiếu nhập:", receipt);
     console.log("Danh sách sản phẩm:", selectedProducts);
 
-    // Trong hàm updateProductQuantityInStorage
-    // console.log("Cập nhật số lượng:", {
-    //   maSanPham,
-    //   maViTri,
-    //   soLuong,
-    // });
-
-    // Trong hàm fetchConversionRate
-    // console.log(
-    //   `Lấy tỷ lệ quy đổi cho sản phẩm ${maSanPham} và đơn vị ${donViKhacId}`
-    // );
-
     // Tạo phiếu nhập chính
     const response = await fetch(`${BACKEND_URL}/phieunhap`, {
       method: "POST",
@@ -193,6 +169,8 @@ async function addReceipt() {
         storageLocationId,
         quantityToUpdate
       );
+      // 3. Cập nhật số lượng tồn trong bảng SanPham_Copy
+      await updateProductStock(productInfo.MaSanPham, quantityToUpdate);
     });
 
     await Promise.all(productPromises);
@@ -347,7 +325,7 @@ function populateEmployeeSelect(employees) {
 // Hàm tải sản phẩm
 async function loadProducts() {
   try {
-    const response = await fetch("${BACKEND_URL}/sanpham");
+    const response = await fetch(`${BACKEND_URL}/sanpham`);
     if (!response.ok) {
       throw new Error("Không thể lấy danh sách sản phẩm");
     }
@@ -597,6 +575,27 @@ async function updateProductQuantityInStorage(maSanPham, maViTri, soLuong) {
     throw error;
   }
 }
+async function updateProductStock(maSanPham, soLuong) {
+  try {
+    const response = await fetch(`${BACKEND_URL}/sanpham/capnhat-ton`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ maSanPham, soLuong }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Lỗi khi cập nhật SoLuongTon.");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Lỗi khi cập nhật tồn kho sản phẩm:", error);
+    throw error;
+  }
+}
 
 async function updateStorageLocation(uniqueId, locationId) {
   const productInfo = selectedProducts.find((p) => p.uniqueId === uniqueId);
@@ -662,19 +661,6 @@ function setQuantity(uniqueId, value) {
   if (productInfo) {
     const quantity = Math.max(1, parseInt(value, 10));
     productInfo.quantity = quantity;
-
-    // Cập nhật lại thành tiền
-    // const totalPrice = productInfo.price * quantity;
-    // document.getElementById(`${uniqueId}-total`).textContent =
-    //   totalPrice.toLocaleString() + " đ";
-
-    // Cập nhật tổng giá trị vào phiếu nhập
-    // const totalValue = calculateTotalValue();
-    // document.getElementById(
-    //   "total-price"
-    // ).textContent = `Tổng giá trị: ${totalValue.toLocaleString()} đ`;
-
-    // updateSelectedProducts(); // Gọi hàm cập nhật
   }
 
   isUpdatingTotal = false; // Đặt cờ về trạng thái ban đầu
@@ -696,12 +682,6 @@ function updatePrice(uniqueId, value) {
     const totalPrice = price * productInfo.quantity;
     document.getElementById(`${uniqueId}-total`).textContent =
       totalPrice.toLocaleString() + " đ";
-
-    // Cập nhật tổng giá trị vào phiếu nhập
-    // const totalValue = calculateTotalValue();
-    // document.getElementById(
-    //   "total-price"
-    // ).textContent = `Tổng giá trị: ${totalValue.toLocaleString()} đ`;
 
     updateSelectedProducts(); // Gọi hàm cập nhật
   }
@@ -754,16 +734,3 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 document.getElementById("date-create").value = today;
-
-{
-  /* <td>
-                  <input type="number" id="${
-                    productInfo.uniqueId
-                  }-price" value="${price}" min="0" onchange="updatePrice('${
-        productInfo.uniqueId
-      }', this.value)" />
-              </td>
-              <td id="${
-                productInfo.uniqueId
-              }-total">${totalPrice.toLocaleString()} đ</td> */
-}

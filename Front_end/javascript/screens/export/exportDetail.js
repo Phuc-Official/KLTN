@@ -122,9 +122,9 @@ async function fetchExportDetails() {
       productList.appendChild(row);
     }
 
-    document.getElementById("date").value = new Date(
+    document.getElementById("date").value = formatDateToDDMMYYYY(
       exports.NgayXuat
-    ).toLocaleDateString();
+    );
     document.getElementById("description").value = exports.MoTa;
   } catch (error) {
     console.error("Lỗi khi tải chi tiết phiếu xuất:", error);
@@ -135,8 +135,40 @@ async function fetchExportDetails() {
   }
 }
 
+document.getElementById("delete-button").addEventListener("click", async () => {
+  if (!confirm("Bạn có chắc muốn xóa phiếu xuất này không?")) return;
+
+  const maPhieuXuat = document.getElementById("export-id").textContent.trim();
+
+  try {
+    const response = await fetch(`${BACKEND_URL}/phieuxuat/${maPhieuXuat}`, {
+      method: "DELETE",
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      alert("Lỗi khi xóa phiếu xuất: " + errorText);
+      return;
+    }
+
+    alert("Xóa phiếu xuất thành công!");
+    // Chuyển hướng hoặc làm mới trang sau khi xóa
+    window.location.href = "exportList.html"; // sửa thành trang danh sách phiếu xuất phù hợp
+  } catch (error) {
+    console.error("Lỗi khi gọi API xóa phiếu xuất:", error);
+    alert("Lỗi khi xóa phiếu xuất, vui lòng thử lại.");
+  }
+});
+
 document.addEventListener("DOMContentLoaded", fetchExportDetails);
 
 function cancel() {
   window.history.back();
+}
+function formatDateToDDMMYYYY(dateInput) {
+  const date = new Date(dateInput);
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
 }

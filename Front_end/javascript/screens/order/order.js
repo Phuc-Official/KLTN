@@ -108,6 +108,7 @@ async function addOrder() {
     document.getElementById("order-form").reset();
     selectedProducts = [];
     updateSelectedProducts();
+    window.location.href = "orderList.html";
   } catch (error) {
     console.error("Lỗi khi thêm đơn hàng:", error);
     alert(error.message);

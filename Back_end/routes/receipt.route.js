@@ -144,20 +144,36 @@ receiptRouter.put("/api/phieunhap/:maPhieuNhap", async (req, res) => {
 // Xóa phiếu nhập
 receiptRouter.delete("/api/phieunhap/:maPhieuNhap", async (req, res) => {
   const maPhieuNhap = req.params.maPhieuNhap;
+
+  const connection = await pool.getConnection();
   try {
-    const [result] = await pool.execute(
+    await connection.beginTransaction();
+
+    // Xóa chi tiết phiếu nhập trước (nếu có)
+    await connection.execute(
+      "DELETE FROM ChiTietPhieuNhap WHERE MaPhieuNhap = ?",
+      [maPhieuNhap]
+    );
+
+    // Xóa phiếu nhập
+    const [result] = await connection.execute(
       "DELETE FROM PhieuNhap_Copy WHERE MaPhieuNhap = ?",
       [maPhieuNhap]
     );
 
     if (result.affectedRows === 0) {
+      await connection.rollback();
       return res.status(404).send("Phiếu nhập không tìm thấy.");
     }
 
+    await connection.commit();
     res.json({ message: "Phiếu nhập đã được xóa thành công!" });
   } catch (err) {
+    await connection.rollback();
     console.error("Lỗi khi xóa phiếu nhập:", err);
     res.status(500).send("Lỗi khi xóa phiếu nhập");
+  } finally {
+    connection.release();
   }
 });
 

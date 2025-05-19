@@ -131,10 +131,36 @@ async function fetchOrderDetails() {
     }
 
     // Cập nhật thông tin khác
-    document.getElementById("date").value = new Date(
+    document.getElementById("date").value = formatDateToDDMMYYYY(
       order.NgayNhap
-    ).toLocaleDateString();
+    );
+
     document.getElementById("description").value = order.MoTa || "";
+
+    // document.getElementById("status").value = order.TrangThai || "Chờ xử lý";
+
+    const statusDisplay = document.getElementById("order-status");
+    if (statusDisplay) {
+      const status = order.TrangThai || "Chờ xử lý";
+      statusDisplay.textContent = ` ${status}`;
+
+      // Gán màu theo trạng thái
+      switch (status) {
+        case "Đã nhập":
+          statusDisplay.style.color = "green";
+          break;
+        default:
+          statusDisplay.style.color = "gray"; // các trạng thái khác
+      }
+    }
+    const addReceiptBtn = document.getElementById("add-receipt-button");
+    if (addReceiptBtn) {
+      if (order.TrangThai === "Đã nhập") {
+        addReceiptBtn.style.display = "none";
+      } else {
+        addReceiptBtn.style.display = "inline-block"; // hoặc "" để hiện lại nếu muốn
+      }
+    }
   } catch (error) {
     console.error("Lỗi khi tải chi tiết đơn hàng:", error);
     const detailsContainer = document.getElementById("order-details");
@@ -202,14 +228,44 @@ document
     window.location.href = createReceiptUrl;
   });
 
-function formatDateString(dateString) {
-  const parts = dateString.split("/");
-  // Kiểm tra định dạng trước khi chuyển đổi
-  if (parts.length === 3) {
-    const day = parts[0].padStart(2, "0"); // Thêm 0 vào trước nếu cần
-    const month = parts[1].padStart(2, "0"); // Thêm 0 vào trước nếu cần
-    const year = parts[2];
-    return `${day}/${month}/${year}`; // Trả về định dạng "yyyy-MM-dd"
-  }
-  return dateString; // Trả về giá trị ban đầu nếu không đúng định dạng
+document
+  .getElementById("delete-button")
+  .addEventListener("click", async function () {
+    const orderId = document.getElementById("order-id").textContent.trim();
+
+    if (!orderId) {
+      alert("Không xác định được mã đơn hàng để xóa.");
+      return;
+    }
+
+    // Xác nhận lại với người dùng trước khi xóa
+    const confirmDelete = confirm(
+      `Bạn có chắc muốn xóa đơn hàng ${orderId} không?`
+    );
+    if (!confirmDelete) return;
+
+    try {
+      const response = await fetch(`${BACKEND_URL}/donhang/${orderId}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Xóa đơn hàng thất bại.");
+      }
+
+      alert(`Đơn hàng ${orderId} đã được xóa thành công.`);
+      // Có thể chuyển về trang danh sách đơn hàng hoặc trang trước đó
+      window.location.href = "orderList.html"; // hoặc trang bạn muốn chuyển đến
+    } catch (error) {
+      console.error("Lỗi khi xóa đơn hàng:", error);
+      alert("Đã xảy ra lỗi khi xóa đơn hàng. Vui lòng thử lại.");
+    }
+  });
+
+function formatDateToDDMMYYYY(dateInput) {
+  const date = new Date(dateInput);
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
 }

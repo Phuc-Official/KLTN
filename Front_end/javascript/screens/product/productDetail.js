@@ -21,6 +21,10 @@ async function fetchProductDetails() {
     document.getElementById("weight").value = product.TrongLuong;
     document.getElementById("description").value = product.MoTaSanPham;
 
+    document
+      .getElementById("delete-button")
+      .addEventListener("click", deleteProduct);
+
     // Gọi API để lấy các đơn vị bổ sung
     await fetchAdditionalUnits(maSanPham);
   } catch (error) {
@@ -187,5 +191,37 @@ async function getConversionRate(unitId) {
   } catch (error) {
     console.error("Lỗi khi lấy tỷ lệ quy đổi:", error);
     return 1; // Trả về 1 nếu có lỗi
+  }
+}
+
+async function deleteProduct() {
+  const maSanPham = document.getElementById("product-id").value;
+  if (!maSanPham) {
+    alert("Không có mã sản phẩm để xóa.");
+    return;
+  }
+
+  const confirmed = confirm(
+    `Bạn có chắc muốn xóa sản phẩm ${maSanPham} không?`
+  );
+  if (!confirmed) return;
+
+  try {
+    const response = await fetch(`${BACKEND_URL}/sanpham/${maSanPham}`, {
+      method: "DELETE",
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      alert(`Lỗi khi xóa sản phẩm: ${errorText}`);
+      return;
+    }
+
+    alert("Xóa sản phẩm thành công!");
+    // Chuyển về trang danh sách sản phẩm hoặc trang khác
+    window.location.href = "productList.html"; // hoặc trang bạn muốn
+  } catch (error) {
+    console.error("Lỗi khi xóa sản phẩm:", error);
+    alert("Đã xảy ra lỗi khi xóa sản phẩm.");
   }
 }

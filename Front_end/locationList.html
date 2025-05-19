@@ -20,7 +20,9 @@
       <h2>WHM</h2>
       <ul>
         <li>
-          <a href=""><i class="fa-solid fa-house"></i>Tổng quan</a>
+          <a href="dashboard.html"
+            ><i class="fa-solid fa-house"></i>Tổng quan</a
+          >
         </li>
         <!-- <li>
           <a href="#"><i class="fa-solid fa-file-invoice"></i>Đơn hàng</a>
@@ -47,7 +49,7 @@
               <a href="productList.html">Danh sách sản phẩm</a>
             </li>
             <li>
-              <a href="groupList.html">Nhóm sản phẩm</a>
+              <a href="groupList.html">Loại sản phẩm</a>
             </li>
           </ul>
         </li>
@@ -76,7 +78,7 @@
         <li>
           <a href="#"><i class="fa-solid fa-user"></i>Đối tác</a>
           <ul class="submenu">
-            <li><a href="#">Khách hàng</a></li>
+            <li><a href="customer.html">Khách hàng</a></li>
             <li><a href="supplierList.html">Nhà cung cấp</a></li>
           </ul>
         </li>
@@ -111,6 +113,13 @@
             <h2 id="drawer-title" style="margin-bottom: 20px">Tạo ô lưu trữ</h2>
             <div id="drawer-content">
               <!-- Phần tạo ô lưu trữ -->
+              <div id="confirmModal" class="modal" style="display: none">
+                <div class="modal-content">
+                  <p id="confirmMessage"></p>
+                  <button id="btnYes">Có</button>
+                  <button id="btnNo">Không</button>
+                </div>
+              </div>
               <div id="create-storage">
                 <div class="input-row">
                   <div class="input-group">

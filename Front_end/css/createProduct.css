@@ -196,14 +196,21 @@ button.upload-button:hover {
 }
 
 /* ///////////// */
+.container-button {
+  margin-right: 185px;
+}
 .add-button,
 .add-receipt-button {
   margin-left: 10px;
-  margin-right: 185px;
+  /* margin-right: 185px; */
 }
 .confirm {
   margin-left: 10px;
   margin-right: 185px;
+}
+
+.delete-button {
+  background-color: red;
 }
 
 .button-cancel {

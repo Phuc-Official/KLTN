@@ -58,3 +58,22 @@ i {
   color: darkgrey; /* Màu sắc của placeholder */
   opacity: 1; /* Đảm bảo độ mờ */
 }
+
+.search {
+  display: flex;
+  justify-content: space-between; /* Căn ra 2 đầu */
+  align-items: center;
+  gap: 10px;
+  /* padding: 10px; */
+  margin-right: 10px;
+}
+
+/* Tùy chỉnh các nhóm nếu cần */
+.left-group {
+  display: flex;
+  gap: 10px;
+}
+
+.right-group {
+  display: flex;
+}

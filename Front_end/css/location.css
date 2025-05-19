@@ -121,3 +121,58 @@ label {
 .small {
   width: 100%;
 }
+
+/* Thêm vào file CSS của bạn (ví dụ location.css hoặc 1 file CSS chung) */
+
+.modal {
+  position: fixed;
+  z-index: 1000;
+  left: 0; /* Cố định sát bên trái */
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+
+  display: none; /* Ẩn mặc định */
+  justify-content: flex-start; /* canh nội dung bên trái */
+  align-items: flex-start; /* canh nội dung lên trên */
+  padding: 40px; /* tạo khoảng cách bên trong */
+}
+
+.modal.show {
+  display: flex;
+}
+
+.modal-content {
+  background-color: #fff;
+  padding: 20px 30px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+
+  /* Thêm margin để không sát ngay mép màn hình */
+  margin-left: 0;
+  /* Nếu muốn modal nhỏ hơn có thể chỉnh width */
+}
+
+.modal-content button {
+  margin: 10px 15px 0 15px;
+  padding: 8px 18px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+#btnYes {
+  background-color: #28a745;
+  color: white;
+}
+
+#btnNo {
+  background-color: #dc3545;
+  color: white;
+}

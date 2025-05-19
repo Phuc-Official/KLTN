@@ -136,22 +136,36 @@ exportRouter.put("/api/phieuxuat/:maPhieuXuat", async (req, res) => {
 
 // Xóa phiếu xuất
 exportRouter.delete("/api/phieuxuat/:maPhieuXuat", async (req, res) => {
-  const { maPhieuXuat } = req.params;
-
+  const maPhieuXuat = req.params.maPhieuXuat;
+  const connection = await pool.getConnection();
   try {
-    const [result] = await pool.query(
+    await connection.beginTransaction();
+
+    // Xóa tất cả chi tiết phiếu xuất liên quan
+    await connection.execute(
+      "DELETE FROM ChiTietPhieuXuat WHERE MaPhieuXuat = ?",
+      [maPhieuXuat]
+    );
+
+    // Sau đó mới xóa phiếu xuất cha
+    const [result] = await connection.execute(
       "DELETE FROM PhieuXuat WHERE MaPhieuXuat = ?",
       [maPhieuXuat]
     );
 
     if (result.affectedRows === 0) {
+      await connection.rollback();
       return res.status(404).send("Phiếu xuất không tìm thấy.");
     }
 
+    await connection.commit();
     res.json({ message: "Phiếu xuất đã được xóa thành công!" });
   } catch (err) {
+    await connection.rollback();
     console.error("Lỗi khi xóa phiếu xuất:", err);
-    res.status(500).send("Lỗi khi xóa phiếu xuất");
+    res.status(500).json({ error: err.message });
+  } finally {
+    connection.release();
   }
 });
 

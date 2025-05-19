@@ -119,21 +119,85 @@ orderRouter.put("/api/donhang/:maDonHang", async (req, res) => {
 // Endpoint xóa đơn hàng
 orderRouter.delete("/api/donhang/:maDonHang", async (req, res) => {
   const maDonHang = req.params.maDonHang;
+
+  const connection = await pool.getConnection();
   try {
-    const [result] = await pool.execute(
+    await connection.beginTransaction();
+
+    // Xóa chi tiết đơn hàng trước
+    await connection.execute("DELETE FROM ChiTietDonHang WHERE MaDonHang = ?", [
+      maDonHang,
+    ]);
+
+    // Xóa đơn hàng
+    const [result] = await connection.execute(
       "DELETE FROM DonHang WHERE MaDonHang = ?",
       [maDonHang]
     );
 
     if (result.affectedRows === 0) {
+      await connection.rollback();
       return res.status(404).send("Đơn hàng không tìm thấy.");
     }
 
-    res.json({ message: "Đơn hàng đã được xóa thành công!" });
+    await connection.commit();
+    res.json({
+      message: "Đơn hàng và chi tiết đơn hàng đã được xóa thành công!",
+    });
   } catch (err) {
-    console.error("Lỗi khi xóa đơn hàng:", err);
+    await connection.rollback();
+    console.error("Lỗi khi xóa đơn hàng và chi tiết:", err);
     res.status(500).send("Lỗi khi xóa đơn hàng");
+  } finally {
+    connection.release();
   }
 });
+
+orderRouter.put(
+  "/api/donhang/:maDonHang/capnhat-trangthai",
+  async (req, res) => {
+    const { maDonHang } = req.params;
+    const { TrangThai } = req.body;
+
+    if (!TrangThai) {
+      return res.status(400).json({
+        success: false,
+        message: "Thiếu thông tin trạng thái cần cập nhật.",
+      });
+    }
+
+    try {
+      const updateQuery = `
+      UPDATE DonHang
+      SET TrangThai = ?
+      WHERE MaDonHang = ?
+    `;
+
+      const [result] = await pool.query(updateQuery, [TrangThai, maDonHang]);
+
+      if (result.affectedRows === 0) {
+        return res.status(404).json({
+          success: false,
+          message: "Không tìm thấy đơn hàng với mã này.",
+        });
+      }
+
+      res.status(200).json({
+        success: true,
+        message: "Cập nhật trạng thái đơn hàng thành công.",
+        maDonHang,
+        TrangThai,
+      });
+    } catch (error) {
+      console.error("Lỗi khi cập nhật trạng thái đơn hàng:", error);
+      res.status(500).json({
+        success: false,
+        message: "Lỗi server khi cập nhật trạng thái đơn hàng.",
+        error: error.message,
+        stack: process.env.NODE_ENV === "development" ? error.stack : undefined,
+      });
+    }
+  }
+);
 
 module.exports = orderRouter;

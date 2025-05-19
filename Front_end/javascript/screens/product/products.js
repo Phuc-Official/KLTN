@@ -74,14 +74,7 @@ async function addProduct() {
   });
 
   // Kiểm tra tất cả các trường cần thiết
-  if (
-    !productId ||
-    !productName ||
-    !weight ||
-    !description ||
-    !groupId ||
-    !baseUnit
-  ) {
+  if (!productId || !productName || !weight || !groupId || !baseUnit) {
     alert("Vui lòng điền đầy đủ thông tin sản phẩm.");
     return;
   }
@@ -153,6 +146,7 @@ async function addProduct() {
     // Reset form
     document.getElementById("product-form").reset();
     document.getElementById("additional-units").innerHTML = ""; // Xóa các đơn vị quy đổi
+    window.location.href = "productList.html";
   } catch (error) {
     console.error("Lỗi khi thêm sản phẩm:", error);
     alert("Lỗi khi thêm sản phẩm!");
@@ -179,7 +173,7 @@ async function loadGroups() {
 
 function addAdditionalUnit() {
   const additionalUnitContainer = document.createElement("div");
-  additionalUnitContainer.style.margin = "10px 0";
+  additionalUnitContainer.style.margin = "0px";
 
   const unitRow = document.createElement("div");
   unitRow.style.display = "flex";
@@ -187,13 +181,18 @@ function addAdditionalUnit() {
   const unitNameInput = document.createElement("input");
   unitNameInput.type = "text";
   unitNameInput.placeholder = "Nhập tên đơn vị";
+  unitNameInput.style.marginRight = "10px";
+  unitNameInput.style.marginBottom = "10px";
 
   const conversionRateInput = document.createElement("input");
   conversionRateInput.type = "number";
   conversionRateInput.placeholder = "Tỷ lệ quy đổi";
+  conversionRateInput.style.marginRight = "10px";
+  conversionRateInput.style.marginBottom = "10px";
 
   const removeButton = document.createElement("button");
   removeButton.textContent = "Xóa";
+  removeButton.style.marginBottom = "10px";
   removeButton.addEventListener("click", () => {
     additionalUnitContainer.remove();
   });
@@ -226,6 +225,32 @@ function formatPriceInput() {
   } else {
     priceInput.value = ""; // Nếu không phải số, xóa ô
   }
+}
+
+function filterProducts() {
+  const searchValue = document
+    .getElementById("searchInput")
+    .value.toLowerCase();
+  const limitValue = parseInt(document.getElementById("limitInput").value);
+
+  const rows = document.querySelectorAll("#productTable tbody tr"); // Giả sử bảng có id="productTable"
+
+  rows.forEach((row) => {
+    const maSP = row.querySelector(".ma-sp")?.textContent.toLowerCase() || "";
+    const tenSP = row.querySelector(".ten-sp")?.textContent.toLowerCase() || "";
+    const soLuongTon =
+      parseInt(row.querySelector(".so-luong-ton")?.textContent) || 0;
+
+    const matchSearch =
+      maSP.includes(searchValue) || tenSP.includes(searchValue);
+    const matchLimit = isNaN(limitValue) || soLuongTon <= limitValue;
+
+    if (matchSearch && matchLimit) {
+      row.style.display = "";
+    } else {
+      row.style.display = "none";
+    }
+  });
 }
 
 // Gọi hàm khi trang được tải

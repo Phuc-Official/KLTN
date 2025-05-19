@@ -123,9 +123,9 @@ async function fetchReceiptDetails() {
       productList.appendChild(row);
     }
 
-    document.getElementById("date").value = new Date(
+    document.getElementById("date").value = formatDateToDDMMYYYY(
       receipt.NgayNhap
-    ).toLocaleDateString();
+    );
     document.getElementById("description").value = receipt.MoTa;
   } catch (error) {
     console.error("Lỗi khi tải chi tiết phiếu nhập:", error);
@@ -136,8 +136,40 @@ async function fetchReceiptDetails() {
   }
 }
 
+document.getElementById("delete-button").addEventListener("click", async () => {
+  if (!confirm("Bạn có chắc muốn xóa phiếu nhập này không?")) return;
+
+  const maPhieuNhap = document.getElementById("receipt-id").textContent.trim();
+
+  try {
+    const response = await fetch(`${BACKEND_URL}/phieunhap/${maPhieuNhap}`, {
+      method: "DELETE",
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      alert("Lỗi khi xóa phiếu nhập: " + errorText);
+      return;
+    }
+
+    alert("Xóa phiếu nhập thành công!");
+    // Chuyển hướng hoặc làm mới trang sau khi xóa
+    window.location.href = "receiptList.html"; // hoặc trang danh sách phiếu nhập của bạn
+  } catch (error) {
+    console.error("Lỗi khi gọi API xóa phiếu nhập:", error);
+    alert("Lỗi khi xóa phiếu nhập, vui lòng thử lại.");
+  }
+});
+
 document.addEventListener("DOMContentLoaded", fetchReceiptDetails);
 
 function cancel() {
   window.history.back();
+}
+function formatDateToDDMMYYYY(dateInput) {
+  const date = new Date(dateInput);
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
 }

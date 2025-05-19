@@ -97,27 +97,4 @@ exportDetailRouter.put("/api/chitietphieuxuat/:id", async (req, res) => {
   }
 });
 
-// 4. Xóa chi tiết phiếu xuất
-exportDetailRouter.delete("/api/chitietphieuxuat/:id", async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    const [result] = await pool.query(
-      "DELETE FROM ChiTietPhieuXuat WHERE Id = ?",
-      [id]
-    );
-
-    if (result.affectedRows === 0) {
-      return res
-        .status(404)
-        .json({ message: "Chi tiết phiếu xuất không tồn tại." });
-    }
-
-    res.status(200).json({ message: "Chi tiết phiếu xuất đã được xóa." });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Lỗi khi xóa chi tiết phiếu xuất." });
-  }
-});
-
 module.exports = exportDetailRouter;

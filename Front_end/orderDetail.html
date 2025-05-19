@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Quản lý kho - Chi tiết đơn hàng</title>
-    <link rel="stylesheet" href="css/createProduct.css" />
+    <link rel="stylesheet" href="css/createPr oduct.css" />
     <link rel="stylesheet" href="css/sidebar.css" />
     <link
       rel="stylesheet"
@@ -14,9 +14,18 @@
   <body>
     <script src="javascript/constants.js"></script>
     <header>
-      <button id="add-receipt-button" type="button" class="add-receipt-button">
-        Tạo phiếu nhập
-      </button>
+      <div class="container-button">
+        <button id="delete-button" type="button" class="delete-button">
+          Xóa phiếu
+        </button>
+        <button
+          id="add-receipt-button"
+          type="button"
+          class="add-receipt-button"
+        >
+          Tạo phiếu nhập
+        </button>
+      </div>
     </header>
     <div class="container">
       <main class="content">
@@ -26,7 +35,9 @@
               <i class="fas fa-arrow-left"></i>
             </button>
             <h1 id="back-title">
-              Chi tiết đơn hàng <span id="order-id"></span>
+              Chi tiết đơn hàng
+              <span id="order-id"></span>
+              <span id="order-status" style="margin-left: 30px"></span>
             </h1>
           </div>
           <div class="main-content">
@@ -47,9 +58,12 @@
             </section>
             <aside class="side-panel">
               <h3>Thông tin đơn hàng</h3>
-
-              <label for="supplier">Nhà cung cấp:</label>
-              <input type="text" id="supplier" value="" disabled />
+              <div class="input-row">
+                <div class="input-group">
+                  <label for="supplier">Nhà cung cấp:</label>
+                  <input type="text" id="supplier" value="" disabled />
+                </div>
+              </div>
 
               <div class="input-row">
                 <div class="input-group">
