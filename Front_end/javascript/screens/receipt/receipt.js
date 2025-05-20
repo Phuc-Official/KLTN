@@ -170,7 +170,7 @@ async function addReceipt() {
         quantityToUpdate
       );
       // 3. Cập nhật số lượng tồn trong bảng SanPham_Copy
-      await updateProductStock(productInfo.MaSanPham, quantityToUpdate);
+      // await updateProductStock(productInfo.MaSanPham, quantityToUpdate);
     });
 
     await Promise.all(productPromises);
