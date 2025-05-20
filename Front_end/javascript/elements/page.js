@@ -120,7 +120,7 @@ function displayItems(type) {
   if (!tbody) return; // phòng trường hợp chưa có phần tử
 
   tbody.innerHTML = "";
-
+  //
   paginatedItems.forEach((item) => {
     const row = document.createElement("tr");
 
@@ -129,7 +129,7 @@ function displayItems(type) {
         <td>${item.MaSanPham}</td>
         <td>${item.TenSanPham}</td>
         <td>${item.TenNhom || ""}</td>
-        <td>${item.SoLuongTon ?? 0}</td>
+        <td>${item.SoLuongTon ?? 0}</td> 
       `;
     } else if (type === "receipt") {
       row.innerHTML = `
