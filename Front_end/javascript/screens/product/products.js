@@ -227,32 +227,6 @@ function formatPriceInput() {
   }
 }
 
-function filterProducts() {
-  const searchValue = document
-    .getElementById("searchInput")
-    .value.toLowerCase();
-  const limitValue = parseInt(document.getElementById("limitInput").value);
-
-  const rows = document.querySelectorAll("#productTable tbody tr"); // Giả sử bảng có id="productTable"
-
-  rows.forEach((row) => {
-    const maSP = row.querySelector(".ma-sp")?.textContent.toLowerCase() || "";
-    const tenSP = row.querySelector(".ten-sp")?.textContent.toLowerCase() || "";
-    const soLuongTon =
-      parseInt(row.querySelector(".so-luong-ton")?.textContent) || 0;
-
-    const matchSearch =
-      maSP.includes(searchValue) || tenSP.includes(searchValue);
-    const matchLimit = isNaN(limitValue) || soLuongTon <= limitValue;
-
-    if (matchSearch && matchLimit) {
-      row.style.display = "";
-    } else {
-      row.style.display = "none";
-    }
-  });
-}
-
 // Gọi hàm khi trang được tải
 window.onload = () => {
   suggestNextProductId();

@@ -7,6 +7,7 @@
 html,
 body {
   height: 100%; /* Đảm bảo html và body chiếm toàn bộ chiều cao */
+  font-family: "Roboto", sans-serif;
 }
 
 body {
@@ -203,6 +204,7 @@ button.upload-button:hover {
 .add-receipt-button {
   margin-left: 10px;
   /* margin-right: 185px; */
+  width: 180px;
 }
 .confirm {
   margin-left: 10px;
@@ -210,7 +212,14 @@ button.upload-button:hover {
 }
 
 .delete-button {
+  margin-left: 10px;
   background-color: red;
+  width: 150px;
+}
+.export-button {
+  margin-left: 10px;
+  background-color: green;
+  width: 150px;
 }
 
 .button-cancel {
@@ -379,4 +388,16 @@ tr:hover {
 p {
   font-size: 14px;
   color: #666;
+}
+
+#pdf-content {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+.pdf-wrapper {
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  padding: 20px;
+  color: #000;
 }

@@ -65,9 +65,15 @@
                   </div>
                   <div class="input-group">
                     <label for="employee">Nhân viên</label>
-                    <select id="employee">
-                      <option value="" disabled selected>Chọn nhân viên</option>
-                    </select>
+                    <input type="hidden" id="employee" name="employee" />
+
+                    <!-- input hiện thị tên nhân viên, chỉ đọc -->
+                    <input
+                      type="text"
+                      id="employee-name"
+                      name="employee-name"
+                      readonly
+                    />
                   </div>
                 </div>
 

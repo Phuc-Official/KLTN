@@ -15,10 +15,12 @@
   <body>
     <script src="javascript/constants.js"></script>
     <header>
-      <button onclick="cancel()" class="button-cancel">Hủy</button>
-      <button id="add-button" type="button" class="add-button">
-        Tạo phiếu đặt hàng
-      </button>
+      <div class="container-button">
+        <button onclick="cancel()" class="button-cancel">Hủy</button>
+        <button id="add-button" type="button" class="add-button">
+          Tạo phiếu đặt hàng
+        </button>
+      </div>
     </header>
     <div class="container">
       <main class="content">
@@ -64,10 +66,9 @@
                     />
                   </div>
                   <div class="input-group">
-                    <label for="employee">Nhân viên</label>
-                    <select id="employee">
-                      <option value="" disabled selected>Chọn nhân viên</option>
-                    </select>
+                    <label for="employee-name">Nhân viên:</label>
+                    <input type="text" id="employee-name" disabled />
+                    <input type="hidden" id="employee" />
                   </div>
                 </div>
 

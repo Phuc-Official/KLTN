@@ -184,20 +184,19 @@ document
     const date = document.getElementById("date").value.trim();
     const description = document.getElementById("description").value.trim();
 
-    // Lấy danh sách sản phẩm với đơn vị từ DonViKhac
     const selectedProducts = [];
     const productRows = document.querySelectorAll("#product-list tr");
 
-    for (const row of productRows) {
+    for (let i = 0; i < productRows.length; i++) {
+      const row = productRows[i];
       const maSanPham = row.cells[0].textContent.trim();
       const tenSanPham = row.cells[1].textContent.trim();
       const soLuong = row.cells[3].textContent.trim();
 
-      // Lấy thông tin đơn vị từ DonViKhac
+      const orderProduct = order.SanPhamList[i];
+
+      // Lấy đơn vị quy đổi dựa vào MaDonViKhac của từng orderProduct
       const productUnits = await fetchProductUnits(maSanPham);
-      const orderProduct = order.SanPhamList.find(
-        (p) => p.MaSanPham === maSanPham
-      );
       const matchedUnit = productUnits.find(
         (u) => u.ID === orderProduct.MaDonViKhac
       );
@@ -212,7 +211,6 @@ document
       });
     }
 
-    // Chuyển đổi danh sách sản phẩm thành chuỗi JSON
     const selectedProductsJson = encodeURIComponent(
       JSON.stringify(selectedProducts)
     );

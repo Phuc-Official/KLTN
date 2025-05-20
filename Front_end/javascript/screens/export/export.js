@@ -293,14 +293,23 @@ function populateCustomerSelect(customers) {
 // Hàm tải nhân viên
 async function loadEmployees() {
   try {
+    // Nếu bạn vẫn muốn tải danh sách nhân viên từ backend thì giữ fetch
     const response = await fetch(`${BACKEND_URL}/nhanvien`);
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
     const employees = await response.json();
-    populateEmployeeSelect(employees);
+
+    // Lấy user hiện tại từ localStorage
+    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+
+    if (currentUser) {
+      // Hiển thị tên nhân viên vào input text (disabled)
+      document.getElementById("employee-name").value = currentUser.TenNhanVien;
+
+      // Gán mã nhân viên vào input hidden để gửi lên backend
+      document.getElementById("employee").value = currentUser.MaNhanVien;
+    } else {
+      // Trường hợp chưa đăng nhập hoặc không có currentUser
+      console.warn("Chưa có thông tin user hiện tại.");
+    }
   } catch (error) {
     console.error("Lỗi khi tải nhân viên:", error);
   }

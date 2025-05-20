@@ -227,12 +227,17 @@ function populateSupplierSelect(suppliers) {
 async function loadEmployees() {
   try {
     const response = await fetch(`${BACKEND_URL}/nhanvien`);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
     const employees = await response.json();
-    populateEmployeeSelect(employees);
+
+    // Lấy user hiện tại
+    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+    if (currentUser) {
+      // Hiển thị tên nhân viên vào input text (disabled)
+      document.getElementById("employee-name").value = currentUser.TenNhanVien;
+
+      // Gán mã nhân viên vào input hidden để gửi lên backend
+      document.getElementById("employee").value = currentUser.MaNhanVien;
+    }
   } catch (error) {
     console.error("Lỗi khi tải nhân viên:", error);
   }
@@ -241,11 +246,15 @@ async function loadEmployees() {
 // Hàm điền nhân viên vào select
 function populateEmployeeSelect(employees) {
   const employeeSelect = document.getElementById("employee");
+
+  const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+  const currentEmployeeId = currentUser?.MaNhanVien;
+
   employees.forEach((employee) => {
     const option = document.createElement("option");
-    option.value = employee.MaNhanVien; // Thay đổi theo thuộc tính của nhân viên
-    option.textContent = employee.TenNhanVien; // Thay đổi theo thuộc tính của nhân viên
-    employeeSelect.appendChild(option);
+    option.value = employee.MaNhanVien; // value vẫn là mã nhân viên để xử lý backend
+    option.textContent = employee.TenNhanVien; // Hiển thị tên nhân viên cho người dùng
+    selectEmployee.appendChild(option);
   });
 }
 
@@ -491,16 +500,13 @@ function removeProduct(uniqueId) {
 document.addEventListener("DOMContentLoaded", () => {
   loadSuppliers();
   fetchUnitOfMeasurements();
-  suggestNextOrderId(); // Gợi ý mã đơn hàng khi trang tải
-  loadProducts(); // Tải sản phẩm
+  suggestNextOrderId();
+  loadProducts();
   loadEmployees();
 
-  // Gọi hàm lọc sản phẩm khi người dùng nhập vào ô tìm kiếm
   document
     .getElementById("search-product")
     .addEventListener("input", filterProducts);
-
-  // Gọi hàm khi thêm đơn hàng
   document.getElementById("add-button").addEventListener("click", addOrder);
 });
 

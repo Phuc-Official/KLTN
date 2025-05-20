@@ -221,66 +221,63 @@ function cancel() {
 document
   .getElementById("save-receipt-button")
   .addEventListener("click", async () => {
-    const receiptId = document.getElementById("receipt-id").value.trim();
-    const params = getQueryParams();
-
-    const supplierId = params.supplier;
-    const employeeId = params.employee;
-    const description = document.getElementById("description").value.trim();
-    const orderId = params.orderId; // Giả sử URL có mã đơn hàng để cập nhật trạng thái
-
-    if (!receiptId || !supplierId || !employeeId) {
-      alert("Vui lòng điền đầy đủ thông tin phiếu nhập!");
-      return;
-    }
-
-    const productRows = document.querySelectorAll(
-      "#selected-products tbody tr"
-    );
-    const products = Array.from(productRows).map((row) => {
-      const maSanPham = row.cells[1].textContent.trim();
-      const soLuongInput = row.cells[4].querySelector("input");
-      const soLuong = parseInt(soLuongInput.value.trim(), 10);
-
-      const locationSelect = row.cells[5].querySelector(
-        "select.location-select"
-      );
-      const maViTri = locationSelect ? locationSelect.value : null;
-
-      const originalProduct = productsFromUrl.find(
-        (p) => p.MaSanPham === maSanPham
-      );
-
-      return {
-        MaSanPham: maSanPham,
-        TenSanPham: row.cells[2].textContent.trim(),
-        SoLuong: soLuong,
-        MaDonViKhac: originalProduct ? originalProduct.MaDonViKhac : null,
-        MaViTri: maViTri,
-      };
-    });
-
-    // Kiểm tra xem tất cả sản phẩm đã chọn vị trí lưu trữ chưa
-    const missingLocation = products.find((p) => !p.MaViTri);
-    if (missingLocation) {
-      alert(
-        `Vui lòng chọn vị trí lưu trữ cho sản phẩm ${missingLocation.MaSanPham}`
-      );
-      return;
-    }
-
-    const receiptData = {
-      MaPhieuNhap: receiptId,
-      MaNhaCungCap: supplierId,
-      MaNhanVien: employeeId,
-      NgayNhap: document.getElementById("date-create").value,
-      MoTa: description,
-      products,
-    };
-
-    console.log("Dữ liệu phiếu nhập sẽ được gửi:", receiptData);
-
     try {
+      const receiptId = document.getElementById("receipt-id").value.trim();
+      const params = getQueryParams();
+
+      const supplierId = params.supplier;
+      const employeeId = params.employee;
+      const description = document.getElementById("description").value.trim();
+      const orderId = params.orderId; // Mã đơn hàng dùng để cập nhật trạng thái nếu có
+
+      if (!receiptId || !supplierId || !employeeId) {
+        alert("Vui lòng điền đầy đủ thông tin phiếu nhập!");
+        return;
+      }
+
+      // Lấy danh sách sản phẩm từ bảng
+      const productRows = document.querySelectorAll(
+        "#selected-products tbody tr"
+      );
+      const products = Array.from(productRows).map((row, index) => {
+        const maSanPham = row.cells[1].textContent.trim();
+        const soLuongInput = row.cells[4].querySelector("input");
+        const soLuong = parseInt(soLuongInput.value.trim(), 10);
+        const locationSelect = row.cells[5].querySelector(
+          "select.location-select"
+        );
+        const maViTri = locationSelect ? locationSelect.value : null;
+        const originalProduct = productsFromUrl[index] || {};
+
+        return {
+          MaSanPham: maSanPham,
+          TenSanPham: row.cells[2].textContent.trim(),
+          SoLuong: soLuong,
+          MaDonViKhac: originalProduct.MaDonViKhac || null,
+          MaViTri: maViTri,
+        };
+      });
+
+      // Kiểm tra xem tất cả sản phẩm đã có vị trí lưu trữ chưa
+      const missingLocation = products.find((p) => !p.MaViTri);
+      if (missingLocation) {
+        alert(
+          `Vui lòng chọn vị trí lưu trữ cho sản phẩm ${missingLocation.MaSanPham}`
+        );
+        return;
+      }
+
+      const receiptData = {
+        MaPhieuNhap: receiptId,
+        MaNhaCungCap: supplierId,
+        MaNhanVien: employeeId,
+        NgayNhap: document.getElementById("date-create").value,
+        MoTa: description,
+        products,
+      };
+
+      console.log("Dữ liệu phiếu nhập sẽ được gửi:", receiptData);
+
       // Kiểm tra mã phiếu nhập đã tồn tại chưa
       const checkResponse = await fetch(
         `${BACKEND_URL}/phieunhap/${receiptId}`
@@ -289,31 +286,26 @@ document
         throw new Error("Mã phiếu nhập đã tồn tại!");
       }
 
-      // Tạo phiếu nhập
-      const response = await fetch(`${BACKEND_URL}/phieunhap`, {
+      // Tạo phiếu nhập mới
+      const createResponse = await fetch(`${BACKEND_URL}/phieunhap`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(receiptData),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
+      if (!createResponse.ok) {
+        const errorData = await createResponse.json();
         throw new Error(`Lỗi khi lưu phiếu nhập: ${errorData.message}`);
       }
 
-      // Lưu chi tiết phiếu nhập và cập nhật số lượng tồn kho tại vị trí
+      // Lưu chi tiết phiếu nhập từng sản phẩm
       await Promise.all(
         products.map(async (product) => {
-          // Lưu chi tiết phiếu nhập
           const detailResponse = await fetch(
             `${BACKEND_URL}/chitietphieunhap`,
             {
               method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
+              headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
                 MaPhieuNhap: receiptId,
                 MaSanPham: product.MaSanPham,
@@ -322,26 +314,82 @@ document
               }),
             }
           );
-
           if (!detailResponse.ok) {
             throw new Error("Lỗi khi lưu chi tiết phiếu nhập");
           }
-
-          // Cập nhật số lượng tồn kho tại vị trí lưu trữ
-          await updateProductQuantityInStorage(
-            product.MaSanPham,
-            product.MaViTri,
-            product.SoLuong
-          );
         })
       );
 
-      // Cập nhật trạng thái đơn hàng (nếu có mã đơn hàng truyền qua URL)
+      // Gộp số lượng thực tế đã quy đổi theo MaSanPham + MaViTri
+      const quantityMap = {}; // key: MaSanPham|MaViTri, value: tổng số lượng thực tế
+      const messages = [];
+
+      for (const product of products) {
+        const soLuong = product.SoLuong;
+        let soLuongThucTe = soLuong;
+        let tenDonVi = "Chuẩn";
+        let donViHienThi = "";
+
+        if (product.MaDonViKhac) {
+          const tyLeQuyDoi = await fetchConversionRate(
+            product.MaSanPham,
+            product.MaDonViKhac
+          );
+          if (!tyLeQuyDoi) {
+            throw new Error(
+              `Không tìm thấy tỷ lệ quy đổi cho sản phẩm ${product.MaSanPham}`
+            );
+          }
+          soLuongThucTe = soLuong * tyLeQuyDoi;
+
+          const originalProduct = productsFromUrl.find(
+            (p) =>
+              p.MaSanPham === product.MaSanPham &&
+              p.MaDonViKhac === product.MaDonViKhac
+          );
+          tenDonVi = originalProduct?.TenDonVi || "Không xác định";
+          donViHienThi = tenDonVi;
+        } else {
+          donViHienThi = "Chuẩn";
+        }
+
+        const msg =
+          `- ${product.TenSanPham} (${product.MaSanPham}):\n` +
+          `  + Vị trí: ${product.MaViTri}\n` +
+          `  + Số lượng thêm: ${soLuong} ${donViHienThi} (tương đương ${soLuongThucTe} đơn vị gốc)\n\n`;
+
+        messages.push(msg);
+        console.log(msg);
+
+        const key = `${product.MaSanPham}|${product.MaViTri}`;
+        quantityMap[key] = (quantityMap[key] || 0) + soLuongThucTe;
+      }
+
+      // Cập nhật tồn kho vị trí và tổng tồn kho sản phẩm
+      await Promise.all(
+        Object.entries(quantityMap).map(async ([key, totalSoLuong]) => {
+          const [maSanPham, maViTri] = key.split("|");
+          await updateProductQuantityInStorage(
+            maSanPham,
+            maViTri,
+            totalSoLuong
+          );
+          await updateProductStock(maSanPham, totalSoLuong);
+        })
+      );
+
+      // Cập nhật trạng thái đơn hàng nếu có mã đơn hàng
       if (orderId) {
         await updateOrderStatus(orderId);
       }
 
-      alert("Lưu phiếu nhập thành công!");
+      // Hiển thị thông báo chi tiết
+      alert(
+        "Lưu phiếu nhập thành công!\n\nChi tiết lưu kho:\n\n" +
+          messages.join("\n")
+      );
+
+      // Chuyển về trang danh sách phiếu nhập
       window.location.href = "receiptList.html";
     } catch (error) {
       console.error("Lỗi:", error);
@@ -406,5 +454,40 @@ async function updateOrderStatus(maDonHang) {
     }
   } catch (error) {
     console.error("Lỗi khi cập nhật trạng thái đơn hàng:", error);
+  }
+}
+
+async function updateProductStock(maSanPham, soLuong) {
+  try {
+    const response = await fetch(`${BACKEND_URL}/sanpham/capnhat-ton`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ maSanPham, soLuong }),
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Lỗi khi cập nhật SoLuongTon.");
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("Lỗi khi cập nhật tồn kho sản phẩm:", error);
+    throw error;
+  }
+}
+
+async function getTenDonViByMaSanPhamVaMaDonViKhac(maSanPham, maDonViKhac) {
+  try {
+    const response = await fetch(
+      `${BACKEND_URL}/donvikhac/by-product/${maSanPham}/${maDonViKhac}`
+    );
+    if (!response.ok) throw new Error("Không thể lấy tên đơn vị");
+
+    const donVi = await response.json();
+
+    // Giả sử API trả về 1 object { MaDonViKhac, TenDonVi, ... }
+    return donVi.TenDonVi || "Không xác định";
+  } catch (error) {
+    console.error("Lỗi khi lấy tên đơn vị:", error);
+    return "Không xác định";
   }
 }

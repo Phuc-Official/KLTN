@@ -4,7 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Quản lý kho - Chi tiết đơn hàng</title>
-    <link rel="stylesheet" href="css/createPr oduct.css" />
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/createProduct.css" />
     <link rel="stylesheet" href="css/sidebar.css" />
     <link
       rel="stylesheet"
@@ -15,6 +17,9 @@
     <script src="javascript/constants.js"></script>
     <header>
       <div class="container-button">
+        <!-- <button id="export-button" type="button" class="export-button">
+          Xuất phiếu
+        </button> -->
         <button id="delete-button" type="button" class="delete-button">
           Xóa phiếu
         </button>
@@ -27,6 +32,7 @@
         </button>
       </div>
     </header>
+
     <div class="container">
       <main class="content">
         <div class="main-section">
@@ -50,7 +56,6 @@
                     <th>Tên SP</th>
                     <th>Đơn vị</th>
                     <th>Số lượng</th>
-                    <!-- <th>Giá</th> -->
                   </tr>
                 </thead>
                 <tbody id="product-list"></tbody>
@@ -61,20 +66,17 @@
               <div class="input-row">
                 <div class="input-group">
                   <label for="supplier">Nhà cung cấp:</label>
-                  <input type="text" id="supplier" value="" disabled />
+                  <input type="text" id="supplier" disabled />
                 </div>
               </div>
-
               <div class="input-row">
                 <div class="input-group">
                   <label for="date">Ngày tạo:</label>
-                  <input type="text" id="date" value="" disabled />
+                  <input type="text" id="date" disabled />
                 </div>
                 <div class="input-group">
-                  <!-- <label for="total-price">Tổng giá trị:</label>
-                  <input type="text" id="total-price" value="" disabled /> -->
                   <label for="employee">Nhân viên tạo:</label>
-                  <input type="text" id="employee" value="" disabled />
+                  <input type="text" id="employee" disabled />
                 </div>
               </div>
               <div class="input-group">
@@ -86,6 +88,8 @@
         </div>
       </main>
     </div>
+
+    <!-- Script xử lý sự kiện sau khi DOM đã sẵn sàng -->
 
     <script src="javascript/screens/order/orderDetail.js"></script>
   </body>

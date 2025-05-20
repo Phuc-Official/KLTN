@@ -65,9 +65,11 @@
                   </div>
                   <div class="input-group">
                     <label for="employee">Nhân viên</label>
-                    <select id="employee">
-                      <option value="" disabled selected>Chọn nhân viên</option>
-                    </select>
+                    <!-- Input để hiển thị tên nhân viên (readonly) -->
+                    <input type="text" id="employee-name" disabled />
+
+                    <!-- Input ẩn để chứa mã nhân viên khi submit -->
+                    <input type="hidden" id="employee" name="MaNhanVien" />
                   </div>
                 </div>
 

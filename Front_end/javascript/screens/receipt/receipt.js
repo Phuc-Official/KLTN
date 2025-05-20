@@ -239,22 +239,23 @@ async function updateProductQuantityInStorage(maSanPham, maViTri, soLuong) {
 
 // Hàm lấy thông tin phiếu nhập từ form
 function getReceiptDetailsFromForm() {
-  // Kiểm tra xem có sản phẩm nào đã được chọn không
   if (selectedProducts.length === 0) {
     console.error("Không có sản phẩm nào được chọn.");
-    return null; // Trả về null nếu không có sản phẩm nào
+    return null;
   }
 
   const receiptId = document.getElementById("receipt-id").value.trim();
   const supplierId = document.getElementById("supplier").value.trim();
+
+  // Lấy mã nhân viên từ input ẩn
   const employeeId = document.getElementById("employee").value.trim();
+
   const dateCreated = document.getElementById("date-create").value.trim();
   const description = document.getElementById("description").value.trim();
 
-  // Kiểm tra tất cả các trường có giá trị hợp lệ
   if (!receiptId || !supplierId || !employeeId || !dateCreated) {
     console.error("Thiếu thông tin cần thiết.");
-    return null; // Trả về null nếu thiếu thông tin
+    return null;
   }
 
   return {
@@ -263,7 +264,6 @@ function getReceiptDetailsFromForm() {
     MaNhanVien: employeeId,
     NgayNhap: dateCreated,
     MoTa: description,
-    // TongGiaTri: calculateTotalValue(), // Tính tổng giá trị
   };
 }
 
@@ -575,14 +575,14 @@ async function updateProductQuantityInStorage(maSanPham, maViTri, soLuong) {
     throw error;
   }
 }
-async function updateProductStock(maSanPham, soLuong) {
+async function updateProductStock(maSanPham, soLuongQuyDoi) {
   try {
     const response = await fetch(`${BACKEND_URL}/sanpham/capnhat-ton`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ maSanPham, soLuong }),
+      body: JSON.stringify({ maSanPham, soLuong: soLuongQuyDoi }), // gửi đúng key backend nhận
     });
 
     if (!response.ok) {
@@ -729,8 +729,47 @@ document.addEventListener("click", (event) => {
   }
 });
 
-document.addEventListener("DOMContentLoaded", () => {
-  loadProducts();
-});
-
 document.getElementById("date-create").value = today;
+async function fetchEmployeeById(maNhanVien) {
+  try {
+    const response = await fetch(`${BACKEND_URL}/nhanvien/${maNhanVien}`);
+    if (!response.ok) {
+      throw new Error("Không thể lấy thông tin nhân viên.");
+    }
+    const employee = await response.json();
+    return employee;
+  } catch (error) {
+    console.error("Lỗi khi lấy thông tin nhân viên:", error);
+    return null;
+  }
+}
+
+async function loadEmployees() {
+  try {
+    // Nếu bạn vẫn muốn tải danh sách nhân viên từ backend thì giữ fetch
+    const response = await fetch(`${BACKEND_URL}/nhanvien`);
+    const employees = await response.json();
+
+    // Lấy user hiện tại từ localStorage
+    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+
+    if (currentUser) {
+      // Hiển thị tên nhân viên vào input text (disabled)
+      document.getElementById("employee-name").value = currentUser.TenNhanVien;
+
+      // Gán mã nhân viên vào input hidden để gửi lên backend
+      document.getElementById("employee").value = currentUser.MaNhanVien;
+    } else {
+      // Trường hợp chưa đăng nhập hoặc không có currentUser
+      console.warn("Chưa có thông tin user hiện tại.");
+    }
+  } catch (error) {
+    console.error("Lỗi khi tải nhân viên:", error);
+  }
+}
+
+// Gọi hàm này trong DOMContentLoaded
+document.addEventListener("DOMContentLoaded", () => {
+  loadEmployees();
+  // Các hàm khác...
+});

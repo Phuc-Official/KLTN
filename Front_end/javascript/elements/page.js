@@ -65,10 +65,11 @@ function displayItems(type) {
       filtered = data.filter((item) => {
         const matchKeyword =
           item.MaSanPham?.toLowerCase().includes(keyword) ||
-          item.TenSanPham?.toLowerCase().includes(keyword);
+          item.TenSanPham?.toLowerCase().includes(keyword) ||
+          item.TenNhom?.toLowerCase().includes(keyword);
         const matchLimit =
           isNaN(limitVal) ||
-          (item.SoLuongTon !== undefined && item.SoLuongTon < limitVal);
+          (item.SoLuongTon !== undefined && item.SoLuongTon <= limitVal);
         return matchKeyword && matchLimit;
       });
       break;
