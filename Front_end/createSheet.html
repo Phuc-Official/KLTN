@@ -67,9 +67,8 @@
                   </div>
                   <div class="input-group">
                     <label for="employee">Nhân viên</label>
-                    <select id="employee">
-                      <option value="" disabled selected>Chọn nhân viên</option>
-                    </select>
+                    <input type="text" id="employee-name" readonly />
+                    <input type="hidden" id="employee-id" />
                   </div>
                 </div>
 
@@ -79,6 +78,13 @@
                   id="search-product"
                   placeholder="Nhập mã sản phẩm hoặc tên sản phẩm"
                 />
+
+                <div>
+                  <button id="select-all-btn" type="button">
+                    Chọn tất cả sản phẩm
+                  </button>
+                </div>
+                <br />
                 <ul
                   id="product-list"
                   class="product-list"

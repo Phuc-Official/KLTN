@@ -304,8 +304,9 @@ select {
 #product-table th,
 #product-table td {
   border: 1px solid #ddd; /* Đường viền cho các ô */
-  padding: 8px; /* Khoảng cách bên trong ô */
+  padding: 12px 10px; /* Khoảng cách bên trong ô */
   text-align: left; /* Căn trái nội dung */
+  vertical-align: middle;
 }
 
 #product-table th {
@@ -400,4 +401,30 @@ p {
   font-size: 14px;
   padding: 20px;
   color: #000;
+}
+
+.unit-row {
+  height: 40px;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+.actual-row {
+  height: 40px;
+  /* padding: 4px 0; */
+  border-bottom: 1px solid #f0f0f0;
+}
+.actual-row input[type="number"] {
+  font-size: 15px;
+}
+
+.stock-row {
+  height: 40px;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.unit-row:last-child,
+.stock-row:last-child,
+.actual-row:last-child {
+  border-bottom: none;
 }

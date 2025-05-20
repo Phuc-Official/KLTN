@@ -176,3 +176,40 @@ label {
   background-color: #dc3545;
   color: white;
 }
+.suggestion-box {
+  border: 1px solid #ccc;
+  max-height: 200px;
+  overflow-y: auto;
+  background: white;
+  width: 100%;
+  z-index: 1000;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  position: absolute;
+}
+
+.suggestion-item {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.suggestion-item:hover {
+  background-color: #eee;
+}
+
+.no-result {
+  padding: 8px 12px;
+  color: #999;
+}
+.button-footer {
+  position: fixed; /* Cố định ở vị trí */
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: white; /* Nền trắng cho rõ */
+  padding: 10px 20px;
+  display: flex;
+  justify-content: flex-end; /* Đẩy nút sang phải */
+  gap: 10px; /* Khoảng cách giữa 2 nút */
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1); /* Tạo bóng nhẹ */
+  z-index: 9999; /* Đảm bảo nằm trên cùng */
+}

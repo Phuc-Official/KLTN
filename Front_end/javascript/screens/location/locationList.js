@@ -76,8 +76,20 @@ function getBackgroundColor(percentage) {
 
 function closeAllDrawers() {
   const drawer = document.getElementById("drawer");
-  drawer.classList.remove("open"); // Đóng drawer
-  isShelfInfoVisible = false; // Đặt lại trạng thái
+  drawer.classList.remove("open");
+
+  const drawerShelves = document.getElementById("drawer-shelves");
+  const infoDisplay = document.getElementById("info-display");
+  const createStorageDiv = document.getElementById("create-storage");
+  const shelfInfoDiv = document.getElementById("shelf-info");
+
+  drawerShelves.innerHTML = "";
+  infoDisplay.innerHTML = "";
+
+  createStorageDiv.style.display = "none";
+  shelfInfoDiv.style.display = "none";
+
+  isShelfInfoVisible = false;
 }
 
 function showShelfPositions(positions, shelfRowNumber) {
@@ -113,15 +125,28 @@ function showShelfPositions(positions, shelfRowNumber) {
       cellDiv.className = "shelf-cell";
       const quantity = position ? position.SoLuong : 0;
       const capacity = 288;
-      const percentage = (quantity / capacity) * 100;
 
-      cellDiv.style.backgroundColor = getBackgroundColor(percentage);
+      // Kiểm tra nếu không có mã sản phẩm thì màu xám
+      if (!position || !position.MaSanPham) {
+        cellDiv.style.backgroundColor = "#e6e6e6"; // màu xám
+      } else {
+        const percentage = (quantity / capacity) * 100;
+        cellDiv.style.backgroundColor = getBackgroundColor(percentage);
+      }
+
       cellDiv.textContent = `O${k}`;
 
+      // Sự kiện click giữ nguyên như cũ
       cellDiv.addEventListener("click", () => {
         const displayQuantity = quantity || 0;
+
         if (position) {
-          infoDisplay.innerHTML = `Mã vị trí: ${position.MaViTri}, Mã sản phẩm: ${position.MaSanPham} <br> Sức chứa: ${position.SucChua},  Đang chứa: ${displayQuantity}`;
+          const maSanPhamText = position.MaSanPham
+            ? position.MaSanPham
+            : "Chưa có";
+          const sucChuaText = position.SucChua != null ? position.SucChua : 0; // kiểm tra null hoặc undefined
+
+          infoDisplay.innerHTML = `Mã vị trí: ${position.MaViTri}, Mã sản phẩm: ${maSanPhamText} <br> Sức chứa: ${sucChuaText}, Đang chứa: ${displayQuantity}`;
         } else {
           infoDisplay.innerHTML = `Mã: Không có thông tin, Số lượng: 0`;
         }
@@ -143,16 +168,29 @@ function showShelfPositions(positions, shelfRowNumber) {
 
 function toggleDrawer() {
   const drawer = document.getElementById("drawer");
-  if (drawer.classList.contains("open")) {
-    drawer.classList.remove("open");
-    isShelfInfoVisible = false; // Đặt lại trạng thái khi đóng
-  } else {
-    closeAllDrawers();
-    drawer.classList.add("open");
-    // if (isShelfInfoVisible) {
-    //   showShelfInfo(); // Hiển thị thông tin nếu cần
-    // }
-  }
+  drawer.classList.toggle("open");
+}
+
+function openCreateStorageForm() {
+  const drawer = document.getElementById("drawer");
+  const createStorageDiv = document.getElementById("create-storage");
+  const shelfInfoDiv = document.getElementById("shelf-info");
+  const drawerShelves = document.getElementById("drawer-shelves");
+  const infoDisplay = document.getElementById("info-display");
+
+  // Hiển thị drawer
+  drawer.classList.add("open");
+
+  // Hiển thị form tạo lưu trữ, ẩn phần thông tin kệ
+  createStorageDiv.style.display = "block";
+  shelfInfoDiv.style.display = "none";
+
+  // Reset nội dung phần kệ và thông tin
+  drawerShelves.innerHTML = "";
+  infoDisplay.innerHTML = "";
+
+  // Đặt trạng thái isShelfInfoVisible = false vì không phải xem kệ
+  isShelfInfoVisible = false;
 }
 
 async function createStorage() {
@@ -275,13 +313,105 @@ function showConfirmModal(message) {
 }
 
 // Đóng drawer khi nhấn vào nút đóng
-document
-  .getElementById("close-drawer")
-  .addEventListener("click", closeAllDrawers);
-
-document
-  .getElementById("close-drawer-a")
-  .addEventListener("click", closeAllDrawers);
+document.getElementById("close-drawer").onclick = closeAllDrawers;
+document.getElementById("close-drawer-a").onclick = closeAllDrawers;
 
 // Gọi loadWarehousePositions khi DOM đã tải xong
-document.addEventListener("DOMContentLoaded", loadWarehousePositions);
+// document.addEventListener("DOMContentLoaded", loadWarehousePositions);
+
+window.productsList = [];
+
+// Hàm tải danh sách sản phẩm từ backend
+async function loadProducts() {
+  try {
+    const response = await fetch(`${BACKEND_URL}/sanpham`);
+    if (!response.ok) {
+      throw new Error("Không thể lấy danh sách sản phẩm");
+    }
+    const products = await response.json();
+    window.productsList = products;
+    // Nếu bạn có hàm displayProducts, gọi ở đây
+    // displayProducts(products);
+  } catch (error) {
+    console.error("Lỗi khi tải sản phẩm:", error);
+  }
+}
+
+function closeAllDrawers() {
+  const drawer = document.getElementById("drawer");
+  drawer.classList.remove("open"); // Đóng drawer
+
+  // Reset nội dung drawer nếu cần
+  document.getElementById("drawer-shelves").innerHTML = "";
+  document.getElementById("info-display").innerHTML = "";
+  document.getElementById("create-storage").style.display = "none";
+  document.getElementById("shelf-info").style.display = "none";
+
+  isShelfInfoVisible = false;
+}
+
+// Khởi tạo suggestion box cho input ma_san_pham
+const maSanPhamInput = document.getElementById("ma_san_pham");
+const suggestionBox = document.createElement("div");
+maSanPhamInput.parentNode.style.position = "relative";
+maSanPhamInput.parentNode.appendChild(suggestionBox);
+suggestionBox.className = "suggestion-box";
+
+maSanPhamInput.addEventListener("input", () => {
+  // Kiểm tra xem danh sách sản phẩm đã tải chưa
+  if (!window.productsList || !Array.isArray(window.productsList)) {
+    suggestionBox.style.display = "none";
+    return;
+  }
+
+  const query = maSanPhamInput.value.trim().toLowerCase();
+  if (!query) {
+    suggestionBox.innerHTML = "";
+    suggestionBox.style.display = "none";
+    return;
+  }
+
+  // Lọc sản phẩm theo mã hoặc tên sản phẩm
+  const filteredProducts = window.productsList.filter(
+    (p) =>
+      p.MaSanPham.toLowerCase().includes(query) ||
+      p.TenSanPham.toLowerCase().includes(query)
+  );
+
+  if (filteredProducts.length === 0) {
+    suggestionBox.innerHTML =
+      "<div class='no-result'>Không tìm thấy sản phẩm</div>";
+    suggestionBox.style.display = "block";
+    return;
+  }
+
+  // Hiển thị danh sách gợi ý
+  suggestionBox.innerHTML = "";
+  filteredProducts.forEach((product) => {
+    const item = document.createElement("div");
+    item.className = "suggestion-item";
+    item.textContent = `${product.MaSanPham} - ${product.TenSanPham}`;
+    item.addEventListener("click", () => {
+      maSanPhamInput.value = product.MaSanPham;
+      suggestionBox.innerHTML = "";
+      suggestionBox.style.display = "none";
+    });
+    suggestionBox.appendChild(item);
+  });
+
+  suggestionBox.style.display = "block";
+});
+
+// Ẩn suggestion khi click ra ngoài
+document.addEventListener("click", (e) => {
+  if (!maSanPhamInput.contains(e.target) && !suggestionBox.contains(e.target)) {
+    suggestionBox.style.display = "none";
+  }
+});
+
+// Khi DOM sẵn sàng, gọi loadProducts
+document.addEventListener("DOMContentLoaded", async () => {
+  await loadProducts();
+  // Nếu bạn có hàm loadWarehousePositions(), gọi ở đây
+  await loadWarehousePositions();
+});

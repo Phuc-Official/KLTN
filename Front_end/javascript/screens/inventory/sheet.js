@@ -141,14 +141,13 @@ function generateNextSheetId(maxId) {
 function getSheetDetailsFromForm() {
   const sheetId = document.getElementById("sheet-id").value.trim();
   const sheetName = document.getElementById("sheet-name").value.trim();
-  const employeeId = document.getElementById("employee").value.trim();
+  const employeeId = document.getElementById("employee-id").value.trim(); // lấy từ input ẩn
   const dateCreated = document.getElementById("date-create").value.trim();
   const description = document.getElementById("description").value.trim();
 
-  // Kiểm tra tất cả các trường có giá trị hợp lệ
   if (!sheetId || !employeeId || !dateCreated) {
     console.error("Thiếu thông tin cần thiết.");
-    return null; // Trả về null nếu thiếu thông tin
+    return null;
   }
 
   return {
@@ -161,17 +160,22 @@ function getSheetDetailsFromForm() {
 }
 
 // Hàm tải nhân viên
-async function loadEmployees() {
+function loadCurrentEmployee() {
   try {
-    const response = await fetch(`${BACKEND_URL}/nhanvien`);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+    if (!currentUser) {
+      throw new Error("Chưa có thông tin nhân viên đăng nhập.");
     }
 
-    const employees = await response.json();
-    populateEmployeeSelect(employees);
+    // Hiển thị tên nhân viên
+    const employeeNameInput = document.getElementById("employee-name");
+    employeeNameInput.value = currentUser.TenNhanVien;
+
+    // Lưu mã nhân viên vào input ẩn
+    const employeeIdInput = document.getElementById("employee-id");
+    employeeIdInput.value = currentUser.MaNhanVien;
   } catch (error) {
-    console.error("Lỗi khi tải nhân viên:", error);
+    console.error("Lỗi khi lấy thông tin nhân viên đăng nhập:", error);
   }
 }
 
@@ -347,6 +351,34 @@ function updateUnit(uniqueId, unitId) {
   }
 }
 
+function selectAllProducts() {
+  if (!window.productsList) {
+    console.error("Danh sách sản phẩm chưa được tải.");
+    return;
+  }
+
+  window.productsList.forEach((product) => {
+    // Kiểm tra nếu sản phẩm đã chọn chưa
+    const alreadySelected = selectedProducts.some(
+      (p) => p.MaSanPham === product.MaSanPham
+    );
+    if (!alreadySelected) {
+      const productInfo = {
+        uniqueId: `${product.MaSanPham}-${selectedProducts.length + 1}`,
+        MaSanPham: product.MaSanPham,
+        SoLuongTon: product.SoLuongTon,
+        MaDonVi: product.MaDonVi,
+        quantity: product.SoLuongTon,
+      };
+      selectedProducts.push(productInfo);
+    }
+  });
+
+  updateSelectedProducts(); // Cập nhật hiển thị danh sách sản phẩm đã chọn
+  filterProducts(); // Cập nhật lại danh sách sản phẩm (ẩn các sản phẩm đã chọn)
+  document.getElementById("product-list").style.display = "none"; // Ẩn danh sách sản phẩm
+}
+
 // Hàm xóa sản phẩm
 function removeProduct(uniqueId) {
   selectedProducts = selectedProducts.filter((p) => p.uniqueId !== uniqueId);
@@ -380,7 +412,7 @@ function viewSheetDetails(sheetId) {
 document.addEventListener("DOMContentLoaded", () => {
   suggestNextSheetId(); // Gợi ý mã phiếu kiểm kê khi trang tải
   loadProducts(); // Tải sản phẩm
-  loadEmployees();
+  loadCurrentEmployee();
 
   // Gọi hàm lọc sản phẩm khi người dùng nhập vào ô tìm kiếm
   document
@@ -392,6 +424,9 @@ document.addEventListener("DOMContentLoaded", () => {
   document
     .getElementById("confirm")
     .addEventListener("click", redirectToConfirmationPageWithProducts);
+  document
+    .getElementById("select-all-btn")
+    .addEventListener("click", selectAllProducts);
 });
 
 // Ẩn danh sách sản phẩm khi nhấn ra ngoài ô tìm kiếm
@@ -408,33 +443,3 @@ document.addEventListener("click", (event) => {
 });
 
 document.getElementById("date-create").value = today;
-
-{
-  /* <td>
-                  <select id="${
-                    productInfo.uniqueId
-                  }-unit" onchange="updateUnit('${
-        productInfo.uniqueId
-      }', this.value)">
-                    <option value="" disabled ${
-                      !productInfo.MaDonVi ? "selected" : ""
-                    }>Chọn đơn vị</option>
-                    ${unitOfMeasurements
-                      .map(
-                        (unit) => `
-                      <option value="${unit.MaDonVi}" ${
-                          unit.MaDonVi === productInfo.MaDonVi ? "selected" : ""
-                        }>${unit.TenDonVi}</option>
-                    `
-                      )
-                      .join("")}
-                  </select>
-              </td> */
-  //         <td>
-  //             <input type="number" id="${
-  //               productInfo.uniqueId
-  //             }-quantity" value="${
-  //   productInfo.quantity
-  // }" min="0" readonly />
-  //         </td>
-}
