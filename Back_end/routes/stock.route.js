@@ -3,7 +3,7 @@ const pool = require("../db");
 
 const stockRouter = new Router();
 
-stockRouter.put("/capnhat", async (req, res) => {
+stockRouter.put("/api/updatestock", async (req, res) => {
   const { maSanPham, soLuong } = req.body;
 
   if (!maSanPham || typeof soLuong !== "number") {

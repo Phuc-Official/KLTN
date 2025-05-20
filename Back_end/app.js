@@ -38,7 +38,7 @@ app.use(orderRouter);
 app.use(orderDetailRouter);
 app.use(locationRoute);
 app.use(employeeRouter);
-app.use("/api", stockRouter);
+app.use(stockRouter);
 
 // Khởi động server
 app.listen(PORT, () => {
