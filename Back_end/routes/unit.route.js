@@ -112,7 +112,7 @@ unitRouter.get("/api/donvikhac/by-id/:id", async (req, res) => {
   }
 });
 
-unitRouter.post("/api/capnhatton", async (req, res) => {
+unitRouter.put("/api/capnhatton", async (req, res) => {
   const { maSanPham, soLuong } = req.body;
   try {
     await pool.execute(
