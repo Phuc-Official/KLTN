@@ -217,25 +217,6 @@ async function addReceipt() {
 }
 
 // Hàm cập nhật số lượng trong kho (cần sửa lại)
-async function updateProductQuantityInStorage(maSanPham, maViTri, soLuong) {
-  try {
-    const response = await fetch(`${BACKEND_URL}/capnhatsoluong`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ maSanPham, maViTri, soLuong }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || "Lỗi khi cập nhật số lượng.");
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error("Lỗi khi cập nhật số lượng:", error);
-    throw error;
-  }
-}
 
 // Hàm lấy thông tin phiếu nhập từ form
 function getReceiptDetailsFromForm() {
@@ -572,27 +553,6 @@ async function updateProductQuantityInStorage(maSanPham, maViTri, soLuong) {
     return await response.json();
   } catch (error) {
     console.error("Lỗi khi cập nhật số lượng:", error);
-    throw error;
-  }
-}
-async function updateProductStock(maSanPham, soLuongQuyDoi) {
-  try {
-    const response = await fetch(`${BACKEND_URL}/capnhatton`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ maSanPham, soLuong: soLuongQuyDoi }), // gửi đúng key backend nhận
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || "Lỗi khi cập nhật SoLuongTon.");
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error("Lỗi khi cập nhật tồn kho sản phẩm:", error);
     throw error;
   }
 }
