@@ -15,6 +15,7 @@ const orderRouter = require("./routes/order.route");
 const orderDetailRouter = require("./routes/orderDetail.route");
 const locationRoute = require("./routes/location.route");
 const employeeRouter = require("./routes/employee.route");
+const stockRouter = require("./routes/stock.route");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -37,6 +38,7 @@ app.use(orderRouter);
 app.use(orderDetailRouter);
 app.use(locationRoute);
 app.use(employeeRouter);
+app.use("/api", stockRouter);
 
 // Khởi động server
 app.listen(PORT, () => {
