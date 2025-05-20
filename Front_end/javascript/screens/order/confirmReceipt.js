@@ -374,7 +374,7 @@ document
             maViTri,
             totalSoLuong
           );
-          // await updateProductStock(maSanPham, totalSoLuong);
+          await updateProductStock(maSanPham, totalSoLuong);
         })
       );
 
@@ -454,6 +454,24 @@ async function updateOrderStatus(maDonHang) {
     }
   } catch (error) {
     console.error("Lỗi khi cập nhật trạng thái đơn hàng:", error);
+  }
+}
+
+async function updateProductStock(maSanPham, soLuong) {
+  try {
+    const response = await fetch(`${BACKEND_URL}/capnhatton`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ maSanPham, soLuong }),
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Lỗi khi cập nhật SoLuongTon.");
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("Lỗi khi cập nhật tồn kho sản phẩm:", error);
+    throw error;
   }
 }
 
