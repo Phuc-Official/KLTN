@@ -459,7 +459,7 @@ async function updateOrderStatus(maDonHang) {
 
 async function updateProductStock(maSanPham, soLuong) {
   try {
-    const response = await fetch(`${BACKEND_URL}/sanpham/capnhat-ton`, {
+    const response = await fetch(`${BACKEND_URL}/capnhat-ton`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ maSanPham, soLuong }),

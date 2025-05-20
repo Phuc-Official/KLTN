@@ -210,7 +210,7 @@ productRouter.put("/api/sanpham/:maSanPham/stock", async (req, res) => {
 });
 
 // POST /sanpham/capnhat-ton
-productRouter.post("/api/sanpham/capnhat-ton", async (req, res) => {
+productRouter.post("/api/capnhat-ton", async (req, res) => {
   const { maSanPham, soLuong } = req.body;
   try {
     await pool.execute(

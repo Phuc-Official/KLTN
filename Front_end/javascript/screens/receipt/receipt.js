@@ -577,7 +577,7 @@ async function updateProductQuantityInStorage(maSanPham, maViTri, soLuong) {
 }
 async function updateProductStock(maSanPham, soLuongQuyDoi) {
   try {
-    const response = await fetch(`${BACKEND_URL}/sanpham/capnhat-ton`, {
+    const response = await fetch(`${BACKEND_URL}/capnhat-ton`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
