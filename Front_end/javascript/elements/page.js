@@ -129,7 +129,7 @@ function displayItems(type) {
         <td>${item.MaSanPham}</td>
         <td>${item.TenSanPham}</td>
         <td>${item.TenNhom || ""}</td>
-        <td>${item.SoLuongTon ?? 0}</td> 
+        
       `;
     } else if (type === "receipt") {
       row.innerHTML = `

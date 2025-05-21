@@ -374,7 +374,7 @@ document
             maViTri,
             totalSoLuong
           );
-          await updateProductStock(maSanPham, totalSoLuong);
+          // await updateProductStock(maSanPham, totalSoLuong);
         })
       );
 
