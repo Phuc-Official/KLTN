@@ -375,7 +375,6 @@ document
             totalSoLuong
           );
           // await updateProductStock(maSanPham, totalSoLuong);
-          //
         })
       );
 
